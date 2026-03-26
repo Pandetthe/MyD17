@@ -1,0 +1,75 @@
+# ==============================
+# Package Managers
+# ==============================
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+
+# ==============================
+# Turborepo
+# ==============================
+.turbo/
+
+# ==============================
+# Expo / React Native
+# ==============================
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+/ios
+/android
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# ==============================
+# Strapi
+# ==============================
+.strapi/
+.tmp/
+build/
+exports/
+.strapi-updater.json
+.strapi-cloud.json
+public/uploads/*
+!public/uploads/.gitkeep
+
+# ==============================
+# Databases
+# ==============================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================
+# Environment Variables
+# ==============================
+.env
+.env*.local
+!.env.example
+
+# ==============================
+# TypeScript & Testing
+# ==============================
+*.tsbuildinfo
+coverage/
+lcov.info
+
+# ==============================
+# OS & Editor Files
+# ==============================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+.eslintcache
+*.swp
