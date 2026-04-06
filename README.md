@@ -10,6 +10,8 @@ Configure your local machine by following the [Expo Environment Setup Guide](htt
 
 ### Backend and database
 
+Create a `.env` file in the root directory and configure it based on the `.env.example` template. Using the default values should work for a basic setup ;)
+
 From the root folder run
 
 ```bash
