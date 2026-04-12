@@ -8,14 +8,14 @@ Configure your local machine by following the [Expo Environment Setup Guide](htt
 - Mode: Development build
 - Note: do not use EAS
 
-### Backend and database
+### Database
 
-Create a `.env` file in the root directory and configure it based on the `.env.example` template. Using the default values should work for a basic setup ;)
+Create a `.env` file in the root directory and configure it based on the `.env.example.dev` template. Using the default values should work for a basic setup ;)
 
 From the root folder run
 
 ```bash
-docker-compose up
+docker compose up -d
 ```
 
 ### Running the mobile app
@@ -39,4 +39,18 @@ Otherwise, for the regular starts simply start the bundler:
 
 ```bash
 pnpm start
+```
+
+---
+
+# TODO: finish setting up production environment
+
+### Strapi backend and PostgreSQL database in production environment
+
+Create a `.env` file in the root directory and configure it based on the `.env.example.` template. Using the default values should work for a basic setup ;)
+
+From the root folder run
+
+```bash
+docker compose up --profile prod -d
 ```
