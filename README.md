@@ -18,7 +18,17 @@ From the root folder run
 docker compose up -d
 ```
 
-### Running the mobile app
+### Running React Native mobile app and Strapi backend
+
+From root folder run
+
+```bash
+pnpm run dev
+```
+
+which starts React Native server and bundler and Strapi server using Turborepo.
+
+### Building mobile app
 
 Navigate to the mobile directory
 
@@ -35,7 +45,7 @@ pnpm ios -d      # For iOS
 
 The -d flag allows you to select your preferred device/emulator target.
 
-Otherwise, for the regular starts simply start the bundler:
+Otherwise, for the regular starts simply start the bundler (`pnpm run dev` runs this command):
 
 ```bash
 pnpm start
