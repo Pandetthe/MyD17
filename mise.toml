@@ -1,0 +1,4 @@
+[tools]
+node = "24"
+[tasks."setup"]
+run = "corepack enable && corepack install"
