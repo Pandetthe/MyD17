@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_content_event_date_times",
+  "info": {
+    "displayName": "EventDateTime",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "startDateTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "endDateTime": {
+      "type": "datetime"
+    }
+  },
+  "config": {}
+}

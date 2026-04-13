@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_content_texts",
+  "info": {
+    "displayName": "Text",
+    "icon": "file"
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "text",
+      "minLength": 1,
+      "required": true
+    }
+  },
+  "config": {}
+}

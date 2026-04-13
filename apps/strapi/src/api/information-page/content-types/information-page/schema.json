@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "information_pages",
+  "info": {
+    "singularName": "information-page",
+    "pluralName": "information-pages",
+    "displayName": "InformationPage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "staticInformation": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::static-information.static-information"
+    }
+  }
+}

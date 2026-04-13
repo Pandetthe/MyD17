@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "static_informations",
+  "info": {
+    "singularName": "static-information",
+    "pluralName": "static-informations",
+    "displayName": "StaticInformation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "isWide": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "color": {
+      "type": "component",
+      "component": "color-picker.color-picker",
+      "repeatable": false,
+      "required": true
+    },
+    "content": {
+      "type": "dynamiczone",
+      "components": [
+        "content.text",
+        "content.location",
+        "content.event-date-time",
+        "content.chip",
+        "content.calendar"
+      ]
+    }
+  }
+}

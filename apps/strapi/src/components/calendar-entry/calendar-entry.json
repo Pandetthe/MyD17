@@ -1,0 +1,59 @@
+{
+  "collectionName": "components_calendar_entry_calendar_entries",
+  "info": {
+    "displayName": "CalendarEntry",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "withDate": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "day": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "withDate"
+            },
+            false
+          ]
+        }
+      },
+      "required": true,
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ]
+    },
+    "date": {
+      "type": "date",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "withDate"
+            },
+            true
+          ]
+        }
+      },
+      "required": true
+    },
+    "startTime": {
+      "type": "time"
+    },
+    "endTime": {
+      "type": "time"
+    }
+  },
+  "config": {}
+}
