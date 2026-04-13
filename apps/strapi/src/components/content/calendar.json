@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_content_calendars",
+  "info": {
+    "displayName": "Calendar",
+    "icon": "calendar"
+  },
+  "options": {},
+  "attributes": {
+    "entries": {
+      "type": "component",
+      "component": "calendar-entry.calendar-entry",
+      "repeatable": true,
+      "min": 1
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_color_picker_color_pickers",
+  "info": {
+    "displayName": "ColorPicker",
+    "icon": "brush"
+  },
+  "options": {},
+  "attributes": {
+    "color": {
+      "type": "enumeration",
+      "enum": [
+        "red",
+        "orange",
+        "amber",
+        "yellow",
+        "lime",
+        "green",
+        "emerald",
+        "teal",
+        "cyan",
+        "sky",
+        "blue",
+        "indigo",
+        "violet",
+        "purple",
+        "fuchsia",
+        "pink",
+        "rose"
+      ]
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_content_locations",
+  "info": {
+    "displayName": "Location",
+    "icon": "pinMap"
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "enumeration",
+      "enum": [
+        "s1.38",
+        "s2.41",
+        "s3.20",
+        "s4.21"
+      ]
+    }
+  },
+  "config": {}
+}
