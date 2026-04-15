@@ -1,18 +1,21 @@
 import Icon from "@/components/Icon.component";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Icon name="Home"></Icon>
+      <Icon name="Home" />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     justifyContent: "center",
     flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.colors.background.primary,
   },
-});
+}));
