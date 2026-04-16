@@ -13,6 +13,9 @@ config.resolver.nodeModulesPaths = [
 ];
 config.resolver.blockList = [
   /apps\/strapi\/dist\/.*/,
+  /apps\/strapi\/node_modules\/.strapi\/.*/,
+  /apps\/strapi\/\.strapi\/.*/,
+  /apps\/strapi\/tmp\/.*/,
 ];
 
 module.exports = config;
