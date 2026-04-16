@@ -1,5 +1,5 @@
 [tools]
-java = "openjdk-17"
+java = "17"
 node = "24"
 [tasks."setup"]
 run = "corepack enable && corepack install"
