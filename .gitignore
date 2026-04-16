@@ -52,6 +52,8 @@ public/uploads/*
 .env
 .env*.local
 !.env.example
+!.env.example.dev
+!.env.example.prod
 
 # ==============================
 # TypeScript & Testing
