@@ -12,5 +12,12 @@ export const borderRadius = {
   none: 0,
   small: 12,
   medium: 16,
-  large: 32,
+  large: 24,
 } as const;
+
+export const size = {
+  sm: 16,
+  md: 24,
+  lg: 32,
+  xl: 48,
+};

@@ -2,6 +2,8 @@
  * static-information router
  */
 
-import { factories } from '@strapi/strapi';
+import { factories } from "@strapi/strapi";
 
-export default factories.createCoreRouter('api::static-information.static-information');
+export default factories.createCoreRouter(
+  "api::static-information.static-information",
+);

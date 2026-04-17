@@ -1,4 +1,5 @@
-import Icon from "@/components/Icon.component";
+import Icon from "@/components/core/Icon.component";
+import { Theme } from "@/styles/themes/theme";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -10,12 +11,12 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme: Theme) => ({
   container: {
     flex: 1,
     justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: theme.colors.background.primary,
+    backgroundColor: theme.colors.surface,
   },
 }));
