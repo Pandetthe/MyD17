@@ -1,4 +1,4 @@
-import { Color, colors } from "@/styles/semantic-colors";
+import { Color, colors } from "@/styles/colors";
 import { borderRadius, size, spacing } from "@/styles/tokens";
 import { fonts } from "@/styles/fonts";
 import { Theme } from "./theme";
@@ -32,17 +32,16 @@ export const lightTheme: Theme = {
       },
     },
     dark: {
-      main: colors.white,
+      main: colors.core.dark,
       text: {
-        primary: colors.white,
-        secondary: colors.core.surface,
+        primary: colors.core.dark,
+        secondary: colors.core.extraDark,
       },
       background: {
-        main: colors.core.dark,
-        accent: colors.core.extraDark,
+        main: colors.white,
+        accent: colors.core.surface,
       },
     },
-    blue: colorSet(colors.blue),
     red: colorSet(colors.red),
     amber: colorSet(colors.amber),
     green: colorSet(colors.green),
