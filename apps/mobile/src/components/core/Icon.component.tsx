@@ -21,17 +21,13 @@ const styles = StyleSheet.create((theme) => ({
   }),
 }));
 
-export default function Icon({
-  icon,
-  color = "primary",
-  hasBackground = true,
-}: IconProps) {
+export default function Icon({ icon, color = "primary" }: IconProps) {
   const { theme } = useUnistyles();
 
   const IconComponent = icon;
 
   return (
-    <View style={hasBackground ? styles.container(color) : undefined}>
+    <View style={styles.container(color)}>
       <IconComponent size={theme.size.md} color={theme.colors[color].main} />
     </View>
   );
