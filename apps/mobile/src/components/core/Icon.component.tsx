@@ -1,14 +1,11 @@
 import React from "react";
-import * as LucideIcons from "lucide-react-native";
-import { LucideProps } from "lucide-react-native";
+import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { View } from "react-native";
 import { ColorPalette } from "@/styles/themes/theme";
 
-export type IconName = keyof typeof LucideIcons;
-
 interface IconProps {
-  name: IconName;
+  icon: LucideIcon;
   color?: ColorPalette;
   hasBackground?: boolean;
 }
@@ -25,16 +22,17 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 export default function Icon({
-  name,
+  icon,
   color = "primary",
   hasBackground = true,
 }: IconProps) {
   const { theme } = useUnistyles();
-  const LucideIcon = LucideIcons[name] as React.FC<LucideProps>;
+
+  const IconComponent = icon;
 
   return (
     <View style={hasBackground ? styles.container(color) : undefined}>
-      <LucideIcon size={theme.size.md} color={theme.colors[color].main} />
+      <IconComponent size={theme.size.md} color={theme.colors[color].main} />
     </View>
   );
 }

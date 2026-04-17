@@ -1,12 +1,13 @@
 import Icon from "@/components/core/Icon.component";
 import { Theme } from "@/styles/themes/theme";
+import { Home } from "lucide-react-native";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Icon name="Home" />
+      <Icon icon={Home} />
     </View>
   );
 }
