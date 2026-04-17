@@ -1,55 +1,71 @@
-# Local development setup
+# MyD17
 
-### Environment Prerequisite
+A monorepo project for a React Native mobile application with Strapi CMS backend, using Turborepo for build orchestration and Docker Compose for local development environment.
 
-Configure your local machine by following the [Expo Environment Setup Guide](https://docs.expo.dev/get-started/set-up-your-environment/?platform=android&device=simulated&mode=development-build&buildEnv=local).
+## Project Structure
 
-- Target: Whatever you want to test the app on
-- Mode: Development build
-- Note: do not use EAS
+- **apps/mobile** - React Native app (Expo-based)
+- **apps/strapi** - Strapi CMS backend
+- **packages/eslint-config** - Shared ESLint configuration
+- **packages/typescript-config** - Shared TypeScript configuration
+- **packages/ui** - Shared UI components library
 
-### Database
+## Quick Start
 
-Create a `.env` file in the root directory and configure it based on the `.env.example.dev` template. Using the default values should work for a basic setup ;)
+### 1. Setup Environment
 
-From the root folder run
+Copy the development environment templates:
+
+```bash
+cp .env.example.dev .env
+cp apps/strapi/.env.example apps/strapi/.env
+```
+
+Edit `.env` and `apps/strapi/.env` if needed (default values should work for local development).
+
+### 2. Start Database
+
+Start PostgreSQL database in Docker:
 
 ```bash
 docker compose up -d
 ```
 
-### Running React Native mobile app and Strapi backend
+> **Note:** This starts **only the database**. Backend and mobile app are started via `pnpm run dev`.
 
-From root folder run
+### 3. Start Development Servers
+
+From the root directory, run:
 
 ```bash
 pnpm run dev
 ```
+## Development
 
-which starts React Native server and bundler and Strapi server using Turborepo.
+### Mobile App
 
-### Building mobile app
-
-Navigate to the mobile directory
+Navigate to the mobile directory:
 
 ```bash
 cd apps/mobile
 ```
 
-If you are running the app for the first time or you have changed native code, added new packages (with native file changes), or updated the schema, trigger a full build:
+**First time setup** (or after native code changes):
 
 ```bash
-pnpm android -d  # For Android
-pnpm ios -d      # For iOS
+pnpm android -d  # For Android Emulator
+pnpm ios -d      # For iOS Simulator
 ```
 
-The -d flag allows you to select your preferred device/emulator target.
+The `-d` flag allows you to select your device/emulator.
 
-Otherwise, for the regular starts simply start the bundler (`pnpm run dev` runs this command):
+**Regular development**:
 
 ```bash
-pnpm start
+pnpm start       # Start the bundler
 ```
+
+Or from root: `pnpm run dev`
 
 ---
 
