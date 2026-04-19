@@ -1,0 +1,57 @@
+import { Color, colors } from "@/styles/semantic-colors";
+import { borderRadius, size, spacing } from "@/styles/tokens";
+import { fonts } from "@/styles/fonts";
+import { Theme } from "./theme";
+
+export function colorSet(color: Color) {
+  return {
+    main: color.main,
+    text: {
+      primary: color.extraDark,
+      secondary: color.dark,
+    },
+    background: {
+      main: color.extraLight,
+      accent: color.light,
+    },
+  };
+}
+
+export const lightTheme: Theme = {
+  colors: {
+    surface: colors.surface,
+    primary: {
+      main: colors.core.main,
+      text: {
+        primary: colors.core.dark,
+        secondary: colors.core.muted,
+      },
+      background: {
+        main: `linear-gradient(45deg, ${colors.core.extraLight} 0%, ${colors.core.surface} 100%)`,
+        accent: colors.core.light,
+      },
+    },
+    dark: {
+      main: colors.white,
+      text: {
+        primary: colors.white,
+        secondary: colors.core.surface,
+      },
+      background: {
+        main: colors.core.dark,
+        accent: colors.core.extraDark,
+      },
+    },
+    blue: colorSet(colors.blue),
+    red: colorSet(colors.red),
+    amber: colorSet(colors.amber),
+    green: colorSet(colors.green),
+    teal: colorSet(colors.teal),
+    purple: colorSet(colors.purple),
+    pink: colorSet(colors.pink),
+  },
+  spacing,
+  size,
+  borderRadius,
+  fonts,
+} as const;

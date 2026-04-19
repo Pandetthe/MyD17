@@ -40,6 +40,7 @@ From the root directory, run:
 ```bash
 pnpm run dev
 ```
+
 ## Development
 
 ### Mobile App
