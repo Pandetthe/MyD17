@@ -10,22 +10,15 @@ import {
 import { StyleSheet } from "react-native-unistyles";
 
 export type TextVariant =
-  | "h1" // main screen titles
-  | "h2" // section headers, primary category titles
-  | "h3" // card titles, grouped settings headers
-  //
-  | "body" // default text
-  | "bodySmall" // footnotes, secondary info
-  | "subtitle" // text directly under headers
-  //
-  | "button"
-  | "label" // form labels
-  | "link"
-  | "caption"; // image descriptions
+  | "h1"
+  | "h2"
+  | "h3"
+  | "body"
+  | "label";
 
 export type FontWeight = "regular" | "medium" | "bold";
 export type FontFamilyKey = keyof typeof fonts;
-type TextColorRole = "primary" | "secondary" | "link";
+type TextColorRole = "primary" | "secondary";
 
 type TextCoreProps = {
   variant?: TextVariant;
@@ -80,72 +73,41 @@ const variantMap: Record<
   }
 > = {
   h1: {
-    fontSize: 32,
-    lineHeight: 40,
-    defaultWeight: "bold",
-    colorRole: "primary",
-  },
-  h2: {
-    fontSize: 26,
-    lineHeight: 32,
-    defaultWeight: "bold",
-    colorRole: "primary",
-  },
-  h3: {
-    fontSize: 20,
+    fontSize: 24,
     lineHeight: 28,
     defaultWeight: "bold",
     colorRole: "primary",
   },
-  body: {
-    fontSize: 14,
-    lineHeight: 22,
-    defaultWeight: "regular",
+  h2: {
+    fontSize: 18,
+    lineHeight: 28,
+    defaultWeight: "bold",
     colorRole: "primary",
   },
-  bodySmall: {
-    fontSize: 12,
-    lineHeight: 18,
-    defaultWeight: "regular",
-    colorRole: "primary",
-  },
-  subtitle: {
+  h3: {
     fontSize: 16,
     lineHeight: 24,
     defaultWeight: "medium",
     colorRole: "primary",
   },
-  button: {
-    fontSize: 14,
-    lineHeight: 20,
+  body: {
+    fontSize: 12,
+    lineHeight: 16,
     defaultWeight: "regular",
     colorRole: "primary",
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    defaultWeight: "medium",
-    colorRole: "primary",
-  },
-  link: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 12,
+    lineHeight: 16,
     defaultWeight: "bold",
-    colorRole: "link",
-  },
-  caption: {
-    fontSize: 10,
-    lineHeight: 14,
-    defaultWeight: "regular",
-    colorRole: "secondary",
+    colorRole: "primary",
   },
 };
 
 const styles = StyleSheet.create((theme) => {
   const textColors: Record<TextColorRole, string> = {
-    primary: theme.colors.text.primary,
-    secondary: theme.colors.text.secondary,
-    link: theme.colors.text.link,
+    primary: theme.colors.primary.text.primary,
+    secondary: theme.colors.primary.text.secondary,
   };
 
   return {
