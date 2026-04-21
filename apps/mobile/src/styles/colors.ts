@@ -18,6 +18,7 @@ export const colors = {
     main: "#1065AF",
     light: "#CDE7FF",
     extraLight: "#85B9E5",
+    disabled: "#BAD7F1",
     surface: "#F8FAFC",
   },
   red: {
