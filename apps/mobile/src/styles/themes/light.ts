@@ -49,6 +49,10 @@ export const lightTheme: Theme = {
     teal: colorSet(colors.teal),
     purple: colorSet(colors.purple),
     pink: colorSet(colors.pink),
+    switch: {
+      on: colors.core.main,
+      off: colors.core.disabled,
+    },
   },
   spacing,
   size,
