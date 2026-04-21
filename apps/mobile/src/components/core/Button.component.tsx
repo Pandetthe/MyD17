@@ -12,32 +12,28 @@ import { LucideIcon } from "lucide-react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { ColorPalette } from "@/styles/themes/theme";
 
-interface ButtonProps {
+type ButtonSize = "sm" | "md" | "lg";
+
+type ButtonProps = {
   text?: string;
   icon?: LucideIcon;
   color?: ColorPalette;
-  size?: "sm" | "lg";
+  size?: ButtonSize;
   hasBackground?: boolean;
   onPress?: () => void;
-
-  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-  testID?: string;
-}
+} & React.ComponentProps<typeof Pressable>;
 
 export default function Button({
   text = "",
   icon: IconComponent,
-  size = "sm",
+  size = "md",
   color = "primary",
   hasBackground = true,
   onPress,
   style,
   accessibilityLabel,
-  accessibilityHint,
-  testID,
+  ...pressableProps
 }: ButtonProps) {
   const { theme } = useUnistyles();
   const pressProgress = useSharedValue(0);
@@ -51,11 +47,17 @@ export default function Button({
           text: theme.size.xs,
           gap: theme.spacing.xs,
         },
-        lg: {
+        md: {
           height: theme.size.xl,
           icon: theme.size.md,
           text: theme.size.sm,
           gap: theme.spacing.sm,
+        },
+        lg: {
+          height: theme.size.xl,
+          icon: theme.size.lg,
+          text: theme.size.md,
+          gap: theme.spacing.md,
         },
       })[size],
     [size, theme],
@@ -104,7 +106,6 @@ export default function Button({
 
   return (
     <Pressable
-      testID={testID}
       onPress={onPress}
       onPressIn={() => {
         pressProgress.value = withTiming(1, {
@@ -120,8 +121,8 @@ export default function Button({
       }}
       accessibilityRole="button"
       accessibilityLabel={resolvedA11yLabel}
-      accessibilityHint={accessibilityHint}
       hitSlop={8}
+      {...pressableProps}
     >
       <Animated.View style={[containerStyle, animatedStyle, style]}>
         {IconComponent ? (
