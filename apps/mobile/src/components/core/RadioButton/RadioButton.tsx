@@ -6,8 +6,8 @@ import Animated, {
 import { Pressable } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { ColorPalette } from "@/styles/themes/theme";
-import { useRadioButtonContext } from "./RadioButton.context";
-import TextCore from "../Text.component";
+import { useRadioButtonContext } from "@/components/core/RadioButton/RadioButton.context";
+import TextCore from "@/components/core/Text.component";
 
 const RADIO_SIZE = 20;
 const INNER_DOT_SIZE = 10;
