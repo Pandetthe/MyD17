@@ -55,3 +55,5 @@ export const lightTheme: Theme = {
   borderRadius,
   fonts,
 } as const;
+
+export type LightTheme = typeof lightTheme;
