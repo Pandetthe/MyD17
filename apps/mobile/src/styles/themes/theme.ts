@@ -10,6 +10,11 @@ export interface ColorGroup {
   };
 }
 
+export interface SwitchColors {
+  on: string;
+  off: string;
+}
+
 export interface ThemeColors {
   surface: string;
   primary: ColorGroup;
@@ -21,6 +26,7 @@ export interface ThemeColors {
   teal: ColorGroup;
   purple: ColorGroup;
   pink: ColorGroup;
+  switch: SwitchColors;
 }
 
 export interface Theme {
