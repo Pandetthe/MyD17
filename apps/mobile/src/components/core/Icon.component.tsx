@@ -6,7 +6,7 @@ import { ColorPalette, Theme } from "@/styles/themes/theme";
 
 interface IconProps {
   icon: LucideIcon;
-  color?: Exclude<ColorPalette, "dark">;
+  color?: ColorPalette;
   hasBackground?: boolean;
 }
 
