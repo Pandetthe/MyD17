@@ -1,23 +1,26 @@
 export const spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
+  none: 0,
+  xxs: 4,
+  xs: 8,
+  sm: 12,
+  md: 16,
+  lg: 24,
+  xl: 32,
 } as const;
 
 export const borderRadius = {
   none: 0,
-  small: 12,
-  medium: 16,
-  large: 24,
+  sm: 12,
+  md: 16,
+  lg: 24,
+  full: 9999,
 } as const;
 
 export const size = {
+  xxs: 8,
+  xs: 12,
   sm: 16,
-  md: 24,
+  md: 20,
   lg: 32,
-  xl: 48,
+  xl: 40,
 };

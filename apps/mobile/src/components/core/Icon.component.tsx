@@ -2,7 +2,7 @@ import React from "react";
 import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { View } from "react-native";
-import { ColorPalette } from "@/styles/themes/theme";
+import { ColorPalette, Theme } from "@/styles/themes/theme";
 
 interface IconProps {
   icon: LucideIcon;
@@ -10,11 +10,11 @@ interface IconProps {
   hasBackground?: boolean;
 }
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme: Theme) => ({
   container: (color: ColorPalette) => ({
     height: theme.size.xl,
     width: theme.size.xl,
-    borderRadius: theme.borderRadius.small,
+    borderRadius: theme.borderRadius.sm,
     backgroundColor: theme.colors[color].background.accent,
     alignItems: "center",
     justifyContent: "center",

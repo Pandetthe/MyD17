@@ -19,7 +19,6 @@ export interface ThemeColors {
   surface: string;
   primary: ColorGroup;
   dark: ColorGroup;
-  blue: ColorGroup;
   red: ColorGroup;
   amber: ColorGroup;
   green: ColorGroup;
