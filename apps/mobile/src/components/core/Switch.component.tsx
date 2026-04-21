@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Pressable,
 } from 'react-native';
@@ -8,13 +7,13 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withTiming,
-    SharedValue,
 } from 'react-native-reanimated';
 import { StyleSheet } from "react-native-unistyles";
+import {useEffect} from "react";
 
 type SwitchProps = {
     onPress: () => void;
-    value: SharedValue<number>;
+    value: number;
     duration?: number;
 }
 
@@ -25,10 +24,14 @@ const SwitchCore = ({
                 }: SwitchProps) => {
     const height = useSharedValue(0);
     const width = useSharedValue(0);
+    const sharedValue = useSharedValue(value)
+    useEffect(() => {
+        sharedValue.value = value;
+    }, [value])
 
     const trackAnimatedStyle = useAnimatedStyle(() => {
         const color = interpolateColor(
-            value.value,
+            sharedValue.value,
             [0, 1],
             [styles.track.offColor, styles.track.onColor]
         );
@@ -42,7 +45,7 @@ const SwitchCore = ({
 
     const thumbAnimatedStyle = useAnimatedStyle(() => {
         const moveValue = interpolate(
-            Number(value.value),
+            Number(sharedValue.value),
             [0, 1],
             [0, width.value - height.value]
         );
@@ -74,9 +77,9 @@ export default SwitchCore;
 const styles = StyleSheet.create((theme) => ({
     track: {
         alignItems: 'flex-start',
-        width: 48,
-        height: 24,
-        padding: 2,
+        width: theme.size.xl,
+        height: theme.size.md,
+        padding: theme.spacing.half,
         onColor: "#1065AF",
         offColor: "#BAD7F1"
     },
