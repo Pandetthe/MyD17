@@ -3,10 +3,11 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { ColorPalette } from "@/styles/themes/theme";
 import { useRadioButtonContext } from "./RadioButton.context";
+import TextCore from "../Text.component";
 
 const RADIO_SIZE = 20;
 const INNER_DOT_SIZE = 10;
@@ -20,41 +21,6 @@ export type RadioButtonProps = {
   position?: "leading" | "trailing";
   labelStyle?: StyleProp<TextStyle>;
 };
-
-const styles = StyleSheet.create((theme) => ({
-  row: {
-    flexDirection: "row",
-    gap: theme.spacing.two,
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: theme.spacing.two,
-    paddingVertical: theme.spacing.two,
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: theme.fonts.sans,
-    color: theme.colors.dark.text.primary,
-    flexShrink: 1,
-    flexGrow: 1,
-  },
-  labelLeading: {
-    textAlign: "right",
-  },
-  circle: {
-    width: RADIO_SIZE,
-    height: RADIO_SIZE,
-    borderRadius: RADIO_SIZE / 2,
-    borderWidth: BORDER_WIDTH,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 2,
-  },
-  dot: {
-    width: INNER_DOT_SIZE,
-    height: INNER_DOT_SIZE,
-    borderRadius: INNER_DOT_SIZE / 2,
-  },
-}));
 
 export default function RadioButton({
   label,
@@ -113,7 +79,8 @@ export default function RadioButton({
       accessibilityLabel={label}
     >
       {position === "leading" && radioCircle}
-      <Text
+      <TextCore
+        variant="label"
         style={[
           styles.label,
           position === "leading" && styles.labelLeading,
@@ -121,8 +88,40 @@ export default function RadioButton({
         ]}
       >
         {label}
-      </Text>
+      </TextCore>
       {position === "trailing" && radioCircle}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  row: {
+    flexDirection: "row",
+    gap: theme.spacing.two,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: theme.spacing.two,
+    paddingVertical: theme.spacing.two,
+  },
+  label: {
+    flexShrink: 1,
+    flexGrow: 1,
+  },
+  labelLeading: {
+    textAlign: "right",
+  },
+  circle: {
+    width: RADIO_SIZE,
+    height: RADIO_SIZE,
+    borderRadius: RADIO_SIZE / 2,
+    borderWidth: BORDER_WIDTH,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 2,
+  },
+  dot: {
+    width: INNER_DOT_SIZE,
+    height: INNER_DOT_SIZE,
+    borderRadius: INNER_DOT_SIZE / 2,
+  },
+}));
