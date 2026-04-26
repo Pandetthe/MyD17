@@ -1,0 +1,37 @@
+import { apiClient } from "@/lib/apiClient";
+import type { Post, StrapiListResponse } from "../types/post.types";
+import { postQueryKeys } from "./queryKeys";
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+const PAGE_SIZE = 10;
+
+// Strapi v5 requires "on" fragment syntax for dynamic zones.
+// Without it, component fields are not returned.
+const buildPostsUrl = (page: number) =>
+  "/api/posts?" +
+  `pagination[page]=${page}&` +
+  `pagination[pageSize]=${PAGE_SIZE}&` +
+  "populate[images]=true&" +
+  "populate[tags][populate][color]=true&" +
+  "populate[content][on][content.text]=true&" +
+  "populate[content][on][content.location]=true&" +
+  "populate[content][on][content.event-date-time]=true&" +
+  "populate[content][on][content.chip]=true&" +
+  "populate[content][on][content.section-title]=true&" +
+  "populate[content][on][content.calendar][populate][entries]=true&" +
+  "sort=publishedAt:desc";
+
+export function usePosts() {
+  return useInfiniteQuery<StrapiListResponse<Post>, Error>({
+    queryKey: postQueryKeys.list(),
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await apiClient.get<StrapiListResponse<Post>>(buildPostsUrl(pageParam as number));
+      return res.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { page, pageCount } = lastPage.meta.pagination;
+      return page < pageCount ? page + 1 : undefined;
+    },
+  });
+}

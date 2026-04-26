@@ -1,0 +1,29 @@
+import { apiClient } from "@/lib/apiClient";
+import type { Post, StrapiSingleResponse } from "../types/post.types";
+import { postQueryKeys } from "./queryKeys";
+import { useQuery } from "@tanstack/react-query";
+
+function postUrl(documentId: string) {
+  return (
+    `/api/posts/${documentId}?` +
+    "populate[images]=true&" +
+    "populate[tags][populate][color]=true&" +
+    "populate[content][on][content.text]=true&" +
+    "populate[content][on][content.location]=true&" +
+    "populate[content][on][content.event-date-time]=true&" +
+    "populate[content][on][content.chip]=true&" +
+    "populate[content][on][content.section-title]=true&" +
+    "populate[content][on][content.calendar][populate][entries]=true"
+  );
+}
+
+export function usePost(documentId: string) {
+  return useQuery<StrapiSingleResponse<Post>, Error>({
+    queryKey: postQueryKeys.detail(documentId),
+    queryFn: async () => {
+      const res = await apiClient.get<StrapiSingleResponse<Post>>(postUrl(documentId));
+      return res.data;
+    },
+    enabled: !!documentId,
+  });
+}
