@@ -1,4 +1,4 @@
-export interface ColorGroup {
+export type ColorGroup = {
   main: string;
   text: {
     primary: string;
@@ -8,14 +8,14 @@ export interface ColorGroup {
     main: string;
     accent: string;
   };
-}
+};
 
-export interface SwitchColors {
+export type SwitchColors = {
   on: string;
   off: string;
-}
+};
 
-export interface ThemeColors {
+export type ThemeColors = {
   surface: string;
   primary: ColorGroup;
   dark: ColorGroup;
@@ -26,9 +26,9 @@ export interface ThemeColors {
   purple: ColorGroup;
   pink: ColorGroup;
   switch: SwitchColors;
-}
+};
 
-export interface Theme {
+export type Theme = {
   colors: ThemeColors;
   spacing: Record<string, number>;
   size: Record<string, number>;
@@ -39,6 +39,6 @@ export interface Theme {
     rounded: string;
     mono: string;
   };
-}
+};
 
-export type ColorPalette = Exclude<keyof ThemeColors, "surface">;
+export type ColorPalette = Exclude<keyof ThemeColors, "surface" | "switch">;

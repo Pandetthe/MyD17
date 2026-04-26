@@ -6,9 +6,7 @@ type RadioButtonContextType = {
   onValueChange: (value: string) => void;
 };
 
-export const RadioButtonContext = createContext<RadioButtonContextType | null>(
-  null,
-);
+export const RadioButtonContext = createContext<RadioButtonContextType | null>(null);
 
 export function useRadioButtonContext() {
   return useContext(RadioButtonContext);

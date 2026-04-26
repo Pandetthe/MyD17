@@ -1,13 +1,10 @@
 import { StyleProp, TextStyle } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
 import { Pressable } from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { ColorPalette } from "@/styles/themes/theme";
 import { useRadioButtonContext } from "@/components/core/RadioButton/RadioButton.context";
 import TextCore from "@/components/core/Text.component";
+import { ColorPalette } from "@/styles/themes/theme";
+import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 const RADIO_SIZE = 20;
 const INNER_DOT_SIZE = 10;
@@ -26,7 +23,7 @@ export default function RadioButton({
   label,
   value,
   disabled = false,
-  color = "blue",
+  color = "primary",
   position = "leading",
   labelStyle,
 }: RadioButtonProps) {
@@ -45,9 +42,7 @@ export default function RadioButton({
   };
 
   const accent = theme.colors[color].main;
-  const borderColor = isChecked
-    ? accent
-    : theme.colors[color].background.accent;
+  const borderColor = isChecked ? accent : theme.colors[color].background.accent;
 
   const radioCircle = (
     <Animated.View
@@ -59,13 +54,7 @@ export default function RadioButton({
         },
       ]}
     >
-      <Animated.View
-        style={[
-          styles.dot,
-          { backgroundColor: theme.colors.dark.main },
-          dotStyle,
-        ]}
-      />
+      <Animated.View style={[styles.dot, { backgroundColor: theme.colors.dark.main }, dotStyle]} />
     </Animated.View>
   );
 
@@ -81,11 +70,7 @@ export default function RadioButton({
       {position === "leading" && radioCircle}
       <TextCore
         variant="label"
-        style={[
-          styles.label,
-          position === "leading" && styles.labelLeading,
-          labelStyle,
-        ]}
+        style={[styles.label, position === "leading" && styles.labelLeading, labelStyle]}
       >
         {label}
       </TextCore>

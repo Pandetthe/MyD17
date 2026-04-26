@@ -1,8 +1,8 @@
+import { View } from "react-native";
 import Button from "@/components/core/Button.component";
 import Icon from "@/components/core/Icon.component";
 import { Theme } from "@/styles/themes/theme";
-import { ArrowRight, Calendar, Home } from "lucide-react-native";
-import { View } from "react-native";
+import { Calendar, Home } from "lucide-react-native";
 import { StyleSheet } from "react-native-unistyles";
 
 export default function HomeScreen() {

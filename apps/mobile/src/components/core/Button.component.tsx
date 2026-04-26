@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import { Pressable, Text, StyleProp, ViewStyle } from "react-native";
-
+import { ColorPalette } from "@/styles/themes/theme";
+import { LucideIcon } from "lucide-react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
 } from "react-native-reanimated";
-
-import { LucideIcon } from "lucide-react-native";
 import { useUnistyles } from "react-native-unistyles";
-import { ColorPalette } from "@/styles/themes/theme";
 
 type ButtonSize = "sm" | "md" | "lg";
 
@@ -63,9 +61,7 @@ export default function Button({
     [size, theme],
   );
 
-  const fgColor = hasBackground
-    ? theme.colors[color].background.accent
-    : theme.colors[color].main;
+  const fgColor = hasBackground ? theme.colors[color].background.accent : theme.colors[color].main;
 
   const bgColor = hasBackground ? theme.colors[color].main : "transparent";
 
@@ -125,9 +121,7 @@ export default function Button({
       {...pressableProps}
     >
       <Animated.View style={[containerStyle, animatedStyle, style]}>
-        {IconComponent ? (
-          <IconComponent size={selectedSize.icon} color={fgColor} />
-        ) : null}
+        {IconComponent ? <IconComponent size={selectedSize.icon} color={fgColor} /> : null}
         {text ? <Text style={textStyle}>{text}</Text> : null}
       </Animated.View>
     </Pressable>
