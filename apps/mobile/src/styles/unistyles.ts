@@ -6,7 +6,7 @@ type AppThemes = {
 };
 
 declare module "react-native-unistyles" {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-empty-object-type
   export interface UnistylesThemes extends AppThemes {}
 }
 
