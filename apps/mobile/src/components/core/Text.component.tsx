@@ -1,20 +1,9 @@
-import { fonts } from "@/styles/fonts";
 import React from "react";
-import {
-  StyleProp,
-  Text,
-  TextStyle,
-  ColorValue,
-  TextProps,
-} from "react-native";
+import { StyleProp, Text, TextStyle, ColorValue, TextProps } from "react-native";
+import { fonts } from "@/styles/fonts";
 import { StyleSheet } from "react-native-unistyles";
 
-export type TextVariant =
-  | "h1"
-  | "h2"
-  | "h3"
-  | "body"
-  | "label";
+export type TextVariant = "h1" | "h2" | "h3" | "body" | "label";
 
 export type FontWeight = "regular" | "medium" | "bold";
 export type FontFamilyKey = keyof typeof fonts;

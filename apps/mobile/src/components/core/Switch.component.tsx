@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Pressable } from "react-native";
 import Animated, {
   interpolate,
@@ -7,7 +8,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { useEffect } from "react";
 
 type SwitchProps = {
   onPress: () => void;
@@ -27,11 +27,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
   }, [value]);
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
-    const color = interpolateColor(
-      sharedValue.value,
-      [0, 1],
-      [offColor, onColor],
-    );
+    const color = interpolateColor(sharedValue.value, [0, 1], [offColor, onColor]);
     const colorValue = withTiming(color, { duration });
 
     return {
@@ -63,9 +59,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
         }}
         style={[styles.track, trackAnimatedStyle]}
       >
-        <Animated.View
-          style={[styles.thumb, thumbAnimatedStyle]}
-        ></Animated.View>
+        <Animated.View style={[styles.thumb, thumbAnimatedStyle]}></Animated.View>
       </Animated.View>
     </Pressable>
   );

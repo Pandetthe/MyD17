@@ -1,7 +1,7 @@
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import React from "react";
-import { Drawer } from "expo-router/drawer";
 import "@/styles/unistyles";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { Drawer } from "expo-router/drawer";
 
 export default function Layout() {
   return (
