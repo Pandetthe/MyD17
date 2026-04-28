@@ -3,12 +3,27 @@ import React from "react";
 import { Drawer } from "expo-router/drawer";
 import "@/styles/unistyles";
 import Icon from "@/components/core/Icon.component";
-import {SettingsIcon} from "lucide-react-native";
+import {HomeIcon, SettingsIcon} from "lucide-react-native";
 
 export default function Layout() {
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Drawer>
+      <Drawer
+        screenOptions={{
+          drawerContentContainerStyle: {
+            flex: 1,
+          }
+        }}
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: "Ekran główny",
+            drawerIcon: () => (
+                <Icon icon={HomeIcon} hasBackground={false}/>
+            )
+          }}
+        />
         <Drawer.Screen
             name="settings"
             options={{
@@ -16,6 +31,9 @@ export default function Layout() {
               drawerIcon: () => (
                   <Icon icon={SettingsIcon} hasBackground={false}/>
               ),
+              drawerItemStyle: {
+                marginTop: "auto",
+              }
             }}
         />
       </Drawer>
