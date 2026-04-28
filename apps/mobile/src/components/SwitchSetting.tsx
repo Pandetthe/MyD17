@@ -3,11 +3,11 @@ import {Pressable, View} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 import Icon from "@/components/core/Icon.component";
 import SwitchCore from "@/components/core/Switch.component";
-import {ArrowUpRightIcon} from "lucide-react-native";
+import {ArrowUpRightIcon, LucideIcon} from "lucide-react-native";
 
 type SettingProps = {
     text: string,
-    icon: any, // TODO: Make precise
+    icon: LucideIcon,
     onPress: () => void,
     value?: number,
 }
@@ -45,9 +45,9 @@ const styles = StyleSheet.create((theme) => ({
     container: {
         borderStyle: "solid",
         borderWidth: 1,
-        borderRadius: 24,
+        borderRadius: theme.borderRadius.lg,
         borderColor: theme.colors.primary.main,
-        backgroundColor: theme.colors.primary.background.main, // TODO: Add proper color
+        backgroundColor: theme.colors.surface, // TODO: Add gradient
         width: "95%",
         height: 72,
         flexDirection: "row",
