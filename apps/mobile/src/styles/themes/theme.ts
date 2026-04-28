@@ -15,10 +15,15 @@ export interface SwitchColors {
   off: string;
 }
 
+export interface GradientGroup {
+  settings: string[];
+}
+
 export interface ThemeColors {
   surface: string;
   primary: ColorGroup;
   dark: ColorGroup;
+  gradients: GradientGroup;
   red: ColorGroup;
   amber: ColorGroup;
   green: ColorGroup;

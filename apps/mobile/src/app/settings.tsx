@@ -3,7 +3,7 @@ import {StyleSheet} from "react-native-unistyles";
 import {Theme} from "@/styles/themes/theme";
 import {BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon} from "lucide-react-native";
 import {useState} from "react";
-import Setting from "@/components/SwitchSetting";
+import Setting from "@/components/Setting";
 
 export default function Settings() {
     const [darkMode, setDarkMode] = useState(0);
