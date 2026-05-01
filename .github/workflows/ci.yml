@@ -52,4 +52,4 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: Run CI tasks
-        run: pnpm turbo run build test lint check-types --concurrency 4
+        run: pnpm turbo run build test lint format-check check-types --concurrency 5

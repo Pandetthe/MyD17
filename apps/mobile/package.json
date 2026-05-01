@@ -14,7 +14,7 @@
     "lint:check": "eslint . --max-warnings=0 --no-warn-ignored",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx}'",
-    "format:check": "prettier --check './**/*.{js,jsx,ts,tsx}'"
+    "format-check": "prettier --check './**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
