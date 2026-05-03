@@ -1,14 +1,14 @@
 import React from "react";
 import { View } from "react-native";
+import type { Theme } from "@/styles/themes/theme";
+import { InfoRow } from "./InfoRow";
 import type {
   ContentChip,
   ContentEventDateTime,
   ContentLocation,
   LocationValue,
   PostContentBlock,
-} from "@/features/posts/types/post.types";
-import type { Theme } from "@/styles/themes/theme";
-import { InfoRow } from "./InfoRow";
+} from "@repo/types";
 import { Clock, Info, MapPin } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 

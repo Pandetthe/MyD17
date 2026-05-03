@@ -1,6 +1,6 @@
 import React from "react";
 import TextCore from "@/components/core/Text.component";
-import type { ContentText } from "@/features/posts/types/post.types";
+import type { ContentText } from "@repo/types";
 
 export function TextBlock({ block }: { block: ContentText }) {
   return (

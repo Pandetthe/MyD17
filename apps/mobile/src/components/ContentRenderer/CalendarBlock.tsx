@@ -1,8 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import TextCore from "@/components/core/Text.component";
-import type { CalendarEntry, ContentCalendar, DayOfWeek } from "@/features/posts/types/post.types";
 import type { Theme } from "@/styles/themes/theme";
+import type { CalendarEntry, ContentCalendar, DayOfWeek } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
 
 const DAY_LABELS: Record<DayOfWeek, string> = {

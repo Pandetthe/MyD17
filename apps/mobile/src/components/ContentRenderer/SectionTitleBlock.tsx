@@ -1,6 +1,6 @@
 import React from "react";
 import TextCore from "@/components/core/Text.component";
-import type { ContentSectionTitle } from "@/features/posts/types/post.types";
+import type { ContentSectionTitle } from "@repo/types";
 
 export function SectionTitleBlock({ block }: { block: ContentSectionTitle }) {
   return (

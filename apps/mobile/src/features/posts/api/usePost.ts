@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/apiClient";
-import type { Post, StrapiSingleResponse } from "../types/post.types";
 import { postQueryKeys } from "./queryKeys";
+import type { Post, StrapiSingleResponse } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
 
 function postUrl(documentId: string) {

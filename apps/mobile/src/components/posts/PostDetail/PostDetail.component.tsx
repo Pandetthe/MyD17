@@ -4,6 +4,7 @@ import { ContentRenderer } from "@/components/ContentRenderer";
 import { InfoCard } from "@/components/InfoCard";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
+import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import type { Theme } from "@/styles/themes/theme";
 import type {
   ContentChip,
@@ -14,6 +15,7 @@ import type {
 import type { Tag } from "../../types/post.types";
 import { getPostDescription, getPostHeroImage } from "../../utils/postHelpers";
 import { HeroImage } from "./HeroImage.component";
+import type { ContentChip, ContentEventDateTime, ContentLocation, Post } from "@repo/types";
 import { useRouter } from "expo-router";
 import { Heart, Share2, CalendarPlus } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
