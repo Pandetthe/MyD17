@@ -1,10 +1,10 @@
 import React from "react";
 import { View } from "react-native";
-import type { PostContentBlock } from "@/features/posts/types/post.types";
 import type { Theme } from "@/styles/themes/theme";
 import { CalendarBlock } from "./CalendarBlock";
 import { SectionTitleBlock } from "./SectionTitleBlock";
 import { TextBlock } from "./TextBlock";
+import type { PostContentBlock } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {

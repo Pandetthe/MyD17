@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { strapiUrl } from "@/lib/apiClient";
-import type { Post } from "../types/post.types";
+import type { Post } from "@repo/types";
 
 export function getPostDescription(post: Post): string {
   return post.description ?? "";

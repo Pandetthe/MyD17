@@ -1,5 +1,4 @@
 import { apiClient } from "@/lib/apiClient";
-import type { Post, StrapiListResponse } from "../types/post.types";
 import { postQueryKeys } from "./queryKeys";
 import { useInfiniteQuery } from "@tanstack/react-query";
 

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Pressable } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { PostPlaceholder } from "@/lib/images";
 import type { Theme } from "@/styles/themes/theme";
 import type { ColorPalette } from "@/styles/themes/theme";

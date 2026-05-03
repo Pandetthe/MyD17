@@ -1,4 +1,4 @@
-import type { TailwindColorName } from "../types/post.types";
+import type { TailwindColorName } from "@repo/types";
 
 type TagColorTokens = { bg: string; border: string; text: string };
 
