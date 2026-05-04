@@ -16,6 +16,7 @@
     "format:check": "prettier --check './**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
+    "@expo-google-fonts/montserrat": "^0.4.2",
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/drawer": "^7.9.8",
     "@react-navigation/elements": "^2.9.14",
