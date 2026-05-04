@@ -1,18 +1,12 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
-import { usePathname, useRouter } from "expo-router";
-import {
-  HomeIcon,
-  InfoIcon,
-  LucideIcon,
-  MapIcon,
-  SettingsIcon,
-} from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/styles/colors";
-import { StyleSheet } from "react-native-unistyles";
 import { Theme } from "@/styles/themes/theme";
+import { usePathname, useRouter } from "expo-router";
+import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native-unistyles";
 
 type NavItemProps = {
   icon: LucideIcon;
@@ -23,17 +17,9 @@ type NavItemProps = {
 
 function NavItem({ icon: Icon, label, active, onPress }: NavItemProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.navItem,
-        active && styles.navItemActive,
-      ]}
-    >
+    <Pressable onPress={onPress} style={[styles.navItem, active && styles.navItemActive]}>
       <Icon size={24} color={colors.white} strokeWidth={1.8} />
-      <Text style={styles.navItemText}>
-        {label}
-      </Text>
+      <Text style={styles.navItemText}>{label}</Text>
     </Pressable>
   );
 }
@@ -73,7 +59,9 @@ export default function DrawerContent() {
         </View>
       </View>
 
-      <View style={[styles.bottomContainer, { paddingBottom: insets.bottom ? insets.bottom + 16 : 32 }]}>
+      <View
+        style={[styles.bottomContainer, { paddingBottom: insets.bottom ? insets.bottom + 16 : 32 }]}
+      >
         <NavItem
           icon={SettingsIcon}
           label="SETTINGS"
@@ -87,7 +75,7 @@ export default function DrawerContent() {
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: theme.colors.dark.main,
     borderTopRightRadius: 32,
     borderBottomRightRadius: 32,

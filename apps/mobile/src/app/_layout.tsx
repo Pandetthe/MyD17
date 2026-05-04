@@ -1,11 +1,17 @@
-import "@/styles/unistyles";
 import React, { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
 import DrawerContent from "@/components/core/DrawerContent.component";
 import Header from "@/components/core/Header.component";
+import "@/styles/unistyles";
+import {
+  useFonts,
+  Montserrat_400Regular,
+  Montserrat_500Medium,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold,
+} from "@expo-google-fonts/montserrat";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Drawer } from "expo-router/drawer";
-import { useFonts, Montserrat_400Regular, Montserrat_500Medium, Montserrat_600SemiBold, Montserrat_700Bold } from "@expo-google-fonts/montserrat";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();

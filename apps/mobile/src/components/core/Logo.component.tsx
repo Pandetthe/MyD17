@@ -26,21 +26,21 @@ const VARIANTS: Record<"color" | "white" | "black", ColorVariant> = {
   color: {
     text: "#212c3f",
     pixelLeft: ["#0c65af", "#4978bb", "#5c8bc8", "#6fa1d6", "#85b9e5"],
-    pixelMid:  ["#0c65af", "#4978bb", "#5c8bc8", "#6fa1d6", "#85b9e5"],
+    pixelMid: ["#0c65af", "#4978bb", "#5c8bc8", "#6fa1d6", "#85b9e5"],
     dot: "#212c3f",
     bar: "#212c3f",
   },
   white: {
     text: "#ffffff",
     pixelLeft: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
-    pixelMid:  ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+    pixelMid: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
     dot: "#ffffff",
     bar: "#ffffff",
   },
   black: {
     text: "#1d1d1b",
     pixelLeft: ["#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b"],
-    pixelMid:  ["#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b"],
+    pixelMid: ["#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b", "#1d1d1b"],
     dot: "#1d1d1b",
     bar: "#1d1d1b",
   },
@@ -74,7 +74,7 @@ export default function Logo({ height = 36, variant = "color" }: Props) {
         <Rect fill={v.pixelMid[3]} x="22.64" y="48.31" width="6.38" height="6.38" />
         <Rect fill={v.pixelMid[4]} x="22.64" y="57.29" width="6.38" height="6.38" />
 
-        <Rect fill={v.dot} x="31.68" y="12.4"  width="6.38" height="6.38" />
+        <Rect fill={v.dot} x="31.68" y="12.4" width="6.38" height="6.38" />
         <Rect fill={v.bar} x="31.84" y="30.36" width="6.22" height="24.33" />
       </G>
     </Svg>

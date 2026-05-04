@@ -32,12 +32,7 @@ export default function TextCore({
 
   return (
     <Text
-      style={[
-        styles.text(variant),
-        { fontFamily: resolvedFontFamily },
-        color && { color },
-        style,
-      ]}
+      style={[styles.text(variant), { fontFamily: resolvedFontFamily }, color && { color }, style]}
       {...props}
     >
       {children}
