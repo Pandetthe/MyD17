@@ -42,6 +42,9 @@ export const lightTheme: Theme = {
         accent: colors.core.surface,
       },
     },
+    gradients: {
+      settings: [colors.core.surface, colors.core.light],
+    },
     red: colorSet(colors.red),
     amber: colorSet(colors.amber),
     green: colorSet(colors.green),
