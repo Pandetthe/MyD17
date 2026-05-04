@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { ColorPalette } from "@/styles/themes/theme";
-import { StyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type TagProps = {
   text: string;
@@ -25,7 +25,7 @@ const stylesheet = StyleSheet.create((theme) => ({
 }));
 
 export default function Tag({ text, color = "primary" }: TagProps) {
-  const { styles } = useStyles(stylesheet);
+  const { styles } = useUnistyles(stylesheet);
 
   return (
     <View style={styles.container(color)}>
