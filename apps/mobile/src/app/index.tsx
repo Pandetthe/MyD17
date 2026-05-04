@@ -33,7 +33,6 @@ export default function HomeScreen() {
       <Tag text="#Hackathon" color="teal" />
       <Tag text="#Hackathon" color="purple" />
       <Tag text="#Hackathon" color="pink" />
-
     </View>
   );
 }
