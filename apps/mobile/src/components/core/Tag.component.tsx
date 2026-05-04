@@ -25,11 +25,9 @@ const stylesheet = StyleSheet.create((theme) => ({
 }));
 
 export default function Tag({ text, color = "primary" }: TagProps) {
-  const { styles } = StyleSheet.useStyles(stylesheet);
-
   return (
-    <View style={styles.container(color)}>
-      <Text style={styles.text(color)}>{text}</Text>
+    <View style={stylesheet.container(color)}>
+      <Text style={stylesheet.text(color)}>{text}</Text>
     </View>
   );
 }
