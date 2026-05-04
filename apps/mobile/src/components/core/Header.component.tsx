@@ -2,12 +2,13 @@ import React from "react";
 import { Pressable, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { Theme } from "@/styles/themes/theme";
-import { useNavigation } from "@react-navigation/native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { BellIcon, MenuIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function Header() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const { theme } = useUnistyles();
 
   return (

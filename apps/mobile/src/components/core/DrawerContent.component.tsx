@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
-import { usePathname, useRouter } from "expo-router";
+import { usePathname, useRouter, Href } from "expo-router";
 import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
@@ -29,9 +29,9 @@ export default function DrawerContent() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
 
-  const navigate = (href: string) => router.push(href as any);
+  const navigate = (href: Href) => router.push(href);
 
-  const topItems = [
+  const topItems: { icon: LucideIcon; label: string; href: Href }[] = [
     { icon: HomeIcon, label: "HOME", href: "/" },
     { icon: MapIcon, label: "D17 MAP", href: "/d17map" },
     { icon: InfoIcon, label: "INFORMATION", href: "/information" },
