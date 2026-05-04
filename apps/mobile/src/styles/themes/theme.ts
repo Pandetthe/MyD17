@@ -15,11 +15,11 @@ export type SwitchColors = {
   off: string;
 };
 
-export interface GradientGroup {
+export type GradientGroup = {
   settings: string[];
-}
+};
 
-export interface ThemeColors {
+export type ThemeColors = {
   surface: string;
   primary: ColorGroup;
   dark: ColorGroup;
@@ -46,4 +46,4 @@ export type Theme = {
   };
 };
 
-export type ColorPalette = Exclude<keyof ThemeColors, "surface" | "switch">;
+export type ColorPalette = Exclude<keyof ThemeColors, "surface" | "switch" | "gradients">;
