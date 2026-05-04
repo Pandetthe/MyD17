@@ -49,7 +49,7 @@ export default function DrawerContent() {
         <View>
           {topItems.map((item) => (
             <NavItem
-              key={item.href}
+              key={item.label}
               icon={item.icon}
               label={item.label}
               active={pathname === item.href}
