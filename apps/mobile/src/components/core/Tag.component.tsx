@@ -7,29 +7,31 @@ type TagProps = {
   color?: ColorPalette;
 };
 
-export default function Tag({ text, color = "primary" }: TagProps) {
-  const { theme } = useUnistyles();
+const stylesheet = StyleSheet.create((theme) => ({
+  container: (color: ColorPalette) => ({
+    height: theme.size.lg,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors[color].background.accent,
+    borderColor: theme.colors[color].main,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: theme.spacing.sm,
+  }),
+  text: (color: ColorPalette) => ({
+    color: theme.colors[color].main,
+    fontSize: theme.size.sm,
+  }),
+}));
 
-  const styles = StyleSheet.create({
-    container: {
-      height: theme.size.lg,
-      borderRadius: theme.borderRadius.full,
-      backgroundColor: theme.colors[color].background.accent,
-      borderColor: theme.colors[color].main,
-      borderWidth: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      paddingHorizontal: theme.spacing.sm,
-    },
-    text: {
-      color: theme.colors[color].main,
-      fontSize: theme.size.sm,
-    },
-  });
+export default function Tag({ text, color = "primary" }: TagProps) {
+  const { rt } = useUnistyles();
+
+  const styles = rt.create(stylesheet);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{text}</Text>
+    <View style={styles.container(color)}>
+      <Text style={styles.text(color)}>{text}</Text>
     </View>
   );
 }
