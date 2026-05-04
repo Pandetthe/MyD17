@@ -1,0 +1,20 @@
+[
+  {
+    "username": "jan_nowak",
+    "email": "jan.nowak@example.com",
+    "password": "SecurePassword123!",
+    "provider": "local",
+    "confirmed": true,
+    "blocked": false,
+    "role": 1
+  },
+  {
+    "username": "anna_k",
+    "email": "a.kowalska@test.pl",
+    "password": "StrongPassword2026",
+    "provider": "local",
+    "confirmed": true,
+    "blocked": false,
+    "role": 1
+  }
+]

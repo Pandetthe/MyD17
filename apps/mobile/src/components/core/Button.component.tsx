@@ -10,7 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useUnistyles } from "react-native-unistyles";
 
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonSize = "sm" | "lg";
 
 type ButtonProps = {
   text?: string;
@@ -25,7 +25,7 @@ type ButtonProps = {
 export default function Button({
   text = "",
   icon: IconComponent,
-  size = "md",
+  size = "sm",
   color = "primary",
   hasBackground = true,
   onPress,
@@ -45,17 +45,11 @@ export default function Button({
           text: theme.size.xs,
           gap: theme.spacing.xs,
         },
-        md: {
+        lg: {
           height: theme.size.xl,
           icon: theme.size.md,
           text: theme.size.sm,
           gap: theme.spacing.sm,
-        },
-        lg: {
-          height: theme.size.xl,
-          icon: theme.size.lg,
-          text: theme.size.md,
-          gap: theme.spacing.md,
         },
       })[size],
     [size, theme],
