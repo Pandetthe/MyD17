@@ -1,37 +1,53 @@
-import React from "react";
-import Icon from "@/components/core/Icon.component";
 import "@/styles/unistyles";
+import React, { useEffect } from "react";
+import { useWindowDimensions } from "react-native";
+import DrawerContent from "@/components/core/DrawerContent.component";
+import Header from "@/components/core/Header.component";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Drawer } from "expo-router/drawer";
-import { HomeIcon, SettingsIcon } from "lucide-react-native";
+import { useFonts, Montserrat_400Regular, Montserrat_500Medium, Montserrat_600SemiBold, Montserrat_700Bold } from "@expo-google-fonts/montserrat";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
+  const { width } = useWindowDimensions();
+  const drawerWidth = Math.min(width * 0.8, 310);
+
+  const [loaded, error] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
+    Montserrat_700Bold,
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
     <ThemeProvider value={DefaultTheme}>
       <Drawer
+        drawerContent={() => <DrawerContent />}
         screenOptions={{
-          drawerContentContainerStyle: {
-            flex: 1,
+          header: () => <Header />,
+          drawerType: "front",
+          drawerStyle: {
+            backgroundColor: "transparent",
+            width: drawerWidth,
           },
         }}
       >
-        <Drawer.Screen
-          name="index"
-          options={{
-            drawerLabel: "Ekran główny",
-            drawerIcon: () => <Icon icon={HomeIcon} hasBackground={false} />,
-          }}
-        />
-        <Drawer.Screen
-          name="settings"
-          options={{
-            drawerLabel: "Ustawienia",
-            drawerIcon: () => <Icon icon={SettingsIcon} hasBackground={false} />,
-            drawerItemStyle: {
-              marginTop: "auto",
-            },
-          }}
-        />
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="d17map" />
+        <Drawer.Screen name="information" />
+        <Drawer.Screen name="settings" />
       </Drawer>
     </ThemeProvider>
   );
