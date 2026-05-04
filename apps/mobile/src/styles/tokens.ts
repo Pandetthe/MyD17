@@ -21,6 +21,6 @@ export const size = {
   xs: 12,
   sm: 16,
   md: 20,
-  lg: 32,
+  lg: 28,
   xl: 40,
 };
