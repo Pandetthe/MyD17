@@ -54,16 +54,18 @@ const styles = StyleSheet.create((theme) => ({
         height: 72,
         flexDirection: "row",
         alignItems: "center",
+        boxShadow: `10px 5px 20px ${theme.colors.primary.background.accent}33`,
+        elevation: 5,
     },
     iconWrapper: {
-        marginRight: 8,
-        marginLeft: 14,
+        marginRight: theme.spacing.xs,
+        marginLeft: theme.spacing.md,
     },
     textWrapper: {
         flex: 1
     },
     switchWrapper: {
-        paddingHorizontal: 14,
-        paddingVertical: 24,
+        paddingHorizontal: theme.spacing.md,
+        paddingVertical: theme.spacing.lg,
     }
 }));

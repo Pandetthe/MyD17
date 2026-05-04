@@ -38,8 +38,8 @@ const styles = StyleSheet.create((theme: Theme) => ({
         justifyContent: "center",
         flexDirection: "column",
         alignItems: "center",
-        marginTop: 10,
-        gap: 10,
+        marginTop: theme.spacing.sm,
+        gap: theme.spacing.sm,
         backgroundColor: theme.colors.surface,
     },
 }));

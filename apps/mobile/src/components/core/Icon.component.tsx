@@ -25,16 +25,19 @@ export default function Icon({ icon, color = "primary", hasBackground = true }: 
   const { theme } = useUnistyles();
 
   const IconComponent = icon;
+  const IconEl = ({size}: {size: number}) => {
+    return <IconComponent color={theme.colors[color].main} size={size}/>
+  }
 
   if (!hasBackground) {
     return (
-        <IconComponent size={theme.size.lg} color={theme.colors[color].main}/>
+        <IconEl size={theme.size.lg}/>
     )
   }
 
   return (
     <View style={styles.container(color)}>
-      <IconComponent size={theme.size.md} color={theme.colors[color].main} />
+      <IconEl size={theme.size.md}/>
     </View>
   );
 }
