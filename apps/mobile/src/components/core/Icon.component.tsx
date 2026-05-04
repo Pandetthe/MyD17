@@ -1,14 +1,14 @@
 import React from "react";
-import { LucideIcon } from "lucide-react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { View } from "react-native";
 import { ColorPalette, Theme } from "@/styles/themes/theme";
+import { LucideIcon } from "lucide-react-native";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-interface IconProps {
+type IconProps = {
   icon: LucideIcon;
   color?: ColorPalette;
   hasBackground?: boolean;
-}
+};
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: (color: ColorPalette) => ({

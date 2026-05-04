@@ -1,6 +1,6 @@
 import { Color, colors } from "@/styles/colors";
-import { borderRadius, size, spacing } from "@/styles/tokens";
 import { fonts } from "@/styles/fonts";
+import { borderRadius, size, spacing } from "@/styles/tokens";
 import { Theme } from "./theme";
 
 export function colorSet(color: Color) {
