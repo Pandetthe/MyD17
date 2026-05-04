@@ -7,6 +7,14 @@ type TagProps = {
   color?: ColorPalette;
 };
 
+export default function Tag({ text, color = "primary" }: TagProps) {
+  return (
+    <View style={stylesheet.container(color)}>
+      <Text style={stylesheet.text(color)}>{text}</Text>
+    </View>
+  );
+}
+
 const stylesheet = StyleSheet.create((theme) => ({
   container: (color: ColorPalette) => ({
     height: theme.size.lg,
@@ -23,11 +31,3 @@ const stylesheet = StyleSheet.create((theme) => ({
     fontSize: theme.size.sm,
   }),
 }));
-
-export default function Tag({ text, color = "primary" }: TagProps) {
-  return (
-    <View style={stylesheet.container(color)}>
-      <Text style={stylesheet.text(color)}>{text}</Text>
-    </View>
-  );
-}
