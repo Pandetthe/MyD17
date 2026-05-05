@@ -1,4 +1,3 @@
-// import type { Core } from '@strapi/strapi';
 import { promises as fs } from "fs";
 import path from "path";
 
