@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
+import { InfoRow } from "@/components/InfoCard/InfoRow";
 import type { Theme } from "@/styles/themes/theme";
-import { InfoRow } from "./InfoRow";
 import type {
   ContentChip,
   ContentEventDateTime,

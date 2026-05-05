@@ -3,9 +3,10 @@ import { Pressable, View } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
 import type { ColorPalette, Theme } from "@/styles/themes/theme";
-import type { Tag as PostTag } from "../../types/post.types";
+import type { Tag as PostTag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
 import { ArrowLeft } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
@@ -44,6 +45,7 @@ export function HeroImage({ imageUrl, onBack, tags = [] }: Props) {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="light" />
       <Image
         source={imageUrl ? { uri: imageUrl } : PostPlaceholder}
         style={styles.image}

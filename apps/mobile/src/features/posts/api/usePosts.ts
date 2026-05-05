@@ -1,5 +1,6 @@
+import { postQueryKeys } from "@/features/posts/api/queryKeys";
 import { apiClient } from "@/lib/apiClient";
-import { postQueryKeys } from "./queryKeys";
+import type { Post, StrapiListResponse } from "@repo/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 const PAGE_SIZE = 10;
