@@ -3,21 +3,22 @@ import { fonts } from "@/styles/fonts";
 import { borderRadius, size, spacing } from "@/styles/tokens";
 import { Theme } from "./theme";
 
-export function lightColorSet(color: Color) {
+export function darkColorSet(color: Color) {
   return {
     main: color.main,
     text: {
-      primary: color.extraDark,
-      secondary: color.dark,
+      primary: color.extraLight,
+      secondary: color.light,
     },
     background: {
-      main: color.extraLight,
-      accent: color.light,
+      main: color.extraDark,
+      accent: color.dark,
     },
   };
 }
 
-export const lightTheme: Theme = {
+// TODO (sc-100): Choose appropriate colors
+export const darkTheme: Theme = {
   colors: {
     surface: colors.surface,
     primary: {
@@ -45,12 +46,12 @@ export const lightTheme: Theme = {
     gradients: {
       settings: [colors.core.surface, colors.core.light],
     },
-    red: lightColorSet(colors.red),
-    amber: lightColorSet(colors.amber),
-    green: lightColorSet(colors.green),
-    teal: lightColorSet(colors.teal),
-    purple: lightColorSet(colors.purple),
-    pink: lightColorSet(colors.pink),
+    red: darkColorSet(colors.red),
+    amber: darkColorSet(colors.amber),
+    green: darkColorSet(colors.green),
+    teal: darkColorSet(colors.teal),
+    purple: darkColorSet(colors.purple),
+    pink: darkColorSet(colors.pink),
     switch: {
       on: colors.core.main,
       off: colors.core.disabled,
@@ -62,4 +63,4 @@ export const lightTheme: Theme = {
   fonts,
 } as const;
 
-export type LightTheme = typeof lightTheme;
+export type DarkTheme = typeof darkTheme;

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
 import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
   const [darkMode, setDarkMode] = useState(0);
@@ -11,6 +11,11 @@ export default function Settings() {
 
   const darkModeClick = () => {
     setDarkMode(1 - darkMode);
+    if (darkMode === 1) {
+      UnistylesRuntime.setTheme("light");
+    } else {
+      UnistylesRuntime.setTheme("dark");
+    }
   };
   const notificationsClick = () => {
     setNotifications(1 - notifications);
@@ -21,6 +26,12 @@ export default function Settings() {
   const openSubscriptions = () => {
     alert("Subscriptions"); // Placeholder
   };
+
+  useEffect(() => {
+    if (UnistylesRuntime.themeName === "dark") {
+      setDarkMode(1);
+    }
+  }, []);
 
   return (
     <View style={styles.container}>

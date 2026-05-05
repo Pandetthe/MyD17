@@ -13,6 +13,7 @@ export default {
   importOrder: [
     "^react$",
     "^react-native$",
+    "^@/styles/unistyles$",
     "^@/assets/(.*)$",
     "^@/(.*)$",
     "^[./]",
