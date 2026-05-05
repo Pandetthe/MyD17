@@ -38,8 +38,8 @@ export const lightTheme: Theme = {
         secondary: colors.core.extraDark,
       },
       background: {
-        main: colors.white,
-        accent: colors.core.surface,
+        main: colors.core.dark,
+        accent: colors.core.extraDark,
       },
     },
     gradients: {

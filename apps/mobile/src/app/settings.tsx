@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
+import TextCore from "@/components/core/Text.component";
 import { Theme } from "@/styles/themes/theme";
 import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
@@ -50,11 +51,11 @@ export default function Settings() {
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
-    flex: 0,
-    justifyContent: "center",
+    flex: 1,
+    justifyContent: "flex-start",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: theme.spacing.sm,
+    paddingTop: theme.spacing.sm,
     gap: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
   },

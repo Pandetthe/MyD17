@@ -27,12 +27,14 @@ export default function Setting({ text, icon, onPress, value }: SettingProps) {
       </View>
 
       <View style={styles.textWrapper}>
-        <TextCore variant="h3">{text}</TextCore>
+        <TextCore variant="h3" color={theme.colors.primary.text.primary}>
+          {text}
+        </TextCore>
       </View>
 
       <Pressable onPress={onPress} style={styles.switchWrapper}>
         {value == null ? (
-          <Icon icon={ArrowUpRightIcon} hasBackground={false}></Icon>
+          <Icon icon={ArrowUpRightIcon} hasBackground={false} color="primary"></Icon>
         ) : (
           <SwitchCore onPress={onPress} value={value} />
         )}
