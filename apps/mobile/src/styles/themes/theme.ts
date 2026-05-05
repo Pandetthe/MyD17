@@ -39,10 +39,10 @@ export type Theme = {
   size: Record<string, number>;
   borderRadius: Record<string, number>;
   fonts: {
-    sans: string;
-    serif: string;
-    rounded: string;
-    mono: string;
+    regular: string;
+    medium: string;
+    semiBold: string;
+    bold: string;
   };
 };
 

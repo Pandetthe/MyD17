@@ -5,46 +5,34 @@ import { StyleSheet } from "react-native-unistyles";
 
 export type TextVariant = "h1" | "h2" | "h3" | "body" | "label";
 
-export type FontWeight = "regular" | "medium" | "bold";
-export type FontFamilyKey = keyof typeof fonts;
+export type FontWeight = "regular" | "medium" | "semiBold" | "bold";
+
 type TextColorRole = "primary" | "secondary";
 
 type TextCoreProps = {
   variant?: TextVariant;
   color?: ColorValue;
-  boldness?: FontWeight;
-  fontFamily?: FontFamilyKey;
+  weight?: FontWeight;
+  fontFamily?: string;
   style?: StyleProp<TextStyle>;
 } & TextProps;
 
 export default function TextCore({
   variant = "body",
   color,
-  boldness,
-  fontFamily = "sans",
+  weight,
+  fontFamily,
   style,
   children,
   ...props
 }: TextCoreProps) {
   const variantStyle = variantMap[variant];
-  const resolvedWeight = boldness ?? variantStyle.defaultWeight;
-  const resolvedFontFamily = fonts[fontFamily];
-
-  const fontWeightMap: Record<FontWeight, TextStyle["fontWeight"]> = {
-    regular: "400",
-    medium: "500",
-    bold: "700",
-  };
-  const resolvedFontWeight = fontWeightMap[resolvedWeight];
+  const resolvedWeight = weight ?? variantStyle.defaultWeight;
+  const resolvedFontFamily = fontFamily ?? fonts[resolvedWeight];
 
   return (
     <Text
-      style={[
-        styles.text(variant),
-        { fontFamily: resolvedFontFamily, fontWeight: resolvedFontWeight },
-        color && { color },
-        style,
-      ]}
+      style={[styles.text(variant), { fontFamily: resolvedFontFamily }, color && { color }, style]}
       {...props}
     >
       {children}
