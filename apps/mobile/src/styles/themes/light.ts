@@ -1,7 +1,7 @@
 import { Color, colors } from "@/styles/colors";
 import { fonts } from "@/styles/fonts";
+import { Theme } from "@/styles/themes/theme";
 import { borderRadius, size, spacing } from "@/styles/tokens";
-import { Theme } from "./theme";
 
 export function colorSet(color: Color) {
   return {

@@ -6,7 +6,9 @@ import { PostCard } from "@/components/posts/PostCard.component";
 import { TagFilterBar } from "@/components/posts/TagFilterBar.component";
 import { usePosts } from "@/features/posts/api/usePosts";
 import type { Theme } from "@/styles/themes/theme";
+import type { Tag } from "@repo/types";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function PostsScreen() {
@@ -58,6 +60,7 @@ export default function PostsScreen() {
   if (isLoading) {
     return (
       <View style={styles.safe}>
+        <StatusBar style="dark" />
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.primary.main} />
         </View>
@@ -68,6 +71,7 @@ export default function PostsScreen() {
   if (isError) {
     return (
       <View style={styles.safe}>
+        <StatusBar style="dark" />
         <View style={styles.centered}>
           <TextCore variant="body" color={theme.colors.primary.text.secondary}>
             Failed to load posts.
@@ -80,6 +84,7 @@ export default function PostsScreen() {
 
   return (
     <View style={styles.safe}>
+      <StatusBar style="dark" />
       <TagFilterBar
         tags={allTags}
         selectedTagIds={selectedTagIds}
@@ -143,7 +148,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   feed: {
     gap: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.md,
     paddingTop: theme.spacing.xs,
     paddingBottom: theme.spacing.xl * 3,
   },
@@ -154,7 +159,8 @@ const styles = StyleSheet.create((theme: Theme) => ({
     gap: theme.spacing.sm,
   },
   emptyText: {
-    textAlign: "center",
+    textAlign: "left",
+    paddingHorizontal: theme.spacing.md,
     marginTop: theme.spacing.xl,
   },
   footerLoader: {

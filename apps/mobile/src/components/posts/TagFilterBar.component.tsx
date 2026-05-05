@@ -3,7 +3,7 @@ import { ScrollView, View, Pressable } from "react-native";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import type { Theme, ColorPalette } from "@/styles/themes/theme";
-import type { Tag as PostTag } from "../types/post.types";
+import type { Tag as PostTag } from "@repo/types";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
@@ -76,14 +76,16 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
 
 const styles = StyleSheet.create((theme: Theme) => ({
   scrollView: {
-    height: 34,
+    width: "100%",
+    height: 40,
     backgroundColor: "transparent",
   },
   container: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
     gap: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xxs,
   },
   clearPill: {

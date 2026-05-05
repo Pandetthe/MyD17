@@ -1,9 +1,9 @@
 import React from "react";
 import { View } from "react-native";
+import { CalendarBlock } from "@/components/ContentRenderer/CalendarBlock";
+import { SectionTitleBlock } from "@/components/ContentRenderer/SectionTitleBlock";
+import { TextBlock } from "@/components/ContentRenderer/TextBlock";
 import type { Theme } from "@/styles/themes/theme";
-import { CalendarBlock } from "./CalendarBlock";
-import { SectionTitleBlock } from "./SectionTitleBlock";
-import { TextBlock } from "./TextBlock";
 import type { PostContentBlock } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
 

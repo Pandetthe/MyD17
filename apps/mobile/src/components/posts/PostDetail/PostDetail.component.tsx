@@ -1,21 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import { InfoCard } from "@/components/InfoCard";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
+import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import type { Theme } from "@/styles/themes/theme";
-import type {
-  ContentChip,
-  ContentEventDateTime,
-  ContentLocation,
-  Post,
-} from "../../types/post.types";
-import type { Tag } from "../../types/post.types";
-import { getPostDescription, getPostHeroImage } from "../../utils/postHelpers";
-import { HeroImage } from "./HeroImage.component";
-import type { ContentChip, ContentEventDateTime, ContentLocation, Post } from "@repo/types";
+import type { Post, Tag, ContentLocation, ContentEventDateTime, ContentChip } from "@repo/types";
 import { useRouter } from "expo-router";
 import { Heart, Share2, CalendarPlus } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -33,7 +26,7 @@ export function PostDetail({ post }: Props) {
   const tags = post.tags ?? [];
 
   const hasInfoBlocks = content.some(
-    (b): b is ContentLocation | ContentEventDateTime | ContentChip =>
+    (b: any): b is ContentLocation | ContentEventDateTime | ContentChip =>
       b.__component === "content.location" ||
       b.__component === "content.event-date-time" ||
       b.__component === "content.chip",

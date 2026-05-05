@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { View, Pressable } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { PostPlaceholder } from "@/lib/images";
-import type { Theme } from "@/styles/themes/theme";
-import type { ColorPalette } from "@/styles/themes/theme";
-import type { Post } from "../types/post.types";
-import { getPostDescription, getPostFirstImage } from "../utils/postHelpers";
+import type { Theme, ColorPalette } from "@/styles/themes/theme";
+import type { Post } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Heart, Share2 } from "lucide-react-native";
@@ -102,10 +101,10 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
           {(post.tags ?? []).length > 0 && (
             <View style={styles.tagsOverlay}>
-              {(post.tags ?? []).map((tag) => (
+              {(post.tags ?? []).map((tag: any) => (
                 <TagComponent
                   key={tag.id}
-                  text={`#${tag.title}`}
+                  text={`#${tag.title ?? ""}`}
                   color={mapTagColor(tag.color?.color)}
                   onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
                 />
@@ -153,16 +152,16 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
 const styles = StyleSheet.create((theme: Theme) => ({
   wrapper: {
-    width: "100%",
+    alignSelf: "stretch",
     borderRadius: theme.borderRadius.lg,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: theme.colors.primary.main,
     shadowColor: theme.colors.primary.main,
-    shadowOffset: { width: 10, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
   },
   card: {
     borderRadius: theme.borderRadius.lg,

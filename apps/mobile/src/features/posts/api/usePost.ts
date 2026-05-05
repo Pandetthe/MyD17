@@ -1,5 +1,5 @@
+import { postQueryKeys } from "@/features/posts/api/queryKeys";
 import { apiClient } from "@/lib/apiClient";
-import { postQueryKeys } from "./queryKeys";
 import type { Post, StrapiSingleResponse } from "@repo/types";
 import { useQuery } from "@tanstack/react-query";
 
