@@ -29,22 +29,24 @@ function getDayLabel(entry: CalendarEntry): string {
   return entry.day ? DAY_LABELS[entry.day] : "";
 }
 
-function CalendarEntryRow({ entry }: { entry: CalendarEntry; color?: ColorValue }) {
+function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean }) {
   const dayLabel = getDayLabel(entry);
   const fmt = (t?: string | null) => t?.slice(0, 5);
   const timeRange = [fmt(entry.startTime), fmt(entry.endTime)].filter(Boolean).join(" – ");
   const isClosed = timeRange.length === 0;
 
+  const textColor = dark ? colors.core.extraLight : colors.core.dark;
+  const closedColor = colors.core.main;
+
   return (
     <View style={styles.row}>
-      <TextCore variant="h3" weight="semiBold" color={colors.core.extraLight}>
+      <TextCore variant="h3" weight="semiBold" color={textColor}>
         {dayLabel}
       </TextCore>
       <TextCore
         variant="h3"
         weight="semiBold"
-        color={isClosed ? colors.core.main : colors.core.extraLight}
-        style={styles.time}
+        color={isClosed ? closedColor : textColor}
       >
         {isClosed ? "ZAMKNIĘTE" : timeRange}
       </TextCore>
@@ -52,13 +54,13 @@ function CalendarEntryRow({ entry }: { entry: CalendarEntry; color?: ColorValue 
   );
 }
 
-export function CalendarBlock({ block }: { block: ContentCalendar; color?: ColorValue }) {
+export function CalendarBlock({ block, dark = false }: { block: ContentCalendar; color?: ColorValue; dark?: boolean }) {
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
       {entries.map((entry) => (
-        <CalendarEntryRow key={entry.id} entry={entry} />
+        <CalendarEntryRow key={entry.id} entry={entry} dark={dark} />
       ))}
     </View>
   );
@@ -66,12 +68,18 @@ export function CalendarBlock({ block }: { block: ContentCalendar; color?: Color
 
 const styles = StyleSheet.create((theme: Theme) => ({
   card: {
-    backgroundColor: theme.colors.dark.main,
     borderWidth: 1,
-    borderColor: colors.core.light,
     borderRadius: theme.borderRadius.md,
     padding: 20,
     gap: theme.spacing.sm,
+  },
+  cardLight: {
+    backgroundColor: theme.colors.dark.background.main,
+    borderColor: theme.colors.primary.main,
+  },
+  cardDark: {
+    backgroundColor: theme.colors.dark.main,
+    borderColor: colors.core.light,
   },
   row: {
     flexDirection: "row",
@@ -79,5 +87,4 @@ const styles = StyleSheet.create((theme: Theme) => ({
     alignItems: "center",
     paddingVertical: 4,
   },
-  time: {},
 }));

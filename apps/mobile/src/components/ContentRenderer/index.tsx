@@ -32,7 +32,7 @@ export function ContentRenderer({ blocks, textColor, dark }: Props) {
           case "content.section-title":
             return <SectionTitleBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
           case "content.calendar":
-            return <CalendarBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
+            return <CalendarBlock key={`${block.__component}-${block.id}`} block={block} dark={dark} />;
           case "content.chip":
           case "content.location":
           case "content.event-date-time":
