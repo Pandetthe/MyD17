@@ -1,6 +1,7 @@
 import React from "react";
-import { View } from "react-native";
+import { View, type ColorValue } from "react-native";
 import TextCore from "@/components/core/Text.component";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { CalendarEntry, ContentCalendar, DayOfWeek } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
@@ -28,26 +29,30 @@ function getDayLabel(entry: CalendarEntry): string {
   return entry.day ? DAY_LABELS[entry.day] : "";
 }
 
-function CalendarEntryRow({ entry }: { entry: CalendarEntry }) {
+function CalendarEntryRow({ entry }: { entry: CalendarEntry; color?: ColorValue }) {
   const dayLabel = getDayLabel(entry);
   const fmt = (t?: string | null) => t?.slice(0, 5);
   const timeRange = [fmt(entry.startTime), fmt(entry.endTime)].filter(Boolean).join(" – ");
+  const isClosed = timeRange.length === 0;
 
   return (
     <View style={styles.row}>
-      <TextCore variant="h3" weight="medium">
+      <TextCore variant="h3" weight="semiBold" color={colors.core.extraLight}>
         {dayLabel}
       </TextCore>
-      {timeRange.length > 0 && (
-        <TextCore variant="body" style={styles.time}>
-          {timeRange}
-        </TextCore>
-      )}
+      <TextCore
+        variant="h3"
+        weight="semiBold"
+        color={isClosed ? colors.core.main : colors.core.extraLight}
+        style={styles.time}
+      >
+        {isClosed ? "ZAMKNIĘTE" : timeRange}
+      </TextCore>
     </View>
   );
 }
 
-export function CalendarBlock({ block }: { block: ContentCalendar }) {
+export function CalendarBlock({ block }: { block: ContentCalendar; color?: ColorValue }) {
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
   return (
@@ -61,19 +66,18 @@ export function CalendarBlock({ block }: { block: ContentCalendar }) {
 
 const styles = StyleSheet.create((theme: Theme) => ({
   card: {
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.dark.main,
     borderWidth: 1,
-    borderColor: theme.colors.primary.background.accent,
-    borderRadius: theme.borderRadius.sm,
-    padding: theme.spacing.sm,
-    gap: theme.spacing.xs,
+    borderColor: colors.core.light,
+    borderRadius: theme.borderRadius.md,
+    padding: 20,
+    gap: theme.spacing.sm,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 4,
   },
-  time: {
-    fontSize: 14,
-  },
+  time: {},
 }));

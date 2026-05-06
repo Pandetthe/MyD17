@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { View, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
@@ -8,8 +7,9 @@ import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
 import { PostPlaceholder } from "@/lib/images";
-import type { Theme, ColorPalette } from "@/styles/themes/theme";
-import type { Post, PostAuthor } from "@repo/types";
+import { strapiColorToPalette } from "@/lib/strapiColors";
+import type { Theme } from "@/styles/themes/theme";
+import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Heart, Share2 } from "lucide-react-native";
@@ -26,29 +26,6 @@ function formatDate(dateStr: string): string {
     day: "2-digit",
     month: "short",
   });
-}
-
-function mapTagColor(colorName?: string): ColorPalette {
-  const map: Record<string, ColorPalette> = {
-    red: "red",
-    rose: "red",
-    amber: "amber",
-    yellow: "amber",
-    orange: "amber",
-    green: "green",
-    emerald: "green",
-    lime: "green",
-    teal: "teal",
-    cyan: "teal",
-    blue: "primary",
-    sky: "primary",
-    indigo: "purple",
-    violet: "purple",
-    purple: "purple",
-    fuchsia: "pink",
-    pink: "pink",
-  };
-  return map[colorName ?? ""] ?? "primary";
 }
 
 export function PostCard({ post, onPress, onTagPress }: Props) {
@@ -112,11 +89,11 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
           {(post.tags ?? []).length > 0 && (
             <View style={styles.tagsOverlay}>
-              {(post.tags ?? []).map((tag: any) => (
+              {((post.tags ?? []) as Tag[]).map((tag) => (
                 <TagComponent
                   key={tag.id}
                   text={`#${tag.title ?? ""}`}
-                  color={mapTagColor(tag.color?.color)}
+                  color={strapiColorToPalette(tag.color?.color)}
                   onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
                 />
               ))}

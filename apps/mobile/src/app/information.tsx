@@ -1,7 +1,9 @@
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
+import { ActivityIndicator, RefreshControl, ScrollView, View, Pressable } from "react-native";
+import TextCore from "@/components/core/Text.component";
 import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
-import { StaticInfoCard, tailwindToCardColor } from "@/components/information/StaticInfoCard";
+import { StaticInfoCard } from "@/components/information/StaticInfoCard";
+import { strapiColorToCard } from "@/lib/strapiColors";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
 import type { StaticInformation } from "@repo/types";
 import type { Theme } from "@/styles/themes/theme";
@@ -46,7 +48,7 @@ function getIcon(item: StaticInformation, index: number): LucideIcon {
 
 export default function Information() {
   const { theme } = useUnistyles();
-  const { data, isLoading, refetch } = useInformationPage();
+  const { data, isLoading, isError, refetch } = useInformationPage();
   const [selectedItem, setSelectedItem] = useState<StaticInformation | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -76,6 +78,21 @@ export default function Information() {
     }
   }
 
+  if (isError) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+          Nie udało się załadować informacji.
+        </TextCore>
+        <Pressable onPress={() => refetch()}>
+          <TextCore variant="label" color={theme.colors.primary.main}>
+            Spróbuj ponownie
+          </TextCore>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -94,7 +111,7 @@ export default function Information() {
                 key={row.key}
                 title={row.items[0].title}
                 icon={getIcon(row.items[0], row.startIndex)}
-                color={tailwindToCardColor(row.items[0].color?.color)}
+                color={strapiColorToCard(row.items[0].color?.color)}
                 wide
                 onPress={() => setSelectedItem(row.items[0])}
               />
@@ -105,7 +122,7 @@ export default function Information() {
                     key={item.documentId ?? j}
                     title={item.title}
                     icon={getIcon(item, row.startIndex + j)}
-                    color={tailwindToCardColor(item.color?.color)}
+                    color={strapiColorToCard(item.color?.color)}
                     onPress={() => setSelectedItem(item)}
                   />
                 ))}
@@ -128,6 +145,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.surface,
+  },
+  centered: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing.sm,
   },
   loader: {
     flex: 1,

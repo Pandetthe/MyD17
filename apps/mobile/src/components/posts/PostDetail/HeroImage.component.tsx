@@ -2,7 +2,8 @@ import React from "react";
 import { Pressable, View } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
-import type { ColorPalette, Theme } from "@/styles/themes/theme";
+import { strapiColorToPalette } from "@/lib/strapiColors";
+import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,29 +11,6 @@ import { StatusBar } from "expo-status-bar";
 import { ArrowLeft } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-
-function mapTagColor(colorName?: string): ColorPalette {
-  const map: Record<string, ColorPalette> = {
-    red: "red",
-    rose: "red",
-    amber: "amber",
-    yellow: "amber",
-    orange: "amber",
-    green: "green",
-    emerald: "green",
-    lime: "green",
-    teal: "teal",
-    cyan: "teal",
-    blue: "primary",
-    sky: "primary",
-    indigo: "purple",
-    violet: "purple",
-    purple: "purple",
-    fuchsia: "pink",
-    pink: "pink",
-  };
-  return map[colorName ?? ""] ?? "primary";
-}
 
 type Props = {
   imageUrl: string | null;
@@ -67,7 +45,7 @@ export function HeroImage({ imageUrl, onBack, tags = [] }: Props) {
             <TagComponent
               key={tag.id}
               text={`#${tag.title}`}
-              color={mapTagColor(tag.color?.color)}
+              color={strapiColorToPalette(tag.color?.color)}
             />
           ))}
         </View>

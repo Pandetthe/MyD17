@@ -1,20 +1,13 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
+import IconPrimitive from "@/components/core/Icon.component";
+import TextCore from "@/components/core/Text.component";
 import { colors } from "@/styles/colors";
-import type { TailwindColorName } from "@repo/types";
+import type { CardColor } from "@/lib/strapiColors";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import { StyleSheet } from "react-native-unistyles";
-
-type CardColor = "red" | "green" | "teal";
-
-export function tailwindToCardColor(color: TailwindColorName | undefined): CardColor {
-  if (!color) return "teal";
-  if (["red", "orange", "amber", "pink", "rose", "fuchsia"].includes(color)) return "red";
-  if (["green", "lime", "emerald", "yellow"].includes(color)) return "green";
-  return "teal";
-}
 
 type Props = {
   title: string;
@@ -24,13 +17,15 @@ type Props = {
   onPress: () => void;
 };
 
+import type { AppColor } from "@/styles/colors";
+
 const PALETTE: Record<
   CardColor,
   {
     bg: string;
     border: string;
-    iconBg: string;
-    iconColor: string;
+    iconBg: AppColor;
+    iconFg: AppColor;
     text: string;
     shadow: string;
     ellipseBg: string;
@@ -38,38 +33,38 @@ const PALETTE: Record<
   }
 > = {
   red: {
-    bg: "#fef2f2",
-    border: "#e7000b",
-    iconBg: "#ffc9c9",
-    iconColor: "#e7000b",
-    text: "#460809",
+    bg: colors.red.extraLight,
+    border: colors.red.main,
+    iconBg: colors.red.light,
+    iconFg: colors.red.main,
+    text: colors.red.extraDark,
     shadow: "rgba(251,44,54,0.2)",
-    ellipseBg: "#ffc9c9",
-    arrowBg: "#e7000b",
+    ellipseBg: colors.red.light,
+    arrowBg: colors.red.main,
   },
   green: {
     bg: colors.white,
-    border: "#5ea500",
-    iconBg: "#d8f999",
-    iconColor: "#5ea500",
-    text: "#032e15",
+    border: colors.green.main,
+    iconBg: colors.green.light,
+    iconFg: colors.green.main,
+    text: colors.green.extraDark,
     shadow: "rgba(94,165,0,0.2)",
-    ellipseBg: "#d8f999",
-    arrowBg: "#5ea500",
+    ellipseBg: colors.green.light,
+    arrowBg: colors.green.main,
   },
   teal: {
-    bg: "#ecfeff",
-    border: "#0092b8",
-    iconBg: "#a2f4fd",
-    iconColor: "#0092b8",
-    text: "#053345",
+    bg: colors.teal.extraLight,
+    border: colors.teal.main,
+    iconBg: colors.teal.light,
+    iconFg: colors.teal.main,
+    text: colors.teal.extraDark,
     shadow: "rgba(0,146,184,0.2)",
-    ellipseBg: "#a2f4fd",
-    arrowBg: "#0092b8",
+    ellipseBg: colors.teal.light,
+    arrowBg: colors.teal.main,
   },
 };
 
-export function StaticInfoCard({ title, icon: Icon, color, wide = false, onPress }: Props) {
+export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Props) {
   const p = PALETTE[color];
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
 
@@ -78,29 +73,30 @@ export function StaticInfoCard({ title, icon: Icon, color, wide = false, onPress
       <Animated.View
         style={[
           styles.card,
+          wide && styles.cardWide,
           { backgroundColor: p.bg, borderColor: p.border, shadowColor: p.shadow },
           animStyle,
         ]}
       >
-        <View
-          style={[
-            styles.ellipseLarge,
-            wide && styles.ellipseLargeWide,
-            { backgroundColor: p.ellipseBg },
-          ]}
-        />
+        <View style={[styles.ellipseLarge, wide && styles.ellipseLargeWide, { backgroundColor: p.ellipseBg }]} />
 
-        <View style={[styles.iconContainer, { backgroundColor: p.iconBg }]}>
-          <Icon size={20} color={p.iconColor} strokeWidth={1.8} />
+        <View style={styles.iconWrapper}>
+          <IconPrimitive icon={icon} bg={p.iconBg} fg={p.iconFg} />
         </View>
 
         <View style={[styles.arrowButton, wide && styles.arrowButtonWide, { backgroundColor: p.arrowBg }]}>
           <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
         </View>
 
-        <Text style={[styles.title, { color: p.text }]} numberOfLines={2}>
+        <TextCore
+          variant="h3"
+          weight="bold"
+          color={p.text}
+          numberOfLines={2}
+          style={styles.title}
+        >
           {title}
-        </Text>
+        </TextCore>
       </Animated.View>
     </Pressable>
   );
@@ -126,24 +122,22 @@ const styles = StyleSheet.create({
     shadowRadius: 22.5,
     elevation: 5,
   },
+  cardWide: {
+    height: 131,
+  },
   ellipseLarge: {
     position: "absolute",
     width: 94,
     height: 94,
     borderRadius: 47,
-    right: -16,
-    bottom: -12,
+    right: -26,
+    bottom: -25,
   },
   ellipseLargeWide: {
-    right: -10,
-    bottom: -12,
+    right: -17,
+    bottom: -28,
   },
-  iconContainer: {
-    width: 37.5,
-    height: 37.5,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+  iconWrapper: {
     position: "absolute",
     top: 16,
     left: 18,
@@ -156,18 +150,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     top: 21,
-    right: 18,
+    right: 24,
   },
   arrowButtonWide: {
-    right: 18,
+    right: 17,
   },
   title: {
     position: "absolute",
     bottom: 14,
     left: 18,
     right: 54,
-    fontFamily: "Montserrat_700Bold",
-    fontSize: 15,
     lineHeight: 20,
   },
 });
