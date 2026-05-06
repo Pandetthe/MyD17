@@ -1812,6 +1812,8 @@ export interface components {
                 tags?: (number | string)[];
                 likesCount: number;
                 content: (components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
+                /** @example string or id */
+                author?: number | string;
                 locale?: string;
                 localizations?: (number | string)[];
             };
@@ -2113,6 +2115,143 @@ export interface components {
                     }[];
                     likesCount?: number;
                     content?: (components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
+                    author?: {
+                        id?: string | number;
+                        documentId?: string;
+                        username?: string;
+                        /** Format: email */
+                        email?: string;
+                        provider?: string;
+                        resetPasswordToken?: string;
+                        confirmationToken?: string;
+                        confirmed?: boolean;
+                        blocked?: boolean;
+                        role?: {
+                            id?: string | number;
+                            documentId?: string;
+                            name?: string;
+                            description?: string;
+                            type?: string;
+                            permissions?: {
+                                id?: string | number;
+                                documentId?: string;
+                                action?: string;
+                                role?: {
+                                    id?: string | number;
+                                    documentId?: string;
+                                };
+                                /** Format: date-time */
+                                createdAt?: string;
+                                /** Format: date-time */
+                                updatedAt?: string;
+                                /** Format: date-time */
+                                publishedAt?: string;
+                                createdBy?: {
+                                    id?: string | number;
+                                    documentId?: string;
+                                };
+                                updatedBy?: {
+                                    id?: string | number;
+                                    documentId?: string;
+                                };
+                                locale?: string;
+                                localizations?: {
+                                    id?: string | number;
+                                    documentId?: string;
+                                }[];
+                            }[];
+                            users?: {
+                                id?: string | number;
+                                documentId?: string;
+                            }[];
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                            /** Format: date-time */
+                            publishedAt?: string;
+                            createdBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            updatedBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            locale?: string;
+                            localizations?: {
+                                id?: string | number;
+                                documentId?: string;
+                            }[];
+                        };
+                        avatar?: {
+                            id?: string | number;
+                            documentId?: string;
+                            name?: string;
+                            alternativeText?: string;
+                            caption?: string;
+                            focalPoint?: unknown;
+                            width?: number;
+                            height?: number;
+                            formats?: unknown;
+                            hash?: string;
+                            ext?: string;
+                            mime?: string;
+                            /** Format: float */
+                            size?: number;
+                            url?: string;
+                            previewUrl?: string;
+                            provider?: string;
+                            provider_metadata?: unknown;
+                            related?: {
+                                id?: string | number;
+                                documentId?: string;
+                            }[];
+                            folder?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            folderPath?: string;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                            /** Format: date-time */
+                            publishedAt?: string;
+                            createdBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            updatedBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            locale?: string;
+                            localizations?: {
+                                id?: string | number;
+                                documentId?: string;
+                            }[];
+                        };
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                        /** Format: date-time */
+                        publishedAt?: string;
+                        createdBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        updatedBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        locale?: string;
+                        localizations?: {
+                            id?: string | number;
+                            documentId?: string;
+                        }[];
+                    };
                     /** Format: date-time */
                     createdAt?: string;
                     /** Format: date-time */
@@ -2155,6 +2294,10 @@ export interface components {
             }[];
             likesCount: number;
             content: (components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
+            author?: {
+                id?: string | number;
+                documentId?: string;
+            };
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -2629,6 +2772,143 @@ export interface components {
                 }[];
                 likesCount?: number;
                 content?: (components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
+                author?: {
+                    id?: string | number;
+                    documentId?: string;
+                    username?: string;
+                    /** Format: email */
+                    email?: string;
+                    provider?: string;
+                    resetPasswordToken?: string;
+                    confirmationToken?: string;
+                    confirmed?: boolean;
+                    blocked?: boolean;
+                    role?: {
+                        id?: string | number;
+                        documentId?: string;
+                        name?: string;
+                        description?: string;
+                        type?: string;
+                        permissions?: {
+                            id?: string | number;
+                            documentId?: string;
+                            action?: string;
+                            role?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                            /** Format: date-time */
+                            publishedAt?: string;
+                            createdBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            updatedBy?: {
+                                id?: string | number;
+                                documentId?: string;
+                            };
+                            locale?: string;
+                            localizations?: {
+                                id?: string | number;
+                                documentId?: string;
+                            }[];
+                        }[];
+                        users?: {
+                            id?: string | number;
+                            documentId?: string;
+                        }[];
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                        /** Format: date-time */
+                        publishedAt?: string;
+                        createdBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        updatedBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        locale?: string;
+                        localizations?: {
+                            id?: string | number;
+                            documentId?: string;
+                        }[];
+                    };
+                    avatar?: {
+                        id?: string | number;
+                        documentId?: string;
+                        name?: string;
+                        alternativeText?: string;
+                        caption?: string;
+                        focalPoint?: unknown;
+                        width?: number;
+                        height?: number;
+                        formats?: unknown;
+                        hash?: string;
+                        ext?: string;
+                        mime?: string;
+                        /** Format: float */
+                        size?: number;
+                        url?: string;
+                        previewUrl?: string;
+                        provider?: string;
+                        provider_metadata?: unknown;
+                        related?: {
+                            id?: string | number;
+                            documentId?: string;
+                        }[];
+                        folder?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        folderPath?: string;
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                        /** Format: date-time */
+                        publishedAt?: string;
+                        createdBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        updatedBy?: {
+                            id?: string | number;
+                            documentId?: string;
+                        };
+                        locale?: string;
+                        localizations?: {
+                            id?: string | number;
+                            documentId?: string;
+                        }[];
+                    };
+                    /** Format: date-time */
+                    createdAt?: string;
+                    /** Format: date-time */
+                    updatedAt?: string;
+                    /** Format: date-time */
+                    publishedAt?: string;
+                    createdBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                    };
+                    updatedBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                    };
+                    locale?: string;
+                    localizations?: {
+                        id?: string | number;
+                        documentId?: string;
+                    }[];
+                };
                 /** Format: date-time */
                 createdAt?: string;
                 /** Format: date-time */

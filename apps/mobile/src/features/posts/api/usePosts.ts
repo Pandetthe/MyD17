@@ -12,6 +12,7 @@ const buildPostsUrl = (page: number) =>
   `pagination[page]=${page}&` +
   `pagination[pageSize]=${PAGE_SIZE}&` +
   "populate[images]=true&" +
+  "populate[author][populate][avatar]=true&" +
   "populate[tags][populate][color]=true&" +
   "populate[content][on][content.text]=true&" +
   "populate[content][on][content.location]=true&" +

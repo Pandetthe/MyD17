@@ -4,9 +4,10 @@ import { View, Pressable } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
+import { strapiUrl } from "@/lib/apiClient";
 import { PostPlaceholder } from "@/lib/images";
 import type { Theme, ColorPalette } from "@/styles/themes/theme";
-import type { Post } from "@repo/types";
+import type { Post, PostAuthor } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Heart, Share2 } from "lucide-react-native";
@@ -53,6 +54,8 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const imageUrl = getPostFirstImage(post);
   const description = getPostDescription(post);
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
+  const author = post.author as PostAuthor | undefined;
+  const avatarUrl = author?.avatar?.url ? strapiUrl(author.avatar.url) : null;
 
   return (
     <Pressable onPress={onPress} style={styles.wrapper}>
@@ -64,14 +67,18 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       >
         {/* Author row */}
         <View style={styles.authorRow}>
-          <View style={styles.avatar} />
+          <Image
+            source={avatarUrl ? { uri: avatarUrl } : null}
+            style={styles.avatar}
+            contentFit="cover"
+          />
           <TextCore
             variant="label"
             color={theme.colors.dark.main}
             numberOfLines={1}
             style={styles.authorName}
           >
-            {post.title}
+            {author?.username ?? ""}
           </TextCore>
           <TextCore variant="label" color={theme.colors.primary.main} style={styles.date}>
             {dateLabel}
