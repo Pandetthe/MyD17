@@ -113,6 +113,7 @@ export function StaticInfoCard({ title, icon: Icon, color, wide = false, onPress
 const styles = StyleSheet.create({
   card: {
     flex: 1,
+    maxWidth: "50%",
     height: 150,
     borderWidth: 0.75,
     borderRadius: 24,
@@ -126,7 +127,8 @@ const styles = StyleSheet.create({
   cardWide: {
     flex: 0,
     width: "100%",
-    height: 131,
+    maxWidth: "100%",
+    height: 150,
   },
   ellipseLarge: {
     position: "absolute",

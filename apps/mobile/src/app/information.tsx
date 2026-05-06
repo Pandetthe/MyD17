@@ -27,8 +27,24 @@ export default function Information() {
   }, [refetch]);
 
   const items = (data?.staticInformation ?? []) as StaticInformation[];
-  const narrowItems = items.filter((item) => !item.isWide);
-  const wideItems = items.filter((item) => item.isWide);
+
+  const rows: Array<{ key: string; wide: boolean; items: StaticInformation[]; startIndex: number }> = [];
+  let i = 0;
+  while (i < items.length) {
+    const item = items[i];
+    if (item.isWide) {
+      rows.push({ key: item.documentId ?? String(i), wide: true, items: [item], startIndex: i });
+      i++;
+    } else {
+      const pair: StaticInformation[] = [item];
+      if (i + 1 < items.length && !items[i + 1].isWide) {
+        pair.push(items[i + 1]);
+        i++;
+      }
+      rows.push({ key: item.documentId ?? String(i), wide: false, items: pair, startIndex: i - pair.length + 1 });
+      i++;
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -42,29 +58,30 @@ export default function Information() {
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
           }
         >
-          {narrowItems.length > 0 && (
-            <View style={styles.row}>
-              {narrowItems.map((item, i) => (
-                <StaticInfoCard
-                  key={item.documentId ?? i}
-                  title={item.title}
-                  icon={getIcon(i)}
-                  color={tailwindToCardColor(item.color?.color)}
-                  onPress={() => setSelectedItem(item)}
-                />
-              ))}
-            </View>
+          {rows.map((row) =>
+            row.wide ? (
+              <StaticInfoCard
+                key={row.key}
+                title={row.items[0].title}
+                icon={getIcon(row.startIndex)}
+                color={tailwindToCardColor(row.items[0].color?.color)}
+                wide
+                onPress={() => setSelectedItem(row.items[0])}
+              />
+            ) : (
+              <View key={row.key} style={styles.row}>
+                {row.items.map((item, j) => (
+                  <StaticInfoCard
+                    key={item.documentId ?? j}
+                    title={item.title}
+                    icon={getIcon(row.startIndex + j)}
+                    color={tailwindToCardColor(item.color?.color)}
+                    onPress={() => setSelectedItem(item)}
+                  />
+                ))}
+              </View>
+            )
           )}
-          {wideItems.map((item, i) => (
-            <StaticInfoCard
-              key={item.documentId ?? i}
-              title={item.title}
-              icon={getIcon(narrowItems.length + i)}
-              color={tailwindToCardColor(item.color?.color)}
-              wide
-              onPress={() => setSelectedItem(item)}
-            />
-          ))}
         </ScrollView>
       )}
 
