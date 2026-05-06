@@ -1757,6 +1757,7 @@ export interface components {
             /** @enum {string} */
             __component?: "content.text";
             content?: string;
+            isHeader?: boolean;
         };
         ContentLocationComponent: {
             id?: string | number;

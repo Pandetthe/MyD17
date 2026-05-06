@@ -14,17 +14,13 @@ type Props = {
   dark?: boolean;
 };
 
+const INFO_COMPONENTS = new Set(["content.chip", "content.location", "content.event-date-time"]);
+
 export function ContentRenderer({ blocks, textColor, dark }: Props) {
-  const hasInfoBlocks = blocks.some(
-    (b) =>
-      b.__component === "content.chip" ||
-      b.__component === "content.location" ||
-      b.__component === "content.event-date-time",
-  );
+  let infoCardRendered = false;
 
   return (
     <View style={styles.container}>
-      {hasInfoBlocks && <InfoCard blocks={blocks} dark={dark} />}
       {blocks.map((block) => {
         switch (block.__component) {
           case "content.text":
@@ -35,8 +31,11 @@ export function ContentRenderer({ blocks, textColor, dark }: Props) {
             return <CalendarBlock key={`${block.__component}-${block.id}`} block={block} dark={dark} />;
           case "content.chip":
           case "content.location":
-          case "content.event-date-time":
-            return null;
+          case "content.event-date-time": {
+            if (infoCardRendered) return null;
+            infoCardRendered = true;
+            return <InfoCard key="info-card" blocks={blocks.filter((b) => INFO_COMPONENTS.has(b.__component ?? ""))} dark={dark} />;
+          }
           default:
             return null;
         }
