@@ -1588,6 +1588,7 @@ export interface components {
                 isWide?: boolean;
                 color?: components["schemas"]["ColorPickerColorPickerComponent"];
                 content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
+                Icon?: components["schemas"]["IconPickerIconComponent"];
                 /** Format: date-time */
                 createdAt?: string;
                 /** Format: date-time */
@@ -1803,6 +1804,11 @@ export interface components {
             /** @enum {string} */
             __component?: "content.calendar";
             entries?: components["schemas"]["CalendarEntryCalendarEntryComponent"][];
+        };
+        IconPickerIconComponent: {
+            id?: string | number;
+            /** @enum {string} */
+            icon?: "graduation-cap" | "book-open" | "scroll-text" | "info" | "music" | "calendar" | "map-pin" | "clock" | "users" | "trophy" | "bell" | "file-text" | "building" | "mic" | "library" | "coffee" | "wifi" | "parking" | "phone" | "mail";
         };
         PostRequest: {
             data: {
@@ -2334,6 +2340,7 @@ export interface components {
                 isWide: boolean;
                 color: components["schemas"]["ColorPickerColorPickerComponent"];
                 content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
+                Icon: components["schemas"]["IconPickerIconComponent"];
                 locale?: string;
                 localizations?: (number | string)[];
             };
@@ -2356,6 +2363,7 @@ export interface components {
             isWide: boolean;
             color: components["schemas"]["ColorPickerColorPickerComponent"];
             content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
+            Icon: components["schemas"]["IconPickerIconComponent"];
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -2469,6 +2477,7 @@ export interface components {
                 isWide?: boolean;
                 color?: components["schemas"]["ColorPickerColorPickerComponent"];
                 content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
+                Icon?: components["schemas"]["IconPickerIconComponent"];
                 /** Format: date-time */
                 createdAt?: string;
                 /** Format: date-time */

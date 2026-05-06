@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { View, Pressable } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
@@ -56,9 +58,11 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
   const author = post.author as PostAuthor | undefined;
   const avatarUrl = author?.avatar?.url ? strapiUrl(author.avatar.url) : null;
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
 
   return (
-    <Pressable onPress={onPress} style={styles.wrapper}>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.wrapper, animStyle]}>
       <LinearGradient
         colors={["#F2F9FF", "#ECF6FF"]}
         start={{ x: 0, y: 0 }}
@@ -153,6 +157,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
           </TextCore>
         </View>
       </LinearGradient>
+      </Animated.View>
     </Pressable>
   );
 }

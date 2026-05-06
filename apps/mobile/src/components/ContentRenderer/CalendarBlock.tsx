@@ -30,7 +30,8 @@ function getDayLabel(entry: CalendarEntry): string {
 
 function CalendarEntryRow({ entry }: { entry: CalendarEntry }) {
   const dayLabel = getDayLabel(entry);
-  const timeRange = [entry.startTime, entry.endTime].filter(Boolean).join(" – ");
+  const fmt = (t?: string | null) => t?.slice(0, 5);
+  const timeRange = [fmt(entry.startTime), fmt(entry.endTime)].filter(Boolean).join(" – ");
 
   return (
     <View style={styles.row}>

@@ -1,10 +1,26 @@
 import React from "react";
 import { ScrollView, View, Pressable } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import type { Theme, ColorPalette } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
+
+function ClearPill({ onPress }: { onPress: () => void }) {
+  const { theme } = useUnistyles();
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
+  return (
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.clearPill, animStyle]}>
+        <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
+          Clear filters
+        </TextCore>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 type Props = {
   tags: PostTag[];
@@ -38,7 +54,6 @@ function mapTagColor(colorName?: string): ColorPalette {
 }
 
 export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props) {
-  const { theme } = useUnistyles();
   const hasSelection = selectedTagIds.length > 0;
 
   return (
@@ -48,13 +63,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
       style={styles.scrollView}
       contentContainerStyle={styles.container}
     >
-      {hasSelection && (
-        <Pressable style={styles.clearPill} onPress={onClear}>
-          <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
-            Clear filters
-          </TextCore>
-        </Pressable>
-      )}
+      {hasSelection && <ClearPill onPress={onClear} />}
 
       {tags.map((tag) => {
         const tagId = tag.id as number;

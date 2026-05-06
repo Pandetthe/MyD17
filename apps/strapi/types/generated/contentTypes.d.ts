@@ -544,6 +544,8 @@ export interface ApiStaticInformationStaticInformation
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Icon: Schema.Attribute.Component<'icon-picker.icon', false> &
+      Schema.Attribute.Required;
     isWide: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;

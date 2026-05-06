@@ -5,13 +5,43 @@ import { StaticInfoCard, tailwindToCardColor } from "@/components/information/St
 import { useInformationPage } from "@/features/information/api/useInformationPage";
 import type { StaticInformation } from "@repo/types";
 import type { Theme } from "@/styles/themes/theme";
-import { BookOpen, GraduationCap, Info, ScrollText } from "lucide-react-native";
+import {
+  Bell, BookOpen, Building, Calendar, Clock, Coffee,
+  FileText, GraduationCap, Info, Library, MapPin,
+  Mic, Music, ParkingSquare, Phone, Mail, ScrollText,
+  Trophy, Users, Wifi,
+} from "lucide-react-native";
 import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-function getIcon(index: number): LucideIcon {
-  const icons: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
-  return icons[index % icons.length];
+const ICON_MAP: Record<string, LucideIcon> = {
+  "graduation-cap": GraduationCap,
+  "book-open": BookOpen,
+  "scroll-text": ScrollText,
+  "info": Info,
+  "music": Music,
+  "calendar": Calendar,
+  "map-pin": MapPin,
+  "clock": Clock,
+  "users": Users,
+  "trophy": Trophy,
+  "bell": Bell,
+  "file-text": FileText,
+  "building": Building,
+  "mic": Mic,
+  "library": Library,
+  "coffee": Coffee,
+  "wifi": Wifi,
+  "parking": ParkingSquare,
+  "phone": Phone,
+  "mail": Mail,
+};
+
+function getIcon(item: StaticInformation, index: number): LucideIcon {
+  const name = item.Icon?.icon;
+  if (name && ICON_MAP[name]) return ICON_MAP[name];
+  const fallback: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
+  return fallback[index % fallback.length];
 }
 
 export default function Information() {
@@ -63,7 +93,7 @@ export default function Information() {
               <StaticInfoCard
                 key={row.key}
                 title={row.items[0].title}
-                icon={getIcon(row.startIndex)}
+                icon={getIcon(row.items[0], row.startIndex)}
                 color={tailwindToCardColor(row.items[0].color?.color)}
                 wide
                 onPress={() => setSelectedItem(row.items[0])}
@@ -74,7 +104,7 @@ export default function Information() {
                   <StaticInfoCard
                     key={item.documentId ?? j}
                     title={item.title}
-                    icon={getIcon(row.startIndex + j)}
+                    icon={getIcon(item, row.startIndex + j)}
                     color={tailwindToCardColor(item.color?.color)}
                     onPress={() => setSelectedItem(item)}
                   />
@@ -87,6 +117,7 @@ export default function Information() {
 
       <InfoBottomDrawer
         visible={selectedItem !== null}
+        item={selectedItem}
         onClose={() => setSelectedItem(null)}
       />
     </View>

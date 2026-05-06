@@ -1,5 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import Logo from "@/components/core/Logo.component";
 import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
@@ -16,10 +18,13 @@ type NavItemProps = {
 };
 
 function NavItem({ icon: Icon, label, active, onPress }: NavItemProps) {
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
   return (
-    <Pressable onPress={onPress} style={[styles.navItem, active && styles.navItemActive]}>
-      <Icon size={24} color={colors.white} strokeWidth={1.8} />
-      <Text style={styles.navItemText}>{label}</Text>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.navItem, active && styles.navItemActive, animStyle]}>
+        <Icon size={24} color={colors.white} strokeWidth={1.8} />
+        <Text style={styles.navItemText}>{label}</Text>
+      </Animated.View>
     </Pressable>
   );
 }

@@ -1,4 +1,6 @@
 import { Text, Pressable } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { ColorPalette } from "@/styles/themes/theme";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -9,9 +11,13 @@ type TagProps = {
 };
 
 export default function Tag({ text, color = "primary", onPress }: TagProps) {
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
+
   return (
-    <Pressable style={stylesheet.container(color)} onPress={onPress}>
-      <Text style={stylesheet.text(color)}>{text}</Text>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[stylesheet.container(color), animStyle]}>
+        <Text style={stylesheet.text(color)}>{text}</Text>
+      </Animated.View>
     </Pressable>
   );
 }

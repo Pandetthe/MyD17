@@ -1,5 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import type { TailwindColorName } from "@repo/types";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
@@ -69,51 +71,51 @@ const PALETTE: Record<
 
 export function StaticInfoCard({ title, icon: Icon, color, wide = false, onPress }: Props) {
   const p = PALETTE[color];
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        wide && styles.cardWide,
-        {
-          backgroundColor: p.bg,
-          borderColor: p.border,
-          shadowColor: p.shadow,
-          opacity: pressed ? 0.88 : 1,
-        },
-      ]}
-    >
-      {/* dekoracyjna elipsa w prawym dolnym rogu */}
-      <View
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={wide ? styles.pressableWide : styles.pressable}>
+      <Animated.View
         style={[
-          styles.ellipseLarge,
-          wide && styles.ellipseLargeWide,
-          { backgroundColor: p.ellipseBg },
+          styles.card,
+          { backgroundColor: p.bg, borderColor: p.border, shadowColor: p.shadow },
+          animStyle,
         ]}
-      />
+      >
+        <View
+          style={[
+            styles.ellipseLarge,
+            wide && styles.ellipseLargeWide,
+            { backgroundColor: p.ellipseBg },
+          ]}
+        />
 
-      {/* ikona */}
-      <View style={[styles.iconContainer, { backgroundColor: p.iconBg }]}>
-        <Icon size={20} color={p.iconColor} strokeWidth={1.8} />
-      </View>
+        <View style={[styles.iconContainer, { backgroundColor: p.iconBg }]}>
+          <Icon size={20} color={p.iconColor} strokeWidth={1.8} />
+        </View>
 
-      {/* przycisk strzałki */}
-      <View style={[styles.arrowButton, wide && styles.arrowButtonWide, { backgroundColor: p.arrowBg }]}>
-        <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
-      </View>
+        <View style={[styles.arrowButton, wide && styles.arrowButtonWide, { backgroundColor: p.arrowBg }]}>
+          <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
+        </View>
 
-      <Text style={[styles.title, { color: p.text }]} numberOfLines={2}>
-        {title}
-      </Text>
+        <Text style={[styles.title, { color: p.text }]} numberOfLines={2}>
+          {title}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  pressable: {
     flex: 1,
     maxWidth: "50%",
+  },
+  pressableWide: {
+    width: "100%",
+  },
+  card: {
+    flex: 1,
     height: 150,
     borderWidth: 0.75,
     borderRadius: 24,
@@ -123,12 +125,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 22.5,
     elevation: 5,
-  },
-  cardWide: {
-    flex: 0,
-    width: "100%",
-    maxWidth: "100%",
-    height: 150,
   },
   ellipseLarge: {
     position: "absolute",

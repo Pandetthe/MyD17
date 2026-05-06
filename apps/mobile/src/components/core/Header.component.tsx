@@ -1,5 +1,7 @@
 import React from "react";
 import { Pressable, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import Logo from "@/components/core/Logo.component";
 import { Theme } from "@/styles/themes/theme";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -12,17 +14,23 @@ export default function Header() {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const { theme } = useUnistyles();
   const insets = useSafeAreaInsets();
+  const menu = usePressAnimation(0.93);
+  const bell = usePressAnimation(0.93);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + theme.spacing.sm }]}>
-      <Pressable onPress={() => navigation.openDrawer()} style={styles.iconButton}>
-        <MenuIcon color={theme.colors.dark.text.secondary} size={24} />
+      <Pressable onPress={() => navigation.openDrawer()} onPressIn={menu.onPressIn} onPressOut={menu.onPressOut} style={styles.iconButton}>
+        <Animated.View style={menu.animStyle}>
+          <MenuIcon color={theme.colors.dark.text.secondary} size={24} />
+        </Animated.View>
       </Pressable>
 
       <Logo height={45} />
 
-      <Pressable style={styles.iconButton}>
-        <BellIcon color={theme.colors.dark.text.secondary} size={24} />
+      <Pressable onPressIn={bell.onPressIn} onPressOut={bell.onPressOut} style={styles.iconButton}>
+        <Animated.View style={bell.animStyle}>
+          <BellIcon color={theme.colors.dark.text.secondary} size={24} />
+        </Animated.View>
       </Pressable>
     </View>
   );

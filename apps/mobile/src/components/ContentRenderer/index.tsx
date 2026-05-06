@@ -9,17 +9,18 @@ import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
   blocks: PostContentBlock[];
+  textColor?: import("react-native").ColorValue;
 };
 
-export function ContentRenderer({ blocks }: Props) {
+export function ContentRenderer({ blocks, textColor }: Props) {
   return (
     <View style={styles.container}>
       {blocks.map((block) => {
         switch (block.__component) {
           case "content.text":
-            return <TextBlock key={`${block.__component}-${block.id}`} block={block} />;
+            return <TextBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
           case "content.section-title":
-            return <SectionTitleBlock key={`${block.__component}-${block.id}`} block={block} />;
+            return <SectionTitleBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
           case "content.calendar":
             return <CalendarBlock key={`${block.__component}-${block.id}`} block={block} />;
           case "content.chip":
