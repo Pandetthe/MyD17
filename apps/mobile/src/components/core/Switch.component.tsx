@@ -7,7 +7,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
+import { useAnimatedTheme } from 'react-native-unistyles/reanimated';
 
 type SwitchProps = {
   onPress: () => void;
@@ -16,22 +17,23 @@ type SwitchProps = {
 };
 
 const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
-  const { theme } = useUnistyles();
-  const onColor = theme.colors.switch.on;
-  const offColor = theme.colors.switch.off;
+  const theme = useAnimatedTheme();
   const height = useSharedValue(0);
   const width = useSharedValue(0);
   const sharedValue = useSharedValue(value);
+
   useEffect(() => {
     sharedValue.value = value;
   }, [value]);
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
+    const onColor = theme.value.colors.switch.on;
+    const offColor = theme.value.colors.switch.off;
+
     const color = interpolateColor(sharedValue.value, [0, 1], [offColor, onColor]);
-    const colorValue = withTiming(color, { duration });
 
     return {
-      backgroundColor: colorValue,
+      backgroundColor: withTiming(color, { duration }),
       borderRadius: height.value / 2,
     };
   });
@@ -42,11 +44,11 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
       [0, 1],
       [0, width.value - height.value],
     );
-    const translateValue = withTiming(moveValue, { duration });
 
     return {
-      transform: [{ translateX: translateValue }],
+      transform: [{ translateX: withTiming(moveValue, { duration }) }],
       borderRadius: height.value / 2,
+      backgroundColor: theme.value.colors.surface,
     };
   });
 
@@ -59,7 +61,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
         }}
         style={[styles.track, trackAnimatedStyle]}
       >
-        <Animated.View style={[styles.thumb, thumbAnimatedStyle]}></Animated.View>
+        <Animated.View style={[styles.thumb, thumbAnimatedStyle]} />
       </Animated.View>
     </Pressable>
   );
@@ -77,6 +79,5 @@ const styles = StyleSheet.create((theme) => ({
   thumb: {
     height: "100%",
     aspectRatio: 1,
-    backgroundColor: theme.colors.surface,
   },
 }));
