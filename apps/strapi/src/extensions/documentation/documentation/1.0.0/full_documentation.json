@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-05-06T14:24:50.957Z"
+    "x-generation-date": "2026-05-06T22:00:11.081Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -4204,6 +4204,46 @@
           }
         }
       },
+      "IconPickerIconComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "graduation-cap",
+              "book-open",
+              "scroll-text",
+              "info",
+              "music",
+              "calendar",
+              "map-pin",
+              "clock",
+              "users",
+              "trophy",
+              "bell",
+              "file-text",
+              "building",
+              "mic",
+              "library",
+              "coffee",
+              "wifi",
+              "parking",
+              "phone",
+              "mail"
+            ]
+          }
+        }
+      },
       "ContentChipComponent": {
         "type": "object",
         "properties": {
@@ -4228,6 +4268,9 @@
           },
           "content": {
             "type": "string"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconPickerIconComponent"
           }
         }
       },
@@ -4299,46 +4342,6 @@
             "items": {
               "$ref": "#/components/schemas/CalendarEntryCalendarEntryComponent"
             }
-          }
-        }
-      },
-      "IconPickerIconComponent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              }
-            ]
-          },
-          "icon": {
-            "type": "string",
-            "enum": [
-              "graduation-cap",
-              "book-open",
-              "scroll-text",
-              "info",
-              "music",
-              "calendar",
-              "map-pin",
-              "clock",
-              "users",
-              "trophy",
-              "bell",
-              "file-text",
-              "building",
-              "mic",
-              "library",
-              "coffee",
-              "wifi",
-              "parking",
-              "phone",
-              "mail"
-            ]
           }
         }
       },

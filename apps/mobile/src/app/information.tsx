@@ -7,37 +7,10 @@ import { strapiColorToCard } from "@/lib/strapiColors";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
 import type { StaticInformation } from "@repo/types";
 import type { Theme } from "@/styles/themes/theme";
-import {
-  Bell, BookOpen, Building, Calendar, Clock, Coffee,
-  FileText, GraduationCap, Info, Library, MapPin,
-  Mic, Music, ParkingSquare, Phone, Mail, ScrollText,
-  Trophy, Users, Wifi,
-} from "lucide-react-native";
-import { LucideIcon } from "lucide-react-native";
+import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
+import { ICON_MAP } from "@/lib/iconMap";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  "graduation-cap": GraduationCap,
-  "book-open": BookOpen,
-  "scroll-text": ScrollText,
-  "info": Info,
-  "music": Music,
-  "calendar": Calendar,
-  "map-pin": MapPin,
-  "clock": Clock,
-  "users": Users,
-  "trophy": Trophy,
-  "bell": Bell,
-  "file-text": FileText,
-  "building": Building,
-  "mic": Mic,
-  "library": Library,
-  "coffee": Coffee,
-  "wifi": Wifi,
-  "parking": ParkingSquare,
-  "phone": Phone,
-  "mail": Mail,
-};
 
 function getIcon(item: StaticInformation, index: number): LucideIcon {
   const name = item.Icon?.icon;

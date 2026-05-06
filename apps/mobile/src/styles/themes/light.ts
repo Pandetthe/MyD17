@@ -28,7 +28,7 @@ export const lightTheme: Theme = {
       },
       background: {
         main: `linear-gradient(45deg, ${colors.core.extraLight} 0%, ${colors.core.surface} 100%)`,
-        accent: colors.core.light,
+        accent: colors.core.disabled,
       },
     },
     dark: {
@@ -43,7 +43,7 @@ export const lightTheme: Theme = {
       },
     },
     gradients: {
-      settings: [colors.core.surface, colors.core.light],
+      settings: [colors.core.surface, colors.core.disabled],
     },
     red: colorSet(colors.red),
     amber: colorSet(colors.amber),

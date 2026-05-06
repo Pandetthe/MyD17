@@ -88,6 +88,8 @@ export interface ContentChip extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    icon: Schema.Attribute.Component<'icon-picker.icon', false> &
+      Schema.Attribute.Required;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{

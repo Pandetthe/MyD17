@@ -11,6 +11,8 @@ import type {
   PostContentBlock,
 } from "@repo/types";
 import { Clock, Info, MapPin } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
+import { ICON_MAP } from "@/lib/iconMap";
 import { StyleSheet } from "react-native-unistyles";
 
 const LOCATION_LABELS: Record<LocationValue, string> = {
@@ -71,15 +73,18 @@ export function InfoCard({ blocks, dark = false }: Props) {
           dark={dark}
         />
       )}
-      {chipBlocks.map((chip) => (
-        <InfoRow
-          key={chip.id}
-          icon={<Info size={18} color={iconColor} />}
-          label={chip.title ?? ""}
-          value={chip.content ?? ""}
-          dark={dark}
-        />
-      ))}
+      {chipBlocks.map((chip) => {
+        const ChipIcon: LucideIcon = (chip.icon?.icon && ICON_MAP[chip.icon.icon]) ? ICON_MAP[chip.icon.icon] : Info;
+        return (
+          <InfoRow
+            key={chip.id}
+            icon={<ChipIcon size={18} color={iconColor} />}
+            label={chip.title ?? ""}
+            value={chip.content ?? ""}
+            dark={dark}
+          />
+        );
+      })}
     </View>
   );
 }
