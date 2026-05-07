@@ -18,6 +18,7 @@ export function getPostFirstImage(post: Post): string | null {
   if (!image) return null;
   const formats = image.formats as StrapiImageFormats | null;
   const url = formats?.medium?.url ?? image.url;
+  if (!url) return null;
   return strapiUrl(url);
 }
 
@@ -26,5 +27,6 @@ export function getPostHeroImage(post: Post): string | null {
   if (!image) return null;
   const formats = image.formats as StrapiImageFormats | null;
   const url = formats?.large?.url ?? image.url;
+  if (!url) return null;
   return strapiUrl(url);
 }
