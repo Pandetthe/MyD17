@@ -24,17 +24,33 @@ export function ContentRenderer({ blocks, textColor, dark }: Props) {
       {blocks.map((block) => {
         switch (block.__component) {
           case "content.text":
-            return <TextBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
+            return (
+              <TextBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />
+            );
           case "content.section-title":
-            return <SectionTitleBlock key={`${block.__component}-${block.id}`} block={block} color={textColor} />;
+            return (
+              <SectionTitleBlock
+                key={`${block.__component}-${block.id}`}
+                block={block}
+                color={textColor}
+              />
+            );
           case "content.calendar":
-            return <CalendarBlock key={`${block.__component}-${block.id}`} block={block} dark={dark} />;
+            return (
+              <CalendarBlock key={`${block.__component}-${block.id}`} block={block} dark={dark} />
+            );
           case "content.chip":
           case "content.location":
           case "content.event-date-time": {
             if (infoCardRendered) return null;
             infoCardRendered = true;
-            return <InfoCard key="info-card" blocks={blocks.filter((b) => INFO_COMPONENTS.has(b.__component ?? ""))} dark={dark} />;
+            return (
+              <InfoCard
+                key="info-card"
+                blocks={blocks.filter((b) => INFO_COMPONENTS.has(b.__component ?? ""))}
+                dark={dark}
+              />
+            );
           }
           default:
             return null;

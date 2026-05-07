@@ -1,12 +1,13 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import Animated from "react-native-reanimated";
-import { usePressAnimation } from "@/hooks/usePressAnimation";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
-import { colors } from "@/styles/colors";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import type { CardColor } from "@/lib/strapiColors";
+import { colors } from "@/styles/colors";
+import type { AppColor } from "@/styles/colors";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
+import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -16,8 +17,6 @@ type Props = {
   wide?: boolean;
   onPress: () => void;
 };
-
-import type { AppColor } from "@/styles/colors";
 
 const PALETTE: Record<
   CardColor,
@@ -69,7 +68,12 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
 
   return (
-    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={wide ? styles.pressableWide : styles.pressable}>
+    <Pressable
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      style={wide ? styles.pressableWide : styles.pressable}
+    >
       <Animated.View
         style={[
           styles.card,
@@ -78,23 +82,29 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
           animStyle,
         ]}
       >
-        <View style={[styles.ellipseLarge, wide && styles.ellipseLargeWide, { backgroundColor: p.ellipseBg }]} />
+        <View
+          style={[
+            styles.ellipseLarge,
+            wide && styles.ellipseLargeWide,
+            { backgroundColor: p.ellipseBg },
+          ]}
+        />
 
         <View style={styles.iconWrapper}>
           <IconPrimitive icon={icon} bg={p.iconBg} fg={p.iconFg} />
         </View>
 
-        <View style={[styles.arrowButton, wide && styles.arrowButtonWide, { backgroundColor: p.arrowBg }]}>
+        <View
+          style={[
+            styles.arrowButton,
+            wide && styles.arrowButtonWide,
+            { backgroundColor: p.arrowBg },
+          ]}
+        >
           <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
         </View>
 
-        <TextCore
-          variant="h3"
-          weight="bold"
-          color={p.text}
-          numberOfLines={2}
-          style={styles.title}
-        >
+        <TextCore variant="h3" weight="bold" color={p.text} numberOfLines={2} style={styles.title}>
           {title}
         </TextCore>
       </Animated.View>

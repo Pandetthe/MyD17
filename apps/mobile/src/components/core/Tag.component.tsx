@@ -1,7 +1,7 @@
 import { Text, Pressable } from "react-native";
-import Animated from "react-native-reanimated";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { ColorPalette } from "@/styles/themes/theme";
+import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 
 type TagProps = {

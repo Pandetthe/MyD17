@@ -35,7 +35,11 @@ function resolveColors(colorProps: ThemeIconProps | RawIconProps, theme: Theme) 
   return { bg: palette.background.accent, fg: palette.main };
 }
 
-export default function Icon({ icon: IconComponent, hasBackground = true, ...colorProps }: IconProps) {
+export default function Icon({
+  icon: IconComponent,
+  hasBackground = true,
+  ...colorProps
+}: IconProps) {
   const { theme } = useUnistyles();
   const { bg, fg } = resolveColors(colorProps, theme);
 

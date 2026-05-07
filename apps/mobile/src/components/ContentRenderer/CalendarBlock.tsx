@@ -43,18 +43,21 @@ function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean
       <TextCore variant="h3" weight="semiBold" color={textColor}>
         {dayLabel}
       </TextCore>
-      <TextCore
-        variant="h3"
-        weight="semiBold"
-        color={isClosed ? closedColor : textColor}
-      >
+      <TextCore variant="h3" weight="semiBold" color={isClosed ? closedColor : textColor}>
         {isClosed ? "ZAMKNIĘTE" : timeRange}
       </TextCore>
     </View>
   );
 }
 
-export function CalendarBlock({ block, dark = false }: { block: ContentCalendar; color?: ColorValue; dark?: boolean }) {
+export function CalendarBlock({
+  block,
+  dark = false,
+}: {
+  block: ContentCalendar;
+  color?: ColorValue;
+  dark?: boolean;
+}) {
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
   return (

@@ -65,5 +65,9 @@ export const colors = {
   },
 } as const;
 
-type NestedStringValues<T> = T extends string ? T : T extends object ? NestedStringValues<T[keyof T]> : never;
+type NestedStringValues<T> = T extends string
+  ? T
+  : T extends object
+    ? NestedStringValues<T[keyof T]>
+    : never;
 export type AppColor = NestedStringValues<typeof colors>;

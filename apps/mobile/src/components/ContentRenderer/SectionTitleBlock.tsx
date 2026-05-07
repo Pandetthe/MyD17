@@ -1,9 +1,15 @@
 import React from "react";
+import type { ColorValue } from "react-native";
 import TextCore from "@/components/core/Text.component";
 import type { ContentSectionTitle } from "@repo/types";
-import type { ColorValue } from "react-native";
 
-export function SectionTitleBlock({ block, color }: { block: ContentSectionTitle; color?: ColorValue }) {
+export function SectionTitleBlock({
+  block,
+  color,
+}: {
+  block: ContentSectionTitle;
+  color?: ColorValue;
+}) {
   return (
     <TextCore variant="h1" weight="bold" color={color}>
       {block.content}

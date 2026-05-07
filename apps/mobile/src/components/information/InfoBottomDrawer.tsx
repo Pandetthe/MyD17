@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { ContentRenderer } from "@/components/ContentRenderer";
+import { colors } from "@/styles/colors";
+import type { Theme } from "@/styles/themes/theme";
+import type { PostContentBlock, StaticInformation } from "@repo/types";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -11,10 +15,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { ContentRenderer } from "@/components/ContentRenderer";
-import { colors } from "@/styles/colors";
-import type { Theme } from "@/styles/themes/theme";
-import type { PostContentBlock, StaticInformation } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -48,13 +48,13 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
     translateY.value = withTiming(screenHeight, CLOSE_TIMING, (finished) => {
       if (finished) runOnJS(finishClose)();
     });
-  }, [screenHeight, finishClose]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [screenHeight, finishClose]);
 
   useEffect(() => {
     if (!visible && !modalVisible) return;
     if (visible) open();
     else handleClose();
-  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   const panGesture = Gesture.Pan()
     .activeOffsetY(5)

@@ -1,10 +1,9 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import Animated from "react-native-reanimated";
-import { usePressAnimation } from "@/hooks/usePressAnimation";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { strapiUrl } from "@/lib/apiClient";
 import { PostPlaceholder } from "@/lib/images";
 import { strapiColorToPalette } from "@/lib/strapiColors";
@@ -13,6 +12,7 @@ import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Heart, Share2 } from "lucide-react-native";
+import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
@@ -40,100 +40,100 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   return (
     <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Animated.View style={[styles.wrapper, animStyle]}>
-      <LinearGradient
-        colors={["#F2F9FF", "#ECF6FF"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.card}
-      >
-        {/* Author row */}
-        <View style={styles.authorRow}>
-          <Image
-            source={avatarUrl ? { uri: avatarUrl } : null}
-            style={styles.avatar}
-            contentFit="cover"
-          />
-          <TextCore
-            variant="label"
-            color={theme.colors.dark.main}
-            numberOfLines={1}
-            style={styles.authorName}
-          >
-            {author?.username ?? ""}
+        <LinearGradient
+          colors={["#F2F9FF", "#ECF6FF"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.card}
+        >
+          {/* Author row */}
+          <View style={styles.authorRow}>
+            <Image
+              source={avatarUrl ? { uri: avatarUrl } : null}
+              style={styles.avatar}
+              contentFit="cover"
+            />
+            <TextCore
+              variant="label"
+              color={theme.colors.dark.main}
+              numberOfLines={1}
+              style={styles.authorName}
+            >
+              {author?.username ?? ""}
+            </TextCore>
+            <TextCore variant="label" color={theme.colors.primary.main} style={styles.date}>
+              {dateLabel}
+            </TextCore>
+          </View>
+
+          {/* Image + tags overlay */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={imageUrl ? { uri: imageUrl } : PostPlaceholder}
+              style={styles.image}
+              contentFit="cover"
+            />
+
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.55)"]}
+              locations={[0.538, 1]}
+              style={styles.imageDarkOverlay}
+              pointerEvents="none"
+            />
+
+            <LinearGradient
+              colors={["rgba(236,246,255,0)", "#ecf6ff"]}
+              style={styles.imageGradient}
+              pointerEvents="none"
+            />
+
+            {(post.tags ?? []).length > 0 && (
+              <View style={styles.tagsOverlay}>
+                {((post.tags ?? []) as Tag[]).map((tag) => (
+                  <TagComponent
+                    key={tag.id}
+                    text={`#${tag.title ?? ""}`}
+                    color={strapiColorToPalette(tag.color?.color)}
+                    onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Decorative ellipse */}
+          <View style={styles.decorEllipse} />
+
+          {/* Title */}
+          <TextCore variant="h2" numberOfLines={2} style={styles.title}>
+            {post.title}
           </TextCore>
-          <TextCore variant="label" color={theme.colors.primary.main} style={styles.date}>
-            {dateLabel}
-          </TextCore>
-        </View>
 
-        {/* Image + tags overlay */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={imageUrl ? { uri: imageUrl } : PostPlaceholder}
-            style={styles.image}
-            contentFit="cover"
-          />
-
-          <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.55)"]}
-            locations={[0.538, 1]}
-            style={styles.imageDarkOverlay}
-            pointerEvents="none"
-          />
-
-          <LinearGradient
-            colors={["rgba(236,246,255,0)", "#ecf6ff"]}
-            style={styles.imageGradient}
-            pointerEvents="none"
-          />
-
-          {(post.tags ?? []).length > 0 && (
-            <View style={styles.tagsOverlay}>
-              {((post.tags ?? []) as Tag[]).map((tag) => (
-                <TagComponent
-                  key={tag.id}
-                  text={`#${tag.title ?? ""}`}
-                  color={strapiColorToPalette(tag.color?.color)}
-                  onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
-                />
-              ))}
-            </View>
+          {/* Description */}
+          {description.length > 0 && (
+            <TextCore
+              variant="body"
+              color={theme.colors.primary.text.secondary}
+              numberOfLines={3}
+              style={styles.description}
+            >
+              {description}
+            </TextCore>
           )}
-        </View>
 
-        {/* Decorative ellipse */}
-        <View style={styles.decorEllipse} />
-
-        {/* Title */}
-        <TextCore variant="h2" numberOfLines={2} style={styles.title}>
-          {post.title}
-        </TextCore>
-
-        {/* Description */}
-        {description.length > 0 && (
-          <TextCore
-            variant="body"
-            color={theme.colors.primary.text.secondary}
-            numberOfLines={3}
-            style={styles.description}
-          >
-            {description}
-          </TextCore>
-        )}
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Pressable style={styles.iconButton} hitSlop={8}>
-            <Share2 size={theme.size.md} color={theme.colors.primary.main} />
-          </Pressable>
-          <Pressable style={styles.iconButton} hitSlop={8}>
-            <Heart size={theme.size.md} color={theme.colors.primary.main} />
-          </Pressable>
-          <TextCore variant="h3" color={theme.colors.primary.main} weight="bold">
-            {post.likesCount}
-          </TextCore>
-        </View>
-      </LinearGradient>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Pressable style={styles.iconButton} hitSlop={8}>
+              <Share2 size={theme.size.md} color={theme.colors.primary.main} />
+            </Pressable>
+            <Pressable style={styles.iconButton} hitSlop={8}>
+              <Heart size={theme.size.md} color={theme.colors.primary.main} />
+            </Pressable>
+            <TextCore variant="h3" color={theme.colors.primary.main} weight="bold">
+              {post.likesCount}
+            </TextCore>
+          </View>
+        </LinearGradient>
       </Animated.View>
     </Pressable>
   );

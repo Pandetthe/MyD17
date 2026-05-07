@@ -3,13 +3,13 @@ import { ActivityIndicator, RefreshControl, ScrollView, View, Pressable } from "
 import TextCore from "@/components/core/Text.component";
 import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
 import { StaticInfoCard } from "@/components/information/StaticInfoCard";
-import { strapiColorToCard } from "@/lib/strapiColors";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
-import type { StaticInformation } from "@repo/types";
+import { ICON_MAP } from "@/lib/iconMap";
+import { strapiColorToCard } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
+import type { StaticInformation } from "@repo/types";
 import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { ICON_MAP } from "@/lib/iconMap";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 function getIcon(item: StaticInformation, index: number): LucideIcon {
@@ -33,7 +33,12 @@ export default function Information() {
 
   const items = (data?.staticInformation ?? []) as StaticInformation[];
 
-  const rows: Array<{ key: string; wide: boolean; items: StaticInformation[]; startIndex: number }> = [];
+  const rows: Array<{
+    key: string;
+    wide: boolean;
+    items: StaticInformation[];
+    startIndex: number;
+  }> = [];
   let i = 0;
   while (i < items.length) {
     const item = items[i];
@@ -46,7 +51,12 @@ export default function Information() {
         pair.push(items[i + 1]);
         i++;
       }
-      rows.push({ key: item.documentId ?? String(i), wide: false, items: pair, startIndex: i - pair.length + 1 });
+      rows.push({
+        key: item.documentId ?? String(i),
+        wide: false,
+        items: pair,
+        startIndex: i - pair.length + 1,
+      });
       i++;
     }
   }
@@ -74,9 +84,7 @@ export default function Information() {
         <ScrollView
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
         >
           {rows.map((row) =>
             row.wide ? (
@@ -100,7 +108,7 @@ export default function Information() {
                   />
                 ))}
               </View>
-            )
+            ),
           )}
         </ScrollView>
       )}

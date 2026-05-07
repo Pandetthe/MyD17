@@ -9,8 +9,12 @@ export function usePressAnimation(targetScale = 0.97) {
     transform: [{ scale: scale.value }],
   }));
 
-  const onPressIn = () => { scale.value = withSpring(targetScale, SPRING); };
-  const onPressOut = () => { scale.value = withSpring(1, SPRING); };
+  const onPressIn = () => {
+    scale.value = withSpring(targetScale, SPRING);
+  };
+  const onPressOut = () => {
+    scale.value = withSpring(1, SPRING);
+  };
 
   return { animStyle, onPressIn, onPressOut };
 }

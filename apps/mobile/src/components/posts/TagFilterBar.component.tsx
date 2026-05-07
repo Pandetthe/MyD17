@@ -1,12 +1,12 @@
 import React from "react";
 import { ScrollView, View, Pressable } from "react-native";
-import Animated from "react-native-reanimated";
-import { usePressAnimation } from "@/hooks/usePressAnimation";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { strapiColorToPalette } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
+import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 function ClearPill({ onPress }: { onPress: () => void }) {
@@ -29,7 +29,6 @@ type Props = {
   onSelect: (id: number | string) => void;
   onClear: () => void;
 };
-
 
 export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props) {
   const hasSelection = selectedTagIds.length > 0;

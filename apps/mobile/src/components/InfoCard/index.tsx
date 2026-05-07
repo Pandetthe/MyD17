@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
+import { ICON_MAP } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type {
@@ -12,7 +13,6 @@ import type {
 } from "@repo/types";
 import { Clock, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { ICON_MAP } from "@/lib/iconMap";
 import { StyleSheet } from "react-native-unistyles";
 
 const LOCATION_LABELS: Record<LocationValue, string> = {
@@ -74,7 +74,8 @@ export function InfoCard({ blocks, dark = false }: Props) {
         />
       )}
       {chipBlocks.map((chip) => {
-        const ChipIcon: LucideIcon = (chip.icon?.icon && ICON_MAP[chip.icon.icon]) ? ICON_MAP[chip.icon.icon] : Info;
+        const ChipIcon: LucideIcon =
+          chip.icon?.icon && ICON_MAP[chip.icon.icon] ? ICON_MAP[chip.icon.icon] : Info;
         return (
           <InfoRow
             key={chip.id}
