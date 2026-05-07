@@ -37,9 +37,9 @@ export default function DrawerContent() {
   const navigate = (href: Href) => router.push(href);
 
   const topItems: { icon: LucideIcon; label: string; href: Href }[] = [
-    { icon: HomeIcon, label: "HOME", href: "/" },
-    { icon: MapIcon, label: "D17 MAP", href: "/d17map" },
-    { icon: InfoIcon, label: "INFORMATION", href: "/information" },
+    { icon: HomeIcon, label: "STRONA GŁÓWNA", href: "/" },
+    { icon: MapIcon, label: "MAPA D17", href: "/d17map" },
+    { icon: InfoIcon, label: "INFORMACJE", href: "/information" },
   ];
 
   return (
@@ -69,7 +69,7 @@ export default function DrawerContent() {
       >
         <NavItem
           icon={SettingsIcon}
-          label="SETTINGS"
+          label="USTAWIENIA"
           active={pathname === "/settings"}
           onPress={() => navigate("/settings")}
         />

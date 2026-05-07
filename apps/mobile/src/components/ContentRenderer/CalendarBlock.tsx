@@ -48,7 +48,7 @@ function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean
         weight="semiBold"
         color={isClosed ? closedColor : textColor}
       >
-        {isClosed ? "CLOSED" : timeRange}
+        {isClosed ? "ZAMKNIĘTE" : timeRange}
       </TextCore>
     </View>
   );
