@@ -9,6 +9,7 @@ import type { AppColor } from "@/styles/colors";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
+import type { Theme } from "@/styles/themes/theme";
 
 type Props = {
   title: string;
@@ -112,7 +113,7 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create((theme: Theme) => ({
   pressable: {
     flex: 1,
     maxWidth: "50%",
@@ -124,8 +125,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 150,
     borderWidth: 0.75,
-    borderRadius: 24,
-    padding: 16,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.md,
     overflow: "hidden",
     shadowOffset: { width: 7.5, height: 7.5 },
     shadowOpacity: 1,
@@ -149,18 +150,18 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     position: "absolute",
-    top: 16,
+    top: theme.spacing.md,
     left: 18,
   },
   arrowButton: {
     width: 27,
     height: 27,
-    borderRadius: 14,
+    borderRadius: theme.borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
     top: 21,
-    right: 24,
+    right: theme.spacing.lg,
   },
   arrowButtonWide: {
     right: 17,
@@ -170,6 +171,6 @@ const styles = StyleSheet.create({
     bottom: 14,
     left: 18,
     right: 54,
-    lineHeight: 20,
+    lineHeight: theme.size.md,
   },
-});
+}));
