@@ -16,7 +16,7 @@ function ClearPill({ onPress }: { onPress: () => void }) {
     <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Animated.View style={[styles.clearPill, animStyle]}>
         <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
-          Clear filters
+          Wyczyść
         </TextCore>
       </Animated.View>
     </Pressable>
