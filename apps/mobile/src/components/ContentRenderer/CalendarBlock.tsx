@@ -1,5 +1,5 @@
 import React from "react";
-import { View, type ColorValue } from "react-native";
+import { View } from "react-native";
 import TextCore from "@/components/core/Text.component";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
@@ -55,7 +55,6 @@ export function CalendarBlock({
   dark = false,
 }: {
   block: ContentCalendar;
-  color?: ColorValue;
   dark?: boolean;
 }) {
   const entries = block.entries ?? [];
