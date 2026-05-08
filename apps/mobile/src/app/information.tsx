@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, View, Pressable } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
+import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
 import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
 import { StaticInfoCard } from "@/components/information/StaticInfoCard";
@@ -12,27 +13,7 @@ import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-function getIcon(item: StaticInformation, index: number): LucideIcon {
-  const name = item.Icon?.icon;
-  if (name && ICON_MAP[name]) return ICON_MAP[name];
-  const fallback: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
-  return fallback[index % fallback.length];
-}
-
-export default function Information() {
-  const { theme } = useUnistyles();
-  const { data, isLoading, isError, refetch } = useInformationPage();
-  const [selectedItem, setSelectedItem] = useState<StaticInformation | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await refetch();
-    setIsRefreshing(false);
-  }, [refetch]);
-
-  const items = (data?.staticInformation ?? []) as StaticInformation[];
-
+function buildRows(items: StaticInformation[]) {
   const rows: Array<{
     key: string;
     wide: boolean;
@@ -60,6 +41,33 @@ export default function Information() {
       i++;
     }
   }
+  return rows;
+}
+
+function getIcon(item: StaticInformation, index: number): LucideIcon {
+  const name = item.Icon?.icon;
+  if (name && ICON_MAP[name]) return ICON_MAP[name];
+  const fallback: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
+  return fallback[index % fallback.length];
+}
+
+export default function Information() {
+  const { theme } = useUnistyles();
+  const { data, isLoading, isError, refetch } = useInformationPage();
+  const [selectedItem, setSelectedItem] = useState<StaticInformation | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  }, [refetch]);
+
+  const items = useMemo(
+    () => (data?.staticInformation ?? []) as StaticInformation[],
+    [data],
+  );
+  const rows = useMemo(() => buildRows(items), [items]);
 
   if (isError) {
     return (
@@ -67,11 +75,7 @@ export default function Information() {
         <TextCore variant="body" color={theme.colors.primary.text.secondary}>
           Nie udało się załadować informacji.
         </TextCore>
-        <Pressable onPress={() => refetch()}>
-          <TextCore variant="label" color={theme.colors.primary.main}>
-            Spróbuj ponownie
-          </TextCore>
-        </Pressable>
+        <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
       </View>
     );
   }
