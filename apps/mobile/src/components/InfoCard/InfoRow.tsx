@@ -1,25 +1,29 @@
 import React from "react";
 import { View } from "react-native";
 import TextCore from "@/components/core/Text.component";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
   icon: React.ReactNode;
   label: string;
   value: string;
+  dark?: boolean;
 };
 
-export function InfoRow({ icon, label, value }: Props) {
-  const { theme } = useUnistyles();
+export function InfoRow({ icon, label, value, dark = false }: Props) {
+  const labelColor = dark ? colors.amber.main : colors.core.main;
+  const valueColor = dark ? colors.white : colors.core.dark;
+
   return (
     <View style={styles.row}>
       <View style={styles.iconContainer}>{icon}</View>
       <View style={styles.textColumn}>
-        <TextCore variant="label" color={theme.colors.primary.main} style={styles.label}>
+        <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}
         </TextCore>
-        <TextCore variant="h3" color={theme.colors.dark.main} weight="medium">
+        <TextCore variant="h3" color={valueColor} weight="medium">
           {value}
         </TextCore>
       </View>
@@ -37,7 +41,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 37,
     height: 37,
     borderRadius: theme.borderRadius.sm,
-    backgroundColor: theme.colors.primary.background.accent,
+    backgroundColor: colors.core.extraLight,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,

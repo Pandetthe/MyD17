@@ -2,9 +2,26 @@ import React from "react";
 import { ScrollView, View, Pressable } from "react-native";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
-import type { Theme, ColorPalette } from "@/styles/themes/theme";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
+import { strapiColorToPalette } from "@/lib/strapiColors";
+import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
+import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
+
+function ClearPill({ onPress }: { onPress: () => void }) {
+  const { theme } = useUnistyles();
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
+  return (
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.clearPill, animStyle]}>
+        <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
+          Wyczyść
+        </TextCore>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 type Props = {
   tags: PostTag[];
@@ -13,32 +30,7 @@ type Props = {
   onClear: () => void;
 };
 
-// Map Strapi color names to Theme color palette
-function mapTagColor(colorName?: string): ColorPalette {
-  const map: Record<string, ColorPalette> = {
-    red: "red",
-    rose: "red",
-    amber: "amber",
-    yellow: "amber",
-    orange: "amber",
-    green: "green",
-    emerald: "green",
-    lime: "green",
-    teal: "teal",
-    cyan: "teal",
-    blue: "primary",
-    sky: "primary",
-    indigo: "purple",
-    violet: "purple",
-    purple: "purple",
-    fuchsia: "pink",
-    pink: "pink",
-  };
-  return map[colorName ?? ""] ?? "primary";
-}
-
 export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props) {
-  const { theme } = useUnistyles();
   const hasSelection = selectedTagIds.length > 0;
 
   return (
@@ -48,13 +40,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
       style={styles.scrollView}
       contentContainerStyle={styles.container}
     >
-      {hasSelection && (
-        <Pressable style={styles.clearPill} onPress={onClear}>
-          <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
-            Clear filters
-          </TextCore>
-        </Pressable>
-      )}
+      {hasSelection && <ClearPill onPress={onClear} />}
 
       {tags.map((tag) => {
         const tagId = tag.id as number;
@@ -64,7 +50,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
           <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
             <Tag
               text={`#${tag.title}`}
-              color={mapTagColor(tag.color?.color)}
+              color={strapiColorToPalette(tag.color?.color)}
               onPress={tag.id != null ? () => onSelect(tagId) : undefined}
             />
           </View>
@@ -77,7 +63,6 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
 const styles = StyleSheet.create((theme: Theme) => ({
   scrollView: {
     width: "100%",
-    height: 40,
     backgroundColor: "transparent",
   },
   container: {

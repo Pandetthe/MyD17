@@ -10,6 +10,11 @@
       "type": "text",
       "minLength": 1,
       "required": true
+    },
+    "isHeader": {
+      "type": "boolean",
+      "required": true,
+      "default": false
     }
   },
   "config": {}

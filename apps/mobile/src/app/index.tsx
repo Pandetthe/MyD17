@@ -74,9 +74,9 @@ export default function PostsScreen() {
         <StatusBar style="dark" />
         <View style={styles.centered}>
           <TextCore variant="body" color={theme.colors.primary.text.secondary}>
-            Failed to load posts.
+            Nie udało się załadować postów.
           </TextCore>
-          <Button text="Try again" color="primary" onPress={() => refetch()} />
+          <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
         </View>
       </View>
     );
@@ -124,7 +124,7 @@ export default function PostsScreen() {
             color={theme.colors.primary.text.secondary}
             style={styles.emptyText}
           >
-            No posts match the selected filters.
+            Brak postów pasujących do wybranych filtrów.
           </TextCore>
         }
         ListFooterComponent={

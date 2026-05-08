@@ -88,6 +88,8 @@ export interface ContentChip extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    icon: Schema.Attribute.Component<'icon-picker.icon', false> &
+      Schema.Attribute.Required;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -146,6 +148,42 @@ export interface ContentText extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    isHeader: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface IconPickerIcon extends Struct.ComponentSchema {
+  collectionName: 'components_icon_picker_icons';
+  info: {
+    displayName: 'Icon';
+  };
+  attributes: {
+    icon: Schema.Attribute.Enumeration<
+      [
+        'graduation-cap',
+        'book-open',
+        'scroll-text',
+        'info',
+        'music',
+        'calendar',
+        'map-pin',
+        'clock',
+        'users',
+        'trophy',
+        'bell',
+        'file-text',
+        'building',
+        'mic',
+        'library',
+        'coffee',
+        'wifi',
+        'parking',
+        'phone',
+        'mail',
+      ]
+    >;
   };
 }
 
@@ -160,6 +198,7 @@ declare module '@strapi/strapi' {
       'content.location': ContentLocation;
       'content.section-title': ContentSectionTitle;
       'content.text': ContentText;
+      'icon-picker.icon': IconPickerIcon;
     }
   }
 }

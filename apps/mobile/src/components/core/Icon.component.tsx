@@ -1,41 +1,55 @@
 import React from "react";
 import { View } from "react-native";
+import { AppColor } from "@/styles/colors";
 import { ColorPalette, Theme } from "@/styles/themes/theme";
 import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-type IconProps = {
-  icon: LucideIcon;
+type ThemeIconProps = {
   color?: ColorPalette;
-  hasBackground?: boolean;
+  bg?: never;
+  fg?: never;
 };
 
+type RawIconProps = {
+  color?: never;
+  bg: AppColor;
+  fg: AppColor;
+};
+
+type IconProps = { icon: LucideIcon; hasBackground?: boolean } & (ThemeIconProps | RawIconProps);
+
 const styles = StyleSheet.create((theme: Theme) => ({
-  container: (color: ColorPalette) => ({
+  container: {
     height: theme.size.xl,
     width: theme.size.xl,
     borderRadius: theme.borderRadius.sm,
-    backgroundColor: theme.colors[color].background.accent,
     alignItems: "center",
     justifyContent: "center",
-  }),
+  },
 }));
 
-export default function Icon({ icon, color = "primary", hasBackground = true }: IconProps) {
-  const { theme } = useUnistyles();
+function resolveColors(colorProps: ThemeIconProps | RawIconProps, theme: Theme) {
+  if (colorProps.bg) return { bg: colorProps.bg, fg: colorProps.fg };
+  const palette = theme.colors[colorProps.color ?? "primary"];
+  return { bg: palette.background.accent, fg: palette.main };
+}
 
-  const IconComponent = icon;
-  const IconEl = ({ size }: { size: number }) => {
-    return <IconComponent color={theme.colors[color].main} size={size} />;
-  };
+export default function Icon({
+  icon: IconComponent,
+  hasBackground = true,
+  ...colorProps
+}: IconProps) {
+  const { theme } = useUnistyles();
+  const { bg, fg } = resolveColors(colorProps, theme);
 
   if (!hasBackground) {
-    return <IconEl size={theme.size.lg} />;
+    return <IconComponent color={fg} size={theme.size.lg} />;
   }
 
   return (
-    <View style={styles.container(color)}>
-      <IconEl size={theme.size.md} />
+    <View style={[styles.container, { backgroundColor: bg }]}>
+      <IconComponent color={fg} size={theme.size.md} />
     </View>
   );
 }

@@ -7,11 +7,12 @@ function postUrl(documentId: string) {
   return (
     `/api/posts/${documentId}?` +
     "populate[images]=true&" +
+    "populate[author][populate][avatar]=true&" +
     "populate[tags][populate][color]=true&" +
     "populate[content][on][content.text]=true&" +
     "populate[content][on][content.location]=true&" +
     "populate[content][on][content.event-date-time]=true&" +
-    "populate[content][on][content.chip]=true&" +
+    "populate[content][on][content.chip][populate][icon]=true&" +
     "populate[content][on][content.section-title]=true&" +
     "populate[content][on][content.calendar][populate][entries]=true"
   );

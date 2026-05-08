@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
-import { InfoCard } from "@/components/InfoCard";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import type { Theme } from "@/styles/themes/theme";
-import type { Post, Tag, ContentLocation, ContentEventDateTime, ContentChip } from "@repo/types";
+import type { Post, Tag } from "@repo/types";
 import { useRouter } from "expo-router";
 import { Heart, Share2, CalendarPlus } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -24,13 +22,6 @@ export function PostDetail({ post }: Props) {
   const description = getPostDescription(post);
   const content = post.content ?? [];
   const tags = post.tags ?? [];
-
-  const hasInfoBlocks = content.some(
-    (b: any): b is ContentLocation | ContentEventDateTime | ContentChip =>
-      b.__component === "content.location" ||
-      b.__component === "content.event-date-time" ||
-      b.__component === "content.chip",
-  );
 
   return (
     <ScrollView
@@ -69,8 +60,6 @@ export function PostDetail({ post }: Props) {
             </TextCore>
           </View>
         </View>
-
-        {hasInfoBlocks && <InfoCard blocks={content} />}
 
         <ContentRenderer blocks={content} />
       </View>

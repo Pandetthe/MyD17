@@ -28,6 +28,19 @@ export type StrapiSingleResponse<T> = {
 export type Post = Schema["Post"];
 export type Tag = Schema["Tag"];
 
+export type PostAuthor = {
+  id?: string | number;
+  documentId?: string;
+  username?: string;
+  avatar?: {
+    url?: string;
+    width?: number;
+    height?: number;
+  };
+};
+export type StaticInformation = Schema["StaticInformation"];
+export type InformationPage = Schema["InformationPage"];
+
 export type ContentText = Schema["ContentTextComponent"];
 export type ContentSectionTitle = Schema["ContentSectionTitleComponent"];
 export type ContentChip = Schema["ContentChipComponent"];
