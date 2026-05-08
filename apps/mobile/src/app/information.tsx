@@ -63,10 +63,7 @@ export default function Information() {
     setIsRefreshing(false);
   }, [refetch]);
 
-  const items = useMemo(
-    () => (data?.staticInformation ?? []) as StaticInformation[],
-    [data],
-  );
+  const items = useMemo(() => (data?.staticInformation ?? []) as StaticInformation[], [data]);
   const rows = useMemo(() => buildRows(items), [items]);
 
   if (isError) {

@@ -6,10 +6,10 @@ import { usePressAnimation } from "@/hooks/usePressAnimation";
 import type { CardColor } from "@/lib/strapiColors";
 import { colors } from "@/styles/colors";
 import type { AppColor } from "@/styles/colors";
+import type { Theme } from "@/styles/themes/theme";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
-import type { Theme } from "@/styles/themes/theme";
 
 type Props = {
   title: string;

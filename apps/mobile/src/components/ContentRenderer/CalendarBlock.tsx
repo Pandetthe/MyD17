@@ -50,13 +50,7 @@ function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean
   );
 }
 
-export function CalendarBlock({
-  block,
-  dark = false,
-}: {
-  block: ContentCalendar;
-  dark?: boolean;
-}) {
+export function CalendarBlock({ block, dark = false }: { block: ContentCalendar; dark?: boolean }) {
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
   return (
