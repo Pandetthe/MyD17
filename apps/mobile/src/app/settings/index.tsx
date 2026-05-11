@@ -20,7 +20,7 @@ export default function Settings() {
     }
   };
   const openNotifications = () => {
-    // @ts-ignore
+    // @ts-expect-error
     navigation.navigate("notifications");
   };
   const openLanguage = () => {
