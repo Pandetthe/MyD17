@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "io.github.stawex.myd17"
+      "package": "io.github.stawex.myd17",
+      "versionCode": 1000000
     },
     "web": {
       "output": "static",

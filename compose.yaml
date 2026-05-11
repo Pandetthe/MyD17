@@ -2,7 +2,7 @@ services:
   database:
     container_name: myd17
     platform: linux/amd64
-    image: postgres:latest
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -25,8 +25,7 @@ services:
   strapi:
     container_name: strapi
     profiles: ["prod"]
-    build: ./apps/strapi
-    image: strapi:latest
+    image: ${STRAPI_IMAGE:-ghcr.io/stawex-team/myd17/strapi:latest}
     restart: unless-stopped
     env_file:
       - path: .env
@@ -40,12 +39,13 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       APP_KEYS: ${APP_KEYS}
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: production
     volumes:
-      - ./apps/strapi/config:/opt/app/config
-      - ./apps/strapi/src:/opt/app/src
-      - ./apps/strapi/public/uploads:/opt/app/public/uploads
+      - strapi_uploads:/opt/app/apps/strapi/public/uploads
     ports:
       - "1337:1337"
     networks:
@@ -56,6 +56,8 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  strapi_uploads:
     driver: local
 
 networks:
