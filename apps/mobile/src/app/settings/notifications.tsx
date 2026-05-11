@@ -43,19 +43,19 @@ export default function Notifications() {
         text="Wydarzenia"
         onPress={() => toggle("events")}
         value={notifications.events ? 1 : 0}
-        color={"green"}
+        color="green"
       />
       <Notification
         text="Osiągnięcia"
         onPress={() => toggle("achievements")}
         value={notifications.achievements ? 1 : 0}
-        color={"amber"}
+        color="amber"
       />
       <Notification
         text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE"
         onPress={() => toggle("longTag")}
         value={notifications.longTag ? 1 : 0}
-        color={"purple"}
+        color="purple"
       />
     </ScrollView>
   );
