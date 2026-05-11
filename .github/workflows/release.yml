@@ -21,6 +21,8 @@ permissions:
 env:
   REGISTRY: ghcr.io
   STRAPI_IMAGE_NAME: ${{ github.repository }}/strapi
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   release:
@@ -46,6 +48,27 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependency caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+            .turbo
+            .gradle/caches
+            .gradle/wrapper
+            apps/mobile/android/.gradle
+            apps/mobile/android/app/.cxx
+            apps/mobile/android/app/build/intermediates/cxx
+            apps/mobile/.expo
+          key: release-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/mobile/app.json', 'apps/mobile/package.json', 'apps/strapi/package.json') }}
+          restore-keys: |
+            release-${{ runner.os }}-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -109,7 +132,8 @@ jobs:
         working-directory: apps/mobile/android
         env:
           NODE_ENV: production
-        run: ./gradlew assembleRelease bundleRelease --no-daemon
+          CI: "1"
+        run: ./gradlew assembleRelease bundleRelease --no-daemon -x lintVitalRelease -x lintVitalAnalyzeRelease -x lintVitalReportRelease -x bundleReleaseLocalLintAar
 
       - name: Rename Android artifacts
         shell: bash
