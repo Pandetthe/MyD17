@@ -1,7 +1,6 @@
 import "@/styles/unistyles";
 import React, { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
-import "@/styles/unistyles";
 import DrawerContent from "@/components/core/DrawerContent.component";
 import Header from "@/components/core/Header.component";
 import { QueryProvider } from "@/providers/QueryProvider";

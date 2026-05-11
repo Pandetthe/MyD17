@@ -14,7 +14,6 @@ export default {
     "^@/styles/unistyles$",
     "^react$",
     "^react-native$",
-    "^@/styles/unistyles$",
     "^@/assets/(.*)$",
     "^@/(.*)$",
     "^[./]",

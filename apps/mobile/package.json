@@ -58,6 +58,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.2.0",
     "@repo/types": "workspace:*",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/jest": "^29.5.3",
