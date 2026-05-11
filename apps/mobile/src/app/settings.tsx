@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
-import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
+import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Settings() {
+  const navigation = useNavigation();
+
   const [darkMode, setDarkMode] = useState(0);
-  const [notifications, setNotifications] = useState(0);
 
   const darkModeClick = () => {
     setDarkMode(1 - darkMode);
@@ -17,8 +19,9 @@ export default function Settings() {
       UnistylesRuntime.setTheme("dark");
     }
   };
-  const notificationsClick = () => {
-    setNotifications(1 - notifications);
+  const openNotifications = () => {
+    // @ts-ignore
+    navigation.navigate("notifications");
   };
   const openLanguage = () => {
     alert("Languages"); // Placeholder
@@ -36,12 +39,7 @@ export default function Settings() {
   return (
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Dark Mode" onPress={darkModeClick} value={darkMode} />
-      <Setting
-        icon={notifications === 1 ? BellRingIcon : BellIcon}
-        text="Enable notifications"
-        onPress={notificationsClick}
-        value={notifications}
-      />
+      <Setting icon={BellRingIcon} text="Notifications" onPress={openNotifications} />
       <Setting icon={LanguagesIcon} text="Language" onPress={openLanguage} />
       <Setting icon={InfoIcon} text="Manage subscriptions" onPress={openSubscriptions} />
     </View>
