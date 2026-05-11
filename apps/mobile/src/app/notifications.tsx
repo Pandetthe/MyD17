@@ -5,21 +5,37 @@ import { Theme } from "@/styles/themes/theme";
 import { StyleSheet } from "react-native-unistyles";
 
 export default function Notifications() {
-  const [events, setEvents] = useState(0);
-  const [achievements, setAchievements] = useState(0)
+  const [notifications, setNotifications] = useState({
+    events: false,
+    achievements: false,
+    longTag: false,
+  });
 
-  const eventsClick = () => {
-    setEvents(1 - events);
-  }
+  const toggle = (key: keyof typeof notifications) => {
+    setNotifications(prev => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
-  const achievementsClick = () => {
-    setAchievements(1 - achievements);
-  }
+  const toggleAll = () => {
+    const allOn = Object.values(notifications).every(Boolean);
+
+    const nextValue = !allOn;
+
+    setNotifications({
+      events: nextValue,
+      achievements: nextValue,
+      longTag: nextValue,
+    });
+  };
 
   return (
     <View style={styles.container}>
-      <Notification text="Wydarzenia" onPress={eventsClick} value={events} color={"green"}/>
-      <Notification text="Osiągnięcia" onPress={achievementsClick} value={achievements} color={"amber"}/>
+      <Notification text="Wszystkie" onPress={() => toggleAll()} value={Object.values(notifications).every(Boolean) ? 1 : 0} color = "red" />
+      <Notification text="Wydarzenia" onPress={() => toggle("events")} value={notifications.events ? 1 : 0} color={"green"}/>
+      <Notification text="Osiągnięcia" onPress={() => toggle("achievements")} value={notifications.achievements ? 1 : 0} color={"amber"}/>
+      <Notification text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" onPress={() => toggle("longTag")} value={notifications.longTag ? 1 : 0} color={"purple"}/>
     </View>
   );
 }
