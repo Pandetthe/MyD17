@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
+import { useNavigation } from "@react-navigation/native";
 import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
-import { useNavigation } from "@react-navigation/native";
 
 export default function Settings() {
   const navigation = useNavigation();
