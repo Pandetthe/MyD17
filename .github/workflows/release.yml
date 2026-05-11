@@ -49,6 +49,18 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Free runner disk space
+        shell: bash
+        run: |
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf "$ANDROID_HOME/system-images"
+          sudo rm -rf "$ANDROID_HOME/emulator"
+          df -h
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -63,8 +75,6 @@ jobs:
             .gradle/caches
             .gradle/wrapper
             apps/mobile/android/.gradle
-            apps/mobile/android/app/.cxx
-            apps/mobile/android/app/build/intermediates/cxx
             apps/mobile/.expo
           key: release-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/mobile/app.json', 'apps/mobile/package.json', 'apps/strapi/package.json') }}
           restore-keys: |
