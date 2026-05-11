@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Notification from "@/components/core/Notification.component";
 import { Theme } from "@/styles/themes/theme";
 import { StyleSheet } from "react-native-unistyles";
@@ -31,23 +31,32 @@ export default function Notifications() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Notification text="Wszystkie" onPress={() => toggleAll()} value={Object.values(notifications).every(Boolean) ? 1 : 0} color = "red" />
+      <View style={styles.horizontal_line}></View>
       <Notification text="Wydarzenia" onPress={() => toggle("events")} value={notifications.events ? 1 : 0} color={"green"}/>
       <Notification text="Osiągnięcia" onPress={() => toggle("achievements")} value={notifications.achievements ? 1 : 0} color={"amber"}/>
       <Notification text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" onPress={() => toggle("longTag")} value={notifications.longTag ? 1 : 0} color={"purple"}/>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
-    flex: 0,
-    justifyContent: "space-between",
-    flexDirection: "column",
-    alignItems: "center",
-    marginTop: theme.spacing.sm,
-    gap: theme.spacing.sm,
+    flex: 1,
     backgroundColor: theme.colors.surface,
   },
+  contentContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderColor: theme.colors.primary.main,
+    marginTop: theme.spacing.sm,
+    gap: theme.spacing.sm,
+  },
+  horizontal_line: {
+    borderBottomWidth: 1,
+    borderStyle: "dashed",
+    width: '100%'
+  }
 }));
