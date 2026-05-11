@@ -1,9 +1,9 @@
 import { Pressable, View } from "react-native";
 import SwitchCore from "@/components/core/Switch.component";
-import { LinearGradient } from "react-native-linear-gradient";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import Tag from "@/components/core/Tag.component";
 import { ColorPalette } from "@/styles/themes/theme";
+import { LinearGradient } from "react-native-linear-gradient";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type SettingProps = {
   text: string;
@@ -14,8 +14,7 @@ type SettingProps = {
 
 export default function Notification({ text, onPress, value, color }: SettingProps) {
   const { theme } = useUnistyles();
-  const formatText = (text: string) =>
-    text.length > 26 ? text.slice(0, 23) + "..." : text;
+  const formatText = (text: string) => (text.length > 26 ? text.slice(0, 23) + "..." : text);
 
   return (
     <LinearGradient
@@ -24,9 +23,8 @@ export default function Notification({ text, onPress, value, color }: SettingPro
       useAngle
       style={styles.container}
     >
-
       <View style={styles.tagWrapper}>
-        <Tag text={formatText(text)} color={color}/>
+        <Tag text={formatText(text)} color={color} />
       </View>
 
       <Pressable onPress={onPress} style={styles.switchWrapper}>
@@ -51,7 +49,7 @@ const styles = StyleSheet.create((theme) => ({
   },
   tagWrapper: {
     flex: 1,
-    marginLeft: theme.spacing.md
+    marginLeft: theme.spacing.md,
   },
   switchWrapper: {
     paddingHorizontal: theme.spacing.md,

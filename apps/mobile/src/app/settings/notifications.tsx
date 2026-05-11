@@ -12,7 +12,7 @@ export default function Notifications() {
   });
 
   const toggle = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({
+    setNotifications((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
@@ -32,11 +32,31 @@ export default function Notifications() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Notification text="Wszystkie" onPress={() => toggleAll()} value={Object.values(notifications).every(Boolean) ? 1 : 0} color = "red" />
+      <Notification
+        text="Wszystkie"
+        onPress={() => toggleAll()}
+        value={Object.values(notifications).every(Boolean) ? 1 : 0}
+        color="red"
+      />
       <View style={styles.horizontal_line}></View>
-      <Notification text="Wydarzenia" onPress={() => toggle("events")} value={notifications.events ? 1 : 0} color={"green"}/>
-      <Notification text="Osiągnięcia" onPress={() => toggle("achievements")} value={notifications.achievements ? 1 : 0} color={"amber"}/>
-      <Notification text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" onPress={() => toggle("longTag")} value={notifications.longTag ? 1 : 0} color={"purple"}/>
+      <Notification
+        text="Wydarzenia"
+        onPress={() => toggle("events")}
+        value={notifications.events ? 1 : 0}
+        color={"green"}
+      />
+      <Notification
+        text="Osiągnięcia"
+        onPress={() => toggle("achievements")}
+        value={notifications.achievements ? 1 : 0}
+        color={"amber"}
+      />
+      <Notification
+        text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE"
+        onPress={() => toggle("longTag")}
+        value={notifications.longTag ? 1 : 0}
+        color={"purple"}
+      />
     </ScrollView>
   );
 }
@@ -57,6 +77,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
   horizontal_line: {
     borderBottomWidth: 1,
     borderStyle: "dashed",
-    width: '100%'
-  }
+    width: "100%",
+  },
 }));
