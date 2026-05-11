@@ -5,7 +5,7 @@ import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { strapiUrl } from "@/lib/apiClient";
-import { PostPlaceholder } from "@/lib/images";
+import { AvatarPlaceholder, PostPlaceholder } from "@/lib/images";
 import { strapiColorToPalette } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostAuthor, Tag } from "@repo/types";
@@ -49,7 +49,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
           {/* Author row */}
           <View style={styles.authorRow}>
             <Image
-              source={avatarUrl ? { uri: avatarUrl } : null}
+              source={avatarUrl ? { uri: avatarUrl } : AvatarPlaceholder}
               style={styles.avatar}
               contentFit="cover"
             />
