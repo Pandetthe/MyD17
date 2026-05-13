@@ -1,0 +1,17 @@
+{
+  "name": "@repo/types",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "openapi-typescript ../../apps/strapi/src/extensions/documentation/documentation/1.0.0/full_documentation.json -o src/generated.ts",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "6.0.2"
+  }
+}

@@ -16,6 +16,10 @@
       "minLength": 1,
       "required": true
     },
+    "description": {
+      "type": "text",
+      "required": true
+    },
     "images": {
       "type": "media",
       "multiple": true,
@@ -46,6 +50,11 @@
         "content.section-title"
       ],
       "required": true
+    },
+    "author": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

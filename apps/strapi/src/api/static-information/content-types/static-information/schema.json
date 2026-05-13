@@ -35,6 +35,12 @@
         "content.chip",
         "content.calendar"
       ]
+    },
+    "Icon": {
+      "type": "component",
+      "component": "icon-picker.icon",
+      "repeatable": false,
+      "required": true
     }
   }
 }

@@ -47,9 +47,9 @@ export default function Button({
         },
         lg: {
           height: theme.size.xl,
-          icon: theme.size.md,
-          text: theme.size.sm,
-          gap: theme.spacing.sm,
+          icon: theme.size.lg,
+          text: theme.size.md,
+          gap: theme.spacing.md,
         },
       })[size],
     [size, theme],

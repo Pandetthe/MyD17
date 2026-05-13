@@ -16,38 +16,38 @@ export const colors = {
     dark: "#212C3F",
     muted: "#53535D",
     main: "#1065AF",
-    light: "#CDE7FF",
+    light: "#2198FF",
     extraLight: "#85B9E5",
     disabled: "#BAD7F1",
     surface: "#F8FAFC",
   },
   red: {
-    extraDark: "#3D1719",
+    extraDark: "#460809",
     dark: "#822025",
-    main: "#DA3036",
-    light: "#F8BABA",
-    extraLight: "#FFEBEB",
+    main: "#E7000B",
+    light: "#FFC9C9",
+    extraLight: "#FEF2F2",
   },
   amber: {
     extraDark: "#341C00",
     dark: "#693F05",
-    main: "#FF990A",
+    main: "#F6A200",
     light: "#FFDD8F",
     extraLight: "#FFF6E5",
   },
   green: {
-    extraDark: "#0F2C17",
+    extraDark: "#032E15",
     dark: "#126427",
-    main: "#388E4A",
-    light: "#C8F1C9",
+    main: "#5EA500",
+    light: "#D8F999",
     extraLight: "#DCF6DC",
   },
   teal: {
-    extraDark: "#062923",
+    extraDark: "#053345",
     dark: "#085E53",
-    main: "#0D8C7D",
-    light: "#BEF4EB",
-    extraLight: "#D5F7F1",
+    main: "#0092B8",
+    light: "#A2F4FD",
+    extraLight: "#ECFEFF",
   },
   purple: {
     extraDark: "#432155",
@@ -64,3 +64,10 @@ export const colors = {
     extraLight: "#FEE7F1",
   },
 } as const;
+
+type NestedStringValues<T> = T extends string
+  ? T
+  : T extends object
+    ? NestedStringValues<T[keyof T]>
+    : never;
+export type AppColor = NestedStringValues<typeof colors>;

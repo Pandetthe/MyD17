@@ -1,48 +1,169 @@
-import { View } from "react-native";
+import React, { useState, useCallback, useMemo } from "react";
+import { View, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import Button from "@/components/core/Button.component";
-import Icon from "@/components/core/Icon.component";
-import Tag from "@/components/core/Tag.component";
-import { Theme } from "@/styles/themes/theme";
-import { Calendar, Home } from "lucide-react-native";
-import { StyleSheet } from "react-native-unistyles";
+import TextCore from "@/components/core/Text.component";
+import { PostCard } from "@/components/posts/PostCard.component";
+import { TagFilterBar } from "@/components/posts/TagFilterBar.component";
+import { usePosts } from "@/features/posts/api/usePosts";
+import type { Theme } from "@/styles/themes/theme";
+import type { Tag } from "@repo/types";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-export default function HomeScreen() {
+export default function PostsScreen() {
+  const router = useRouter();
+  const { theme } = useUnistyles();
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const { data, isLoading, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePosts();
+
+  const posts = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
+
+  const allTags = useMemo(
+    () =>
+      Array.from(
+        new Map(posts.flatMap((p) => (p.tags ?? []) as Tag[]).map((t) => [t.id, t])).values(),
+      ),
+    [posts],
+  );
+
+  const filteredPosts = useMemo(
+    () =>
+      selectedTagIds.length === 0
+        ? posts
+        : posts.filter((p) => (p.tags ?? []).some((t) => selectedTagIds.includes(t.id as number))),
+    [posts, selectedTagIds],
+  );
+
+  function handleTagToggle(id: number | string) {
+    const numericId = typeof id === "string" ? parseInt(id, 10) : id;
+    setSelectedTagIds((prev) =>
+      prev.includes(numericId) ? prev.filter((x) => x !== numericId) : [...prev, numericId],
+    );
+  }
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  }, [refetch]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.safe}>
+        <StatusBar style="dark" />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={theme.colors.primary.main} />
+        </View>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.safe}>
+        <StatusBar style="dark" />
+        <View style={styles.centered}>
+          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+            Nie udało się załadować postów.
+          </TextCore>
+          <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Icon icon={Home} />
-      <Icon icon={Home} color="red" />
-      <Icon icon={Home} color="amber" />
-      <Icon icon={Home} color="green" />
-      <Icon icon={Home} color="teal" />
-      <Icon icon={Home} color="purple" />
-      <Icon icon={Home} color="pink" />
-
-      <Button icon={Calendar} text="Button" />
-      <Button icon={Calendar} color="dark" text="Button" />
-      <Button icon={Calendar} color="red" text="Button" size="lg" />
-      <Button icon={Calendar} color="amber" text="Button" />
-      <Button icon={Calendar} color="green" text="Button" />
-      <Button icon={Calendar} color="teal" text="Button" />
-      <Button icon={Calendar} color="purple" text="Button" />
-      <Button icon={Calendar} color="pink" text="Button" />
-
-      <Tag text="#Hackathon" />
-      <Tag text="#Hackathon" color="red" />
-      <Tag text="#Hackathon" color="amber" />
-      <Tag text="#Hackathon" color="green" />
-      <Tag text="#Hackathon" color="teal" />
-      <Tag text="#Hackathon" color="purple" />
-      <Tag text="#Hackathon" color="pink" />
+    <View style={styles.safe}>
+      <StatusBar style="dark" />
+      <TagFilterBar
+        tags={allTags}
+        selectedTagIds={selectedTagIds}
+        onSelect={handleTagToggle}
+        onClear={() => setSelectedTagIds([])}
+      />
+      <FlatList
+        data={filteredPosts}
+        keyExtractor={(item) => item.documentId as string}
+        renderItem={({ item }) => (
+          <PostCard
+            post={item}
+            onPress={() =>
+              router.push({
+                pathname: "/post/[id]",
+                params: { id: item.documentId as string },
+              })
+            }
+            onTagPress={(id) => handleTagToggle(id)}
+          />
+        )}
+        contentContainerStyle={styles.feed}
+        showsVerticalScrollIndicator={false}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.4}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={theme.colors.primary.main}
+            colors={[theme.colors.primary.main]}
+          />
+        }
+        ListEmptyComponent={
+          <TextCore
+            variant="body"
+            color={theme.colors.primary.text.secondary}
+            style={styles.emptyText}
+          >
+            Brak postów pasujących do wybranych filtrów.
+          </TextCore>
+        }
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              size="small"
+              color={theme.colors.primary.main}
+              style={styles.footerLoader}
+            />
+          ) : null
+        }
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  container: {
+  safe: {
     flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
+    backgroundColor: theme.colors.dark.background.main,
+  },
+  feed: {
+    gap: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.xs,
+    paddingBottom: theme.spacing.xl * 3,
+  },
+  centered: {
+    flex: 1,
     alignItems: "center",
-    backgroundColor: theme.colors.surface,
+    justifyContent: "center",
+    gap: theme.spacing.sm,
+  },
+  emptyText: {
+    textAlign: "left",
+    paddingHorizontal: theme.spacing.md,
+    marginTop: theme.spacing.xl,
+  },
+  footerLoader: {
+    paddingVertical: theme.spacing.md,
   },
 }));

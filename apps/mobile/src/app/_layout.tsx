@@ -1,8 +1,9 @@
+import "@/styles/unistyles";
 import React, { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
-import "@/styles/unistyles";
 import DrawerContent from "@/components/core/DrawerContent.component";
 import Header from "@/components/core/Header.component";
+import { QueryProvider } from "@/providers/QueryProvider";
 import {
   useFonts,
   Montserrat_400Regular,
@@ -13,6 +14,8 @@ import {
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Drawer } from "expo-router/drawer";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,23 +41,29 @@ export default function Layout() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <Drawer
-        drawerContent={() => <DrawerContent />}
-        screenOptions={{
-          header: () => <Header />,
-          drawerType: "front",
-          drawerStyle: {
-            backgroundColor: "transparent",
-            width: drawerWidth,
-          },
-        }}
-      >
-        <Drawer.Screen name="index" />
-        <Drawer.Screen name="d17map" />
-        <Drawer.Screen name="information" />
-        <Drawer.Screen name="settings" options={{ headerShown: false }} />
-      </Drawer>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={DefaultTheme}>
+        <QueryProvider>
+          <StatusBar style="auto" />
+          <Drawer
+            drawerContent={() => <DrawerContent />}
+            screenOptions={{
+              header: () => <Header />,
+              drawerType: "front",
+              drawerStyle: {
+                backgroundColor: "transparent",
+                width: drawerWidth,
+              },
+            }}
+          >
+            <Drawer.Screen name="index" />
+            <Drawer.Screen name="d17map" />
+            <Drawer.Screen name="information" />
+            <Drawer.Screen name="settings" options={{ headerShown: false }} />
+            <Drawer.Screen name="post/[id]" options={{ headerShown: false }} />
+          </Drawer>
+        </QueryProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

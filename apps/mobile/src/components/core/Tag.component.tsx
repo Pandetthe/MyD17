@@ -1,6 +1,7 @@
-import { Pressable, Text } from "react-native";
+import { Text, Pressable } from "react-native";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { ColorPalette } from "@/styles/themes/theme";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 
 type TagProps = {
@@ -11,20 +12,11 @@ type TagProps = {
 };
 
 export default function Tag({ text, color = "primary", selected = false, onPress }: TagProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={() => { scale.value = withTiming(0.92, { duration: 60 }); }}
-      onPressOut={() => { scale.value = withTiming(1, { duration: 100 }); }}
-      disabled={!onPress}
-    >
-      <Animated.View style={[stylesheet.container(color, selected), animatedStyle]}>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[stylesheet.container(color, selected), animStyle]}>
         <Text style={stylesheet.text(color, selected)}>{text}</Text>
       </Animated.View>
     </Pressable>
@@ -33,7 +25,6 @@ export default function Tag({ text, color = "primary", selected = false, onPress
 
 const stylesheet = StyleSheet.create((theme) => ({
   container: (color: ColorPalette, selected: boolean) => ({
-    height: theme.size.lg,
     borderRadius: theme.borderRadius.full,
     backgroundColor: selected ? theme.colors[color].main : theme.colors[color].background.accent,
     borderColor: theme.colors[color].main,
@@ -41,10 +32,17 @@ const stylesheet = StyleSheet.create((theme) => ({
     alignItems: "center" as const,
     justifyContent: "center" as const,
     paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xxs,
+    shadowColor: theme.colors[color].main,
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 4,
   }),
   text: (color: ColorPalette, selected: boolean) => ({
     color: selected ? theme.colors[color].background.accent : theme.colors[color].main,
-    fontSize: theme.size.sm,
+    fontSize: 14,
+    lineHeight: 18,
     fontFamily: theme.fonts.medium,
   }),
 }));

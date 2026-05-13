@@ -1,10 +1,12 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
+import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
 import { usePathname, useRouter, Href } from "expo-router";
 import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
+import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -16,10 +18,13 @@ type NavItemProps = {
 };
 
 function NavItem({ icon: Icon, label, active, onPress }: NavItemProps) {
+  const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
   return (
-    <Pressable onPress={onPress} style={[styles.navItem, active && styles.navItemActive]}>
-      <Icon size={24} color={colors.white} strokeWidth={1.8} />
-      <Text style={styles.navItemText}>{label}</Text>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.navItem, active && styles.navItemActive, animStyle]}>
+        <Icon size={24} color={colors.white} strokeWidth={1.8} />
+        <Text style={styles.navItemText}>{label}</Text>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -32,9 +37,9 @@ export default function DrawerContent() {
   const navigate = (href: Href) => router.push(href);
 
   const topItems: { icon: LucideIcon; label: string; href: Href }[] = [
-    { icon: HomeIcon, label: "HOME", href: "/" },
-    { icon: MapIcon, label: "D17 MAP", href: "/d17map" },
-    { icon: InfoIcon, label: "INFORMATION", href: "/information" },
+    { icon: HomeIcon, label: "STRONA GŁÓWNA", href: "/" },
+    { icon: MapIcon, label: "MAPA D17", href: "/d17map" },
+    { icon: InfoIcon, label: "INFORMACJE", href: "/information" },
   ];
 
   return (
@@ -64,7 +69,7 @@ export default function DrawerContent() {
       >
         <NavItem
           icon={SettingsIcon}
-          label="SETTINGS"
+          label="USTAWIENIA"
           active={pathname === "/settings"}
           onPress={() => navigate("/settings")}
         />

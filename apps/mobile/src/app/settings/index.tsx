@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "@react-navigation/native";
-import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 type RootParamList = {
@@ -15,6 +14,7 @@ export default function Settings() {
   const navigation = useNavigation<NavigationProp<RootParamList>>();
 
   const [darkMode, setDarkMode] = useState(0);
+  const [notifications] = useState(0);
 
   const darkModeClick = () => {
     setDarkMode(1 - darkMode);
@@ -24,9 +24,11 @@ export default function Settings() {
       UnistylesRuntime.setTheme("dark");
     }
   };
-  const openNotifications = () => {
-    navigation.navigate("notifications");
-  };
+
+  const notificationsClick = () => navigation.navigate("notifications");
+
+  const openLanguage = () => alert("Languages");
+  const openSubscriptions = () => alert("Subscriptions");
 
   useEffect(() => {
     if (UnistylesRuntime.themeName === "dark") {
@@ -36,9 +38,14 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
-      <Setting icon={MoonIcon} text="Dark Mode" onPress={darkModeClick} value={darkMode} />
-      <Setting icon={BellRingIcon} text="Notifications" onPress={openNotifications} />
-      
+      <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
+      <Setting
+        icon={notifications === 1 ? BellRingIcon : BellIcon}
+        text="Powiadomienia"
+        onPress={notificationsClick}
+      />
+      <Setting icon={LanguagesIcon} text="Język" onPress={openLanguage} />
+      <Setting icon={InfoIcon} text="Zarządzaj subskrypcjami" onPress={openSubscriptions} />
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import { Color, colors } from "@/styles/colors";
 import { fonts } from "@/styles/fonts";
+import { Theme } from "@/styles/themes/theme";
 import { borderRadius, size, spacing } from "@/styles/tokens";
-import { Theme } from "./theme";
 
 export function lightColorSet(color: Color) {
   return {
@@ -28,7 +28,7 @@ export const lightTheme: Theme = {
       },
       background: {
         main: `linear-gradient(45deg, ${colors.core.extraLight} 0%, ${colors.core.surface} 100%)`,
-        accent: colors.core.light,
+        accent: colors.core.disabled,
       },
     },
     dark: {
@@ -43,7 +43,7 @@ export const lightTheme: Theme = {
       },
     },
     gradients: {
-      settings: [colors.core.surface, colors.core.light],
+      settings: [colors.core.surface, colors.core.disabled],
     },
     red: lightColorSet(colors.red),
     amber: lightColorSet(colors.amber),
