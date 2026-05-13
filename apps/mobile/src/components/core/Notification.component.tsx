@@ -17,16 +17,15 @@ export default function Notification({ text, onPress, value, color }: SettingPro
   const formatText = (text: string) => (text.length > 26 ? text.slice(0, 23) + "..." : text);
 
   return (
-    <View
-      style={[
-        styles.container,
-      ]}
-    >
-      <Pressable onPress={onPress} style={[styles.tagWrapper, value == 1 && {borderColor: theme.colors[color ?? "primary"].main}]}>
-        <Tag
-          text={formatText(text)}
-          color={color}
-        />
+    <View style={[styles.container]}>
+      <Pressable
+        onPress={onPress}
+        style={[
+          styles.tagWrapper,
+          value == 1 && { borderColor: theme.colors[color ?? "primary"].main },
+        ]}
+      >
+        <Tag text={formatText(text)} color={color} />
       </Pressable>
     </View>
   );
@@ -34,7 +33,7 @@ export default function Notification({ text, onPress, value, color }: SettingPro
 
 const styles = StyleSheet.create((theme) => ({
   container: {
-    padding: theme.spacing.xxs
+    padding: theme.spacing.xxs,
   },
   tagWrapper: {
     padding: theme.spacing.xxs,
@@ -44,6 +43,6 @@ const styles = StyleSheet.create((theme) => ({
     borderColor: "transparent",
   },
   tagBorder: {
-    borderColor: theme.colors.primary.main
+    borderColor: theme.colors.primary.main,
   },
 }));

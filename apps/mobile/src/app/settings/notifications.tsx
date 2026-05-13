@@ -33,10 +33,13 @@ export default function Notifications() {
 
       setTags(data);
 
-      const initialState = data.reduce((acc, tag) => {
-        acc[tag.id] = false;
-        return acc;
-      }, {} as Record<number, boolean>);
+      const initialState = data.reduce(
+        (acc, tag) => {
+          acc[tag.id] = false;
+          return acc;
+        },
+        {} as Record<number, boolean>,
+      );
 
       setNotifications(initialState);
     };
@@ -55,10 +58,13 @@ export default function Notifications() {
     const allOn = Object.values(notifications).every(Boolean);
     const nextValue = !allOn;
 
-    const updated = Object.keys(notifications).reduce((acc, key) => {
-      acc[Number(key)] = nextValue;
-      return acc;
-    }, {} as Record<number, boolean>);
+    const updated = Object.keys(notifications).reduce(
+      (acc, key) => {
+        acc[Number(key)] = nextValue;
+        return acc;
+      },
+      {} as Record<number, boolean>,
+    );
 
     setNotifications(updated);
   };
@@ -66,8 +72,11 @@ export default function Notifications() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Pressable style={styles.toggleAllContainer} onPress={() => toggleAll()}>
-        <TextCore variant="h3" >SELECT ALL</TextCore>
-        <SwitchCore onPress={() => toggleAll()} value={Object.values(notifications).every(Boolean) ? 1 : 0}/>
+        <TextCore variant="h3">SELECT ALL</TextCore>
+        <SwitchCore
+          onPress={() => toggleAll()}
+          value={Object.values(notifications).every(Boolean) ? 1 : 0}
+        />
       </Pressable>
 
       <View style={styles.horizontal_line}></View>
