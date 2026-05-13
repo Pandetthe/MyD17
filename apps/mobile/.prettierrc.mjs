@@ -11,9 +11,9 @@ export default {
   trailingComma: "all",
   plugins: ["@trivago/prettier-plugin-sort-imports"],
   importOrder: [
+    "^@/styles/unistyles$",
     "^react$",
     "^react-native$",
-    "^@/styles/unistyles$",
     "^@/assets/(.*)$",
     "^@/(.*)$",
     "^[./]",

@@ -35,15 +35,15 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
-      <Setting icon={MoonIcon} text="Dark Mode" onPress={darkModeClick} value={darkMode} />
+      <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
         icon={notifications === 1 ? BellRingIcon : BellIcon}
-        text="Enable notifications"
+        text="Włącz powiadomienia"
         onPress={notificationsClick}
         value={notifications}
       />
-      <Setting icon={LanguagesIcon} text="Language" onPress={openLanguage} />
-      <Setting icon={InfoIcon} text="Manage subscriptions" onPress={openSubscriptions} />
+      <Setting icon={LanguagesIcon} text="Język" onPress={openLanguage} />
+      <Setting icon={InfoIcon} text="Zarządzaj subskrypcjami" onPress={openSubscriptions} />
     </View>
   );
 }
