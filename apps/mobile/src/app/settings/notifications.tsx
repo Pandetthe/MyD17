@@ -1,120 +1,146 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import Notification from "@/components/core/Notification.component";
+import Button from "@/components/core/Button.component";
 import SwitchCore from "@/components/core/Switch.component";
+import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
 import { ColorPalette, Theme } from "@/styles/themes/theme";
+import { useNavigation } from "@react-navigation/native";
+import { SaveIcon } from "lucide-react-native";
 import { StyleSheet } from "react-native-unistyles";
 
-type Tag = {
+interface TagData {
   id: number;
   title: string;
-  color?: ColorPalette;
-};
+  color: {
+    id: number;
+    color: ColorPalette;
+  };
+}
 
 export default function Notifications() {
-  const fetchTags = async (): Promise<Tag[]> => {
-    const res = await fetch("http://localhost:1337/api/tags");
-    const json = await res.json();
+  const navigation = useNavigation();
 
-    return json.data.map((item: Tag) => ({
-      id: item.id,
-      title: item.title,
-      color: item.color ?? undefined,
-    }));
-  };
+  const [tags, setTags] = useState<TagData[]>([]);
+  const [selected, setSelected] = useState<Record<number, boolean>>({});
+  const [saved, setSaved] = useState<Record<number, boolean>>({});
+  const [showModal, setShowModal] = useState(false);
+  const pendingAction = useRef<any>(null);
 
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [notifications, setNotifications] = useState<Record<number, boolean>>({});
+  const hasUnsavedRef = useRef(false);
+  hasUnsavedRef.current = JSON.stringify(selected) !== JSON.stringify(saved);
 
   useEffect(() => {
-    const init = async () => {
-      const data = await fetchTags();
-
+    const fetchTags = async () => {
+      const res = await fetch("http://localhost:1337/api/tags?populate=color");
+      const json = await res.json();
+      const data = json.data as TagData[];
       setTags(data);
-
-      const initialState = data.reduce(
-        (acc, tag) => {
-          acc[tag.id] = false;
-          return acc;
-        },
+      const initial = data.reduce(
+        (acc, tag) => ({ ...acc, [tag.id]: false }),
         {} as Record<number, boolean>,
       );
-
-      setNotifications(initialState);
+      setSelected(initial);
+      setSaved(initial);
     };
-
-    init();
+    fetchTags();
   }, []);
 
-  const toggle = (id: number) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  useEffect(() => {
+    return navigation.addListener("beforeRemove", (e) => {
+      if (!hasUnsavedRef.current) return;
+      e.preventDefault();
+      pendingAction.current = e.data.action;
+      setShowModal(true);
+    });
+  }, [navigation]);
+
+  const toggle = (id: number) =>
+    setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const toggleAll = () => {
-    const allOn = Object.values(notifications).every(Boolean);
-    const nextValue = !allOn;
-
-    const updated = Object.keys(notifications).reduce(
-      (acc, key) => {
-        acc[Number(key)] = nextValue;
-        return acc;
-      },
-      {} as Record<number, boolean>,
+    const allOn = Object.values(selected).every(Boolean);
+    setSelected(
+      Object.keys(selected).reduce(
+        (acc, key) => ({ ...acc, [Number(key)]: !allOn }),
+        {} as Record<number, boolean>,
+      ),
     );
-
-    setNotifications(updated);
   };
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Pressable style={styles.toggleAllContainer} onPress={() => toggleAll()}>
-        <TextCore variant="h3">SELECT ALL</TextCore>
-        <SwitchCore
-          onPress={() => toggleAll()}
-          value={Object.values(notifications).every(Boolean) ? 1 : 0}
-        />
-      </Pressable>
+  const save = () => setSaved({ ...selected });
 
-      <View style={styles.horizontal_line}></View>
-      {tags.map((tag) => (
-        <Notification
-          key={tag.id}
-          text={tag.title}
-          color={tag.color}
-          value={notifications[tag.id] ? 1 : 0}
-          onPress={() => toggle(tag.id)}
-        />
-      ))}
-    </ScrollView>
+  const handleDiscard = () => {
+    setShowModal(false);
+    navigation.dispatch(pendingAction.current);
+  };
+
+  const allSelected = tags.length > 0 && Object.values(selected).every(Boolean);
+
+  return (
+    <View style={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable style={styles.selectAllRow} onPress={toggleAll}>
+          <TextCore variant="h2">Select all</TextCore>
+          <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
+        </Pressable>
+
+        <View style={styles.divider} />
+
+        <View style={styles.tagsGrid}>
+          {tags.map((tag) => (
+            <Tag
+              key={tag.id}
+              text={tag.title}
+              color={tag.color.color}
+              selected={selected[tag.id] ?? false}
+              onPress={() => toggle(tag.id)}
+            />
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={styles.saveWrapper}>
+        <Button text="Save" icon={SaveIcon} color="primary" size="lg" onPress={save} />
+      </View>
+
+      <UnsavedChangesModal
+        visible={showModal}
+        onKeep={() => setShowModal(false)}
+        onDiscard={handleDiscard}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  container: {
+  wrapper: {
     flex: 1,
     backgroundColor: theme.colors.surface,
   },
-  contentContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "flex-start",
+  content: {
+    padding: theme.spacing.md,
+    paddingBottom: 96,
   },
-  toggleAllContainer: {
+  selectAllRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    width: "100%",
-    gap: theme.spacing.md,
-    paddingVertical: theme.spacing.md,
+    justifyContent: "space-between",
+    paddingVertical: theme.spacing.sm,
   },
-  horizontal_line: {
+  divider: {
     borderBottomWidth: 1,
-    borderStyle: "dashed",
-    width: "100%",
+    marginBottom: theme.spacing.md,
+  },
+  tagsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+  },
+  saveWrapper: {
+    position: "absolute",
+    bottom: theme.spacing.md,
+    right: theme.spacing.md,
   },
 }));

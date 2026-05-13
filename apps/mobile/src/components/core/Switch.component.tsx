@@ -5,6 +5,7 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -42,7 +43,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
       [0, 1],
       [0, width.value - height.value],
     );
-    const translateValue = withTiming(moveValue, { duration });
+    const translateValue = withSpring(moveValue, { damping: 18, stiffness: 220, mass: 0.8 });
 
     return {
       transform: [{ translateX: translateValue }],
@@ -70,13 +71,18 @@ export default SwitchCore;
 const styles = StyleSheet.create((theme) => ({
   track: {
     alignItems: "flex-start",
-    width: theme.size.xl,
-    height: theme.size.md,
-    padding: theme.spacing.half,
+    width: 52,
+    height: 30,
+    padding: 4,
   },
   thumb: {
     height: "100%",
     aspectRatio: 1,
     backgroundColor: theme.colors.surface,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.22,
+    shadowRadius: 3,
+    elevation: 4,
   },
 }));

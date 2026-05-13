@@ -2,8 +2,7 @@ import { Pressable, View } from "react-native";
 import Icon from "@/components/core/Icon.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
-import { ArrowUpRightIcon, LucideIcon } from "lucide-react-native";
-import { LinearGradient } from "react-native-linear-gradient";
+import { ArrowRightIcon, LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type SettingProps = {
@@ -16,12 +15,7 @@ type SettingProps = {
 export default function Setting({ text, icon, onPress, value }: SettingProps) {
   const { theme } = useUnistyles();
   return (
-    <LinearGradient
-      colors={theme.colors.gradients.settings}
-      angle={60}
-      useAngle
-      style={styles.container}
-    >
+    <View>
       <View style={styles.iconWrapper}>
         <Icon icon={icon}></Icon>
       </View>
@@ -32,12 +26,12 @@ export default function Setting({ text, icon, onPress, value }: SettingProps) {
 
       <Pressable onPress={onPress} style={styles.switchWrapper}>
         {value == null ? (
-          <Icon icon={ArrowUpRightIcon} hasBackground={false}></Icon>
+          <Icon icon={ArrowRightIcon} hasBackground={false}></Icon>
         ) : (
           <SwitchCore onPress={onPress} value={value} />
         )}
       </Pressable>
-    </LinearGradient>
+    </View>
   );
 }
 

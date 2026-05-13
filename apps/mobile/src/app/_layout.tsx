@@ -53,7 +53,7 @@ export default function Layout() {
         <Drawer.Screen name="index" />
         <Drawer.Screen name="d17map" />
         <Drawer.Screen name="information" />
-        <Drawer.Screen name="settings" />
+        <Drawer.Screen name="settings" options={{ headerShown: false }} />
       </Drawer>
     </ThemeProvider>
   );

@@ -78,8 +78,9 @@ export default function Button({
       color: fgColor,
       fontSize: selectedSize.text,
       paddingRight: theme.spacing.xxs,
+      fontFamily: theme.fonts.semiBold,
     }),
-    [fgColor, selectedSize.text],
+    [fgColor, selectedSize.text, theme.fonts.semiBold],
   );
 
   const animatedStyle = useAnimatedStyle(() => {

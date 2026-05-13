@@ -27,12 +27,6 @@ export default function Settings() {
   const openNotifications = () => {
     navigation.navigate("notifications");
   };
-  const openLanguage = () => {
-    alert("Languages"); // Placeholder
-  };
-  const openSubscriptions = () => {
-    alert("Subscriptions"); // Placeholder
-  };
 
   useEffect(() => {
     if (UnistylesRuntime.themeName === "dark") {
@@ -44,8 +38,7 @@ export default function Settings() {
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Dark Mode" onPress={darkModeClick} value={darkMode} />
       <Setting icon={BellRingIcon} text="Notifications" onPress={openNotifications} />
-      <Setting icon={LanguagesIcon} text="Language" onPress={openLanguage} />
-      <Setting icon={InfoIcon} text="Manage subscriptions" onPress={openSubscriptions} />
+      
     </View>
   );
 }
