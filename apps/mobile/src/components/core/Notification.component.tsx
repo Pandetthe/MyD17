@@ -17,42 +17,33 @@ export default function Notification({ text, onPress, value, color }: SettingPro
   const formatText = (text: string) => (text.length > 26 ? text.slice(0, 23) + "..." : text);
 
   return (
-    <LinearGradient
-      colors={theme.colors.gradients.settings}
-      angle={60}
-      useAngle
-      style={styles.container}
+    <View
+      style={[
+        styles.container,
+      ]}
     >
-      <View style={styles.tagWrapper}>
-        <Tag text={formatText(text)} color={color} />
-      </View>
-
-      <Pressable onPress={onPress} style={styles.switchWrapper}>
-        <SwitchCore onPress={onPress} value={value} />
+      <Pressable onPress={onPress} style={[styles.tagWrapper, value == 1 && {borderColor: theme.colors[color ?? "primary"].main}]}>
+        <Tag
+          text={formatText(text)}
+          color={color}
+        />
       </Pressable>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
   container: {
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.full,
-    borderColor: theme.colors.primary.main,
-    width: "95%",
-    height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    boxShadow: `10px 5px 20px ${theme.colors.primary.background.accent}33`,
-    elevation: 5,
+    padding: theme.spacing.xxs
   },
   tagWrapper: {
-    flex: 1,
-    marginLeft: theme.spacing.md,
+    padding: theme.spacing.xxs,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderRadius: theme.borderRadius.full,
+    borderColor: "transparent",
   },
-  switchWrapper: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
+  tagBorder: {
+    borderColor: theme.colors.primary.main
   },
 }));

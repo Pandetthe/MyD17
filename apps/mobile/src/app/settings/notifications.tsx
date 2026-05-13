@@ -1,62 +1,85 @@
-import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
 import Notification from "@/components/core/Notification.component";
-import { Theme } from "@/styles/themes/theme";
+import SwitchCore from "@/components/core/Switch.component";
+import TextCore from "@/components/core/Text.component";
+import { ColorPalette, Theme } from "@/styles/themes/theme";
 import { StyleSheet } from "react-native-unistyles";
 
-export default function Notifications() {
-  const [notifications, setNotifications] = useState({
-    events: false,
-    achievements: false,
-    longTag: false,
-  });
+type Tag = {
+  id: number;
+  name: string;
+  color?: ColorPalette;
+};
 
-  const toggle = (key: keyof typeof notifications) => {
+export default function Notifications() {
+  const fetchTags = async (): Promise<Tag[]> => {
+    const res = await fetch("http://localhost:1337/api/tags");
+    const json = await res.json();
+
+    return json.data.map((item: any) => ({
+      id: item.id,
+      name: item.title,
+      color: item.color ?? undefined,
+    }));
+  };
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [notifications, setNotifications] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await fetchTags();
+
+      setTags(data);
+
+      const initialState = data.reduce((acc, tag) => {
+        acc[tag.id] = false;
+        return acc;
+      }, {} as Record<number, boolean>);
+
+      setNotifications(initialState);
+    };
+
+    init();
+  }, []);
+
+  const toggle = (id: number) => {
     setNotifications((prev) => ({
       ...prev,
-      [key]: !prev[key],
+      [id]: !prev[id],
     }));
   };
 
   const toggleAll = () => {
     const allOn = Object.values(notifications).every(Boolean);
-
     const nextValue = !allOn;
 
-    setNotifications({
-      events: nextValue,
-      achievements: nextValue,
-      longTag: nextValue,
-    });
+    const updated = Object.keys(notifications).reduce((acc, key) => {
+      acc[Number(key)] = nextValue;
+      return acc;
+    }, {} as Record<number, boolean>);
+
+    setNotifications(updated);
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Notification
-        text="Wszystkie"
-        onPress={() => toggleAll()}
-        value={Object.values(notifications).every(Boolean) ? 1 : 0}
-        color="red"
-      />
+      <Pressable style={styles.toggleAllContainer} onPress={() => toggleAll()}>
+        <TextCore variant="h3" >SELECT ALL</TextCore>
+        <SwitchCore onPress={() => toggleAll()} value={Object.values(notifications).every(Boolean) ? 1 : 0}/>
+      </Pressable>
+
       <View style={styles.horizontal_line}></View>
-      <Notification
-        text="Wydarzenia"
-        onPress={() => toggle("events")}
-        value={notifications.events ? 1 : 0}
-        color="green"
-      />
-      <Notification
-        text="Osiągnięcia"
-        onPress={() => toggle("achievements")}
-        value={notifications.achievements ? 1 : 0}
-        color="amber"
-      />
-      <Notification
-        text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE"
-        onPress={() => toggle("longTag")}
-        value={notifications.longTag ? 1 : 0}
-        color="purple"
-      />
+      {tags.map((tag) => (
+        <Notification
+          key={tag.id}
+          text={tag.name}
+          color={tag.color}
+          value={notifications[tag.id] ? 1 : 0}
+          onPress={() => toggle(tag.id)}
+        />
+      ))}
     </ScrollView>
   );
 }
@@ -67,12 +90,18 @@ const styles = StyleSheet.create((theme: Theme) => ({
     backgroundColor: theme.colors.surface,
   },
   contentContainer: {
-    flexDirection: "column",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "flex-start",
+  },
+  toggleAllContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    borderColor: theme.colors.primary.main,
-    marginTop: theme.spacing.sm,
-    gap: theme.spacing.sm,
+    justifyContent: "center",
+    alignSelf: "center",
+    width: "100%",
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
   },
   horizontal_line: {
     borderBottomWidth: 1,

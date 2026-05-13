@@ -25,7 +25,6 @@ const stylesheet = StyleSheet.create((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: theme.spacing.sm,
-    alignSelf: "flex-start",
   }),
   text: (color: ColorPalette) => ({
     color: theme.colors[color].main,
