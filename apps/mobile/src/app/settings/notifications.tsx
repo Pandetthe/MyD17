@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native-unistyles";
 
 type Tag = {
   id: number;
-  name: string;
+  title: string;
   color?: ColorPalette;
 };
 
@@ -17,9 +17,9 @@ export default function Notifications() {
     const res = await fetch("http://localhost:1337/api/tags");
     const json = await res.json();
 
-    return json.data.map((item: any) => ({
+    return json.data.map((item: Tag) => ({
       id: item.id,
-      name: item.title,
+      title: item.title,
       color: item.color ?? undefined,
     }));
   };
@@ -83,7 +83,7 @@ export default function Notifications() {
       {tags.map((tag) => (
         <Notification
           key={tag.id}
-          text={tag.name}
+          text={tag.title}
           color={tag.color}
           value={notifications[tag.id] ? 1 : 0}
           onPress={() => toggle(tag.id)}
