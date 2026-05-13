@@ -1,8 +1,6 @@
 import { Pressable, View } from "react-native";
-import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import { ColorPalette } from "@/styles/themes/theme";
-import { LinearGradient } from "react-native-linear-gradient";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type SettingProps = {
