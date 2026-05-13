@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
-import TextCore from "@/components/core/Text.component";
 import { Theme } from "@/styles/themes/theme";
 import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
