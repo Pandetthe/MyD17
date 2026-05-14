@@ -46,7 +46,7 @@ export default function Settings() {
       <Setting
         icon={notifications === 1 ? BellRingIcon : BellIcon}
         text="Włącz powiadomienia"
-        onPress={notificationsClick}
+        onPress={openNotifications}
         value={notifications}
       />
       <Setting icon={LanguagesIcon} text="Język" onPress={openLanguage} />
