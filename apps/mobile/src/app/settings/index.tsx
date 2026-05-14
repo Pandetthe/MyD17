@@ -4,7 +4,7 @@ import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
-import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
+import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 type RootParamList = {
@@ -15,6 +15,7 @@ export default function Settings() {
   const navigation = useNavigation<NavigationProp<RootParamList>>();
 
   const [darkMode, setDarkMode] = useState(0);
+  const [notifications, setNotifications] = useState(0);
 
   const darkModeClick = () => {
     setDarkMode(1 - darkMode);
@@ -25,7 +26,7 @@ export default function Settings() {
     }
   };
   const openNotifications = () => {
-    navigation.navigate("notifications");
+    setNotifications(1 - notifications);
   };
   const openLanguage = () => {
     alert("Languages"); // Placeholder
@@ -44,7 +45,7 @@ export default function Settings() {
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
-        icon={notifications === 1 ? BellRingIcon : BellIcon}
+        icon={notifications === 1 ? BellRingIcon : Bell}
         text="Włącz powiadomienia"
         onPress={openNotifications}
         value={notifications}
