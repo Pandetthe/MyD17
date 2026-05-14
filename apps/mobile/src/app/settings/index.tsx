@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
-import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
+import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
@@ -17,7 +17,7 @@ export default function Settings() {
       UnistylesRuntime.setTheme("dark");
     }
   };
-  const notificationsClick = () => {
+  const openNotifications = () => {
     setNotifications(1 - notifications);
   };
   const openLanguage = () => {
@@ -37,9 +37,9 @@ export default function Settings() {
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
-        icon={notifications === 1 ? BellRingIcon : BellIcon}
+        icon={notifications === 1 ? BellRingIcon : Bell}
         text="Włącz powiadomienia"
-        onPress={notificationsClick}
+        onPress={openNotifications}
         value={notifications}
       />
       <Setting icon={LanguagesIcon} text="Język" onPress={openLanguage} />
