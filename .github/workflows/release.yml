@@ -1,0 +1,169 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version to simulate, e.g. v1.0.0 or v1.1.0-rc.1"
+        required: true
+      dry_run:
+        description: "Build and validate without publishing artifacts"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  STRAPI_IMAGE_NAME: ${{ github.repository }}/strapi
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      DRY_RUN: ${{ inputs.dry_run || false }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.33.0
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Free runner disk space
+        shell: bash
+        run: |
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf "$ANDROID_HOME/system-images"
+          sudo rm -rf "$ANDROID_HOME/emulator"
+          df -h
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependency caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+            .turbo
+            .gradle/caches
+            .gradle/wrapper
+            apps/mobile/android/.gradle
+            apps/mobile/.expo
+          key: release-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/mobile/app.json', 'apps/mobile/package.json', 'apps/strapi/package.json') }}
+          restore-keys: |
+            release-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate release versions
+        run: pnpm release:validate
+
+      - name: Run checks
+        run: pnpm turbo run lint check-types format-check test build --continue
+
+      - name: Prepare image metadata
+        id: image
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          image="${REGISTRY}/${STRAPI_IMAGE_NAME}"
+          tags="${image,,}:${version}"
+          if [[ "${version}" != *-* ]]; then
+            tags="${tags}"$'\n'"${image,,}:latest"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "name=${image,,}" >> "$GITHUB_OUTPUT"
+          {
+            echo "tags<<EOF"
+            echo "${tags}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Login to GHCR
+        if: env.DRY_RUN != 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and optionally push Strapi image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/strapi/Dockerfile
+          push: ${{ env.DRY_RUN != 'true' }}
+          tags: ${{ steps.image.outputs.tags }}
+
+      - name: Generate Android project
+        working-directory: apps/mobile
+        env:
+          CI: "1"
+        run: pnpm exec expo prebuild --platform android --clean
+
+      - name: Configure Android release signing
+        if: env.DRY_RUN != 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: pnpm android:configure-signing
+
+      - name: Build Android release artifacts
+        working-directory: apps/mobile/android
+        env:
+          NODE_ENV: production
+          CI: "1"
+        run: ./gradlew assembleRelease bundleRelease --no-daemon -x lintVitalRelease -x lintVitalAnalyzeRelease -x lintVitalReportRelease -x bundleReleaseLocalLintAar
+
+      - name: Rename Android artifacts
+        shell: bash
+        run: |
+          mkdir -p release-artifacts
+          cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk "release-artifacts/MyD17-${RELEASE_TAG}.apk"
+          cp apps/mobile/android/app/build/outputs/bundle/release/app-release.aab "release-artifacts/MyD17-${RELEASE_TAG}.aab"
+
+      - name: Upload dry-run artifacts
+        if: env.DRY_RUN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts-${{ env.RELEASE_TAG }}
+          path: release-artifacts/*
+
+      - name: Create GitHub Release
+        if: env.DRY_RUN != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          generate_release_notes: true
+          prerelease: ${{ contains(steps.image.outputs.version, '-') }}
+          files: release-artifacts/*

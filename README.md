@@ -70,11 +70,24 @@ Or from root: `pnpm run dev`
 
 ---
 
-# TODO: finish setting up production environment
+## Releases
+
+Releases are tag-based. Prepare a release commit with:
+
+```bash
+pnpm release:prepare 1.2.0 --changelog
+```
+
+Then create and push a tag named `v1.2.0`. The release workflow publishes the Strapi image to GHCR and attaches Android `.apk` and `.aab` files to the GitHub Release.
+
+See [docs/release.md](docs/release.md) for the full release and deployment process.
+
+---
 
 ### Strapi backend and PostgreSQL database in production environment
 
-Create a `.env` file in the root directory and configure it based on the `.env.example.` template. Using the default values should work for a basic setup ;)
+Create a `.env` file in the root directory and configure it based on `.env.example.prod`.
+Replace all placeholder secrets before running a production environment.
 
 From the root folder run
 
