@@ -50,11 +50,11 @@ export default function Settings() {
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
-    flex: 0,
-    justifyContent: "center",
+    flex: 1,
+    justifyContent: "flex-start",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: theme.spacing.sm,
+    paddingTop: theme.spacing.sm,
     gap: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
   },

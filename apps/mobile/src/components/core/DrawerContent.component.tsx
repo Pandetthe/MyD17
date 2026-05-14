@@ -81,7 +81,7 @@ export default function DrawerContent() {
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.dark.main,
+    backgroundColor: theme.colors.dark.background.main,
     borderTopRightRadius: 32,
     borderBottomRightRadius: 32,
     overflow: "hidden",
@@ -98,7 +98,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 638,
     height: 638,
     borderRadius: 319,
-    backgroundColor: theme.colors.dark.text.secondary,
+    backgroundColor: theme.colors.dark.background.accent,
   },
   content: {
     flex: 1,

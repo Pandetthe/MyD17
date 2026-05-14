@@ -12,7 +12,8 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function Header() {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const { theme } = useUnistyles();
+  const { theme, rt } = useUnistyles();
+  const logoVariant = rt.themeName === "light" ? "color" : "white";
   const insets = useSafeAreaInsets();
   const menu = usePressAnimation(0.93);
   const bell = usePressAnimation(0.93);
@@ -30,7 +31,7 @@ export default function Header() {
         </Animated.View>
       </Pressable>
 
-      <Logo height={45} />
+      <Logo height={45} variant={logoVariant} />
 
       <Pressable onPressIn={bell.onPressIn} onPressOut={bell.onPressOut} style={styles.iconButton}>
         <Animated.View style={bell.animStyle}>
