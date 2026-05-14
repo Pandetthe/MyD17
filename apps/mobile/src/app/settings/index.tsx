@@ -1,24 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
+import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { Theme } from "@/styles/themes/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
-  const [darkMode, setDarkMode] = useState(0);
-  const [notifications, setNotifications] = useState(0);
+  const [darkMode, setDarkMode] = useState(UnistylesRuntime.themeName === "dark");
+  const [notifications, setNotifications] = useState(false);
 
   const darkModeClick = () => {
-    setDarkMode(1 - darkMode);
-    if (darkMode === 1) {
-      UnistylesRuntime.setTheme("light");
-    } else {
-      UnistylesRuntime.setTheme("dark");
-    }
+    const next = darkMode ? "light" : "dark";
+    AsyncStorage.setItem(THEME_STORAGE_KEY, next);
+    UnistylesRuntime.setAdaptiveThemes(false);
+    UnistylesRuntime.setTheme(next);
+    setDarkMode(!darkMode);
   };
   const openNotifications = () => {
-    setNotifications(1 - notifications);
+    setNotifications(!notifications);
   };
   const openLanguage = () => {
     alert("Languages"); // Placeholder
@@ -27,17 +28,11 @@ export default function Settings() {
     alert("Subscriptions"); // Placeholder
   };
 
-  useEffect(() => {
-    if (UnistylesRuntime.themeName === "dark") {
-      setDarkMode(1);
-    }
-  }, []);
-
   return (
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
-        icon={notifications === 1 ? BellRingIcon : Bell}
+        icon={notifications ? BellRingIcon : Bell}
         text="Włącz powiadomienia"
         onPress={openNotifications}
         value={notifications}

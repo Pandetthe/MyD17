@@ -10,7 +10,7 @@ type SettingProps = {
   text: string;
   icon: LucideIcon;
   onPress: () => void;
-  value?: number;
+  value?: boolean;
 };
 
 export default function Setting({ text, icon, onPress, value }: SettingProps) {

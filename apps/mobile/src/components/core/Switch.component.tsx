@@ -12,7 +12,7 @@ import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
 type SwitchProps = {
   onPress: () => void;
-  value: number;
+  value: boolean;
   duration?: number;
 };
 
@@ -20,10 +20,10 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
   const theme = useAnimatedTheme();
   const height = useSharedValue(0);
   const width = useSharedValue(0);
-  const sharedValue = useSharedValue(value);
+  const sharedValue = useSharedValue(value ? 1 : 0);
 
   useEffect(() => {
-    sharedValue.value = value;
+    sharedValue.value = value ? 1 : 0;
   }, [value]);
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
@@ -39,11 +39,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
   });
 
   const thumbAnimatedStyle = useAnimatedStyle(() => {
-    const moveValue = interpolate(
-      Number(sharedValue.value),
-      [0, 1],
-      [0, width.value - height.value],
-    );
+    const moveValue = interpolate(sharedValue.value, [0, 1], [0, width.value - height.value]);
 
     return {
       transform: [{ translateX: withTiming(moveValue, { duration }) }],
