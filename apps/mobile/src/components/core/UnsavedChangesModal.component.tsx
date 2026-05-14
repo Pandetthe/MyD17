@@ -1,4 +1,5 @@
 import { Modal, Pressable, View } from "react-native";
+import { Card } from "@/components/core/Card.component";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
 import { Theme } from "@/styles/themes/theme";
@@ -18,16 +19,18 @@ export default function UnsavedChangesModal({ visible, onKeep, onDiscard }: Prop
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onKeep}>
       <Pressable style={styles.backdrop} onPress={onKeep}>
-        <Pressable style={styles.card}>
-          <TriangleAlertIcon color={theme.colors.amber.main} size={36} />
-          <TextCore variant="h2" style={styles.title}>Unsaved changes</TextCore>
-          <TextCore variant="body" style={styles.body}>
-            You have unsaved notification preferences. Discard them?
-          </TextCore>
-          <View style={styles.buttons}>
-            <Button text="Discard" color="red" size="lg" onPress={onDiscard} />
-            <Button text="Keep editing" color="dark" size="lg" hasBackground={false} onPress={onKeep} />
-          </View>
+        <Pressable onPress={(e) => e.stopPropagation()} style={styles.wrapper}>
+          <Card color="amber" circle="hash" hashKey="unsaved-changes" style={styles.cardOuter} contentStyle={styles.cardInner}>
+            <TriangleAlertIcon color={theme.colors.amber.main} size={32} />
+            <TextCore variant="h2" style={styles.title}>Niezapisane zmiany</TextCore>
+            <TextCore variant="body" color={theme.colors.primary.text.secondary} style={styles.body}>
+              Masz niezapisane preferencje powiadomień. Czy chcesz je odrzucić?
+            </TextCore>
+            <View style={styles.buttons}>
+              <Button text="Odrzuć" color="red" size="lg" onPress={onDiscard} />
+              <Button text="Kontynuuj edycję" color="amber" size="lg" hasBackground={false} onPress={onKeep} />
+            </View>
+          </Card>
         </Pressable>
       </Pressable>
     </Modal>
@@ -37,15 +40,18 @@ export default function UnsavedChangesModal({ visible, onKeep, onDiscard }: Prop
 const styles = StyleSheet.create((theme: Theme) => ({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     alignItems: "center",
     justifyContent: "center",
     padding: theme.spacing.lg,
   },
-  card: {
+  wrapper: {
     width: "100%",
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
+  },
+  cardOuter: {
+    width: "100%",
+  },
+  cardInner: {
     padding: theme.spacing.lg,
     alignItems: "center",
     gap: theme.spacing.sm,
@@ -55,7 +61,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   body: {
     textAlign: "center",
-    opacity: 0.6,
     marginBottom: theme.spacing.xs,
   },
   buttons: {

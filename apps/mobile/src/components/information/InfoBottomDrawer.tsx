@@ -5,6 +5,7 @@ import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { PostContentBlock, StaticInformation } from "@repo/types";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   Extrapolation,
@@ -30,6 +31,7 @@ const CLOSE_TIMING = { duration: 300, easing: Easing.in(Easing.ease) } as const;
 
 export function InfoBottomDrawer({ visible, item, onClose }: Props) {
   const { height: screenHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   const translateY = useSharedValue(screenHeight);
   const [modalVisible, setModalVisible] = useState(false);
@@ -95,7 +97,7 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
 
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[styles.content, { paddingBottom: Math.max(32, insets.bottom + 16) }]}
             showsVerticalScrollIndicator={false}
           >
             {blocks.length > 0 && <ContentRenderer blocks={blocks} textColor={colors.white} dark />}
@@ -123,7 +125,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     left: 0,
     right: 0,
     maxHeight: "80%",
-    backgroundColor: theme.colors.dark.text.secondary,
+    backgroundColor: theme.colors.dark.main,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: theme.spacing.md,

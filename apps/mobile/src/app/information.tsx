@@ -6,7 +6,7 @@ import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
 import { StaticInfoCard } from "@/components/information/StaticInfoCard";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
 import { ICON_MAP } from "@/lib/iconMap";
-import { strapiColorToCard } from "@/lib/strapiColors";
+import { strapiColorToPalette } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { StaticInformation } from "@repo/types";
 import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
@@ -93,7 +93,7 @@ export default function Information() {
                 key={row.key}
                 title={row.items[0].title}
                 icon={getIcon(row.items[0], row.startIndex)}
-                color={strapiColorToCard(row.items[0].color?.color)}
+                color={strapiColorToPalette(row.items[0].color?.color)}
                 wide
                 onPress={() => setSelectedItem(row.items[0])}
               />
@@ -104,7 +104,7 @@ export default function Information() {
                     key={item.documentId ?? j}
                     title={item.title}
                     icon={getIcon(item, row.startIndex + j)}
-                    color={strapiColorToCard(item.color?.color)}
+                    color={strapiColorToPalette(item.color?.color)}
                     onPress={() => setSelectedItem(item)}
                   />
                 ))}

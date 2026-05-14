@@ -27,9 +27,6 @@ export default function Settings() {
 
   const notificationsClick = () => navigation.navigate("notifications");
 
-  const openLanguage = () => alert("Languages");
-  const openSubscriptions = () => alert("Subscriptions");
-
   useEffect(() => {
     if (UnistylesRuntime.themeName === "dark") {
       setDarkMode(1);
@@ -41,22 +38,19 @@ export default function Settings() {
       <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
         icon={notifications === 1 ? BellRingIcon : BellIcon}
-        text="Powiadomienia"
+        text="Zarządzaj powiadomieniami"
         onPress={notificationsClick}
       />
-      <Setting icon={LanguagesIcon} text="Język" onPress={openLanguage} />
-      <Setting icon={InfoIcon} text="Zarządzaj subskrypcjami" onPress={openSubscriptions} />
     </View>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
   container: {
-    flex: 0,
-    justifyContent: "center",
+    flex: 1,
     flexDirection: "column",
-    alignItems: "center",
-    marginTop: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.sm,
     gap: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
   },

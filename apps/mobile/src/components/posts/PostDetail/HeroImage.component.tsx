@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
+import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
 import { strapiColorToPalette } from "@/lib/strapiColors";
@@ -51,9 +52,13 @@ export function HeroImage({ imageUrl, onBack, tags = [] }: Props) {
         </View>
       )}
 
-      <Pressable style={[styles.backButton, { top: insets.top }]} onPress={onBack} hitSlop={8}>
-        <ArrowLeft size={20} color="#ffffff" />
-      </Pressable>
+      <Button
+        icon={ArrowLeft}
+        color="dark"
+        size="lg"
+        style={[styles.backButton, { top: insets.top }]}
+        onPress={onBack}
+      />
     </View>
   );
 }
@@ -102,11 +107,5 @@ const styles = StyleSheet.create((theme: Theme) => ({
   backButton: {
     position: "absolute",
     left: theme.spacing.md,
-    width: theme.size.xl + 8,
-    height: theme.size.xl + 8,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.dark.main,
-    alignItems: "center",
-    justifyContent: "center",
   },
 }));

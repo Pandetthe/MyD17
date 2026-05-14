@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 import Button from "@/components/core/Button.component";
+import { apiClient } from "@/lib/apiClient";
 import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
 import { ColorPalette, Theme } from "@/styles/themes/theme";
 import { useNavigation } from "@react-navigation/native";
-import { SaveIcon } from "lucide-react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { useRouter } from "expo-router";
+import { ArrowLeft, SaveIcon } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 interface TagData {
   id: number;
@@ -21,6 +25,9 @@ interface TagData {
 
 export default function Notifications() {
   const navigation = useNavigation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useUnistyles();
 
   const [tags, setTags] = useState<TagData[]>([]);
   const [selected, setSelected] = useState<Record<number, boolean>>({});
@@ -28,14 +35,28 @@ export default function Notifications() {
   const [showModal, setShowModal] = useState(false);
   const pendingAction = useRef<any>(null);
 
+  const hasUnsaved = JSON.stringify(selected) !== JSON.stringify(saved);
   const hasUnsavedRef = useRef(false);
-  hasUnsavedRef.current = JSON.stringify(selected) !== JSON.stringify(saved);
+  hasUnsavedRef.current = hasUnsaved;
+
+  const saveOpacity = useSharedValue(0);
+  const saveTranslateY = useSharedValue(16);
+
+  useEffect(() => {
+    const cfg = { duration: 220, easing: Easing.out(Easing.cubic) };
+    saveOpacity.value = withTiming(hasUnsaved ? 1 : 0, cfg);
+    saveTranslateY.value = withTiming(hasUnsaved ? 0 : 16, cfg);
+  }, [hasUnsaved]);
+
+  const saveAnimStyle = useAnimatedStyle(() => ({
+    opacity: saveOpacity.value,
+    transform: [{ translateY: saveTranslateY.value }],
+  }));
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await fetch("http://localhost:1337/api/tags?populate=color");
-      const json = await res.json();
-      const data = json.data as TagData[];
+      const res = await apiClient.get<{ data: TagData[] }>("/api/tags?populate=color");
+      const data = res.data.data;
       setTags(data);
       const initial = data.reduce(
         (acc, tag) => ({ ...acc, [tag.id]: false }),
@@ -80,9 +101,22 @@ export default function Notifications() {
 
   return (
     <View style={styles.wrapper}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <Button
+        icon={ArrowLeft}
+        color="dark"
+        size="lg"
+        style={[styles.backButton, { top: insets.top + theme.spacing.sm }]}
+        onPress={() => router.back()}
+      />
+
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { paddingTop: insets.top + theme.size.xl + theme.spacing.xl },
+        ]}
+      >
         <Pressable style={styles.selectAllRow} onPress={toggleAll}>
-          <TextCore variant="h2">Select all</TextCore>
+          <TextCore variant="h2">Wszystkie</TextCore>
           <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
         </Pressable>
 
@@ -101,9 +135,12 @@ export default function Notifications() {
         </View>
       </ScrollView>
 
-      <View style={styles.saveWrapper}>
-        <Button text="Save" icon={SaveIcon} color="primary" size="lg" onPress={save} />
-      </View>
+      <Animated.View
+        style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
+        pointerEvents={hasUnsaved ? "auto" : "none"}
+      >
+        <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} />
+      </Animated.View>
 
       <UnsavedChangesModal
         visible={showModal}
@@ -131,6 +168,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   divider: {
     borderBottomWidth: 1,
+    borderBottomColor: theme.colors.primary.text.secondary,
     marginBottom: theme.spacing.md,
   },
   tagsGrid: {
@@ -140,7 +178,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   saveWrapper: {
     position: "absolute",
-    bottom: theme.spacing.md,
     right: theme.spacing.md,
+  },
+  backButton: {
+    position: "absolute",
+    left: theme.spacing.md,
+    zIndex: 10,
   },
 }));

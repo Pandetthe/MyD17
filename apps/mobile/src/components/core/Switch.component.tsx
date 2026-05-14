@@ -71,9 +71,9 @@ export default SwitchCore;
 const styles = StyleSheet.create((theme) => ({
   track: {
     alignItems: "flex-start",
-    width: 52,
-    height: 30,
-    padding: 4,
+    width: 48,
+    height: 24,
+    padding: 2,
   },
   thumb: {
     height: "100%",

@@ -36,24 +36,23 @@ export default function Button({
   const { theme } = useUnistyles();
   const pressProgress = useSharedValue(0);
 
-  const selectedSize = useMemo(
-    () =>
-      ({
-        sm: {
-          height: theme.size.lg,
-          icon: theme.size.sm,
-          text: theme.size.xs,
-          gap: theme.spacing.xs,
-        },
-        lg: {
-          height: theme.size.xl,
-          icon: theme.size.lg,
-          text: theme.size.md,
-          gap: theme.spacing.md,
-        },
-      })[size],
-    [size, theme],
-  );
+  const selectedSize = useMemo(() => {
+    const sizes = {
+      sm: {
+        height: theme.size.lg,
+        icon: theme.size.sm,
+        text: theme.size.xs,
+        gap: theme.spacing.xs,
+      },
+      lg: {
+        height: theme.size.xl,
+        icon: theme.size.sm,
+        text: theme.size.xs,
+        gap: theme.spacing.sm,
+      },
+    };
+    return sizes[size] ?? sizes.sm;
+  }, [size, theme]);
 
   const fgColor = hasBackground ? theme.colors[color].background.accent : theme.colors[color].main;
 
@@ -62,6 +61,7 @@ export default function Button({
   const containerStyle = useMemo(
     () => ({
       height: selectedSize.height,
+      ...(text ? {} : { aspectRatio: 1 }),
       borderRadius: theme.borderRadius.full,
       backgroundColor: bgColor,
       alignItems: "center" as const,
@@ -70,7 +70,7 @@ export default function Button({
       gap: selectedSize.gap,
       paddingHorizontal: selectedSize.gap,
     }),
-    [bgColor, selectedSize, theme.borderRadius.full],
+    [bgColor, selectedSize, text, theme.borderRadius.full],
   );
 
   const textStyle = useMemo(
@@ -113,9 +113,10 @@ export default function Button({
       accessibilityRole="button"
       accessibilityLabel={resolvedA11yLabel}
       hitSlop={8}
+      style={style}
       {...pressableProps}
     >
-      <Animated.View style={[containerStyle, animatedStyle, style]}>
+      <Animated.View style={[containerStyle, animatedStyle]}>
         {IconComponent ? <IconComponent size={selectedSize.icon} color={fgColor} /> : null}
         {text ? <Text style={textStyle}>{text}</Text> : null}
       </Animated.View>
