@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
 import DrawerContent from "@/components/core/DrawerContent.component";
 import Header from "@/components/core/Header.component";
+import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { QueryProvider } from "@/providers/QueryProvider";
 import {
   useFonts,
@@ -18,8 +19,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UnistylesRuntime } from "react-native-unistyles";
-
-export const THEME_STORAGE_KEY = "theme_preference";
 
 SplashScreen.preventAutoHideAsync();
 

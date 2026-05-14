@@ -6,7 +6,7 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 type SettingProps = {
   text: string;
   onPress: () => void;
-  value: number;
+  value: boolean;
   color?: ColorPalette;
 };
 
@@ -18,10 +18,7 @@ export default function Notification({ text, onPress, value, color }: SettingPro
     <View style={[styles.container]}>
       <Pressable
         onPress={onPress}
-        style={[
-          styles.tagWrapper,
-          value == 1 && { borderColor: theme.colors[color ?? "primary"].main },
-        ]}
+        style={[styles.tagWrapper, value && { borderColor: theme.colors[color ?? "primary"].main }]}
       >
         <Tag text={formatText(text)} color={color} />
       </Pressable>

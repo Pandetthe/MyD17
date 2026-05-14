@@ -75,7 +75,7 @@ export default function Notifications() {
         <TextCore variant="h3">SELECT ALL</TextCore>
         <SwitchCore
           onPress={() => toggleAll()}
-          value={Object.values(notifications).every(Boolean) ? 1 : 0}
+          value={Object.values(notifications).every(Boolean)}
         />
       </Pressable>
 
@@ -85,7 +85,7 @@ export default function Notifications() {
           key={tag.id}
           text={tag.title}
           color={tag.color}
-          value={notifications[tag.id] ? 1 : 0}
+          value={notifications[tag.id]}
           onPress={() => toggle(tag.id)}
         />
       ))}
