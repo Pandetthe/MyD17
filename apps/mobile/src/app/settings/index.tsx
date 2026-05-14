@@ -6,7 +6,6 @@ import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-re
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
-
   const [darkMode, setDarkMode] = useState(0);
   const [notifications, setNotifications] = useState(0);
 
