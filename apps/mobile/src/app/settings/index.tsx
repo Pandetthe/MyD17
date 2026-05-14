@@ -2,17 +2,10 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "@react-navigation/native";
 import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
-type RootParamList = {
-  notifications: undefined;
-};
-
 export default function Settings() {
-  const navigation = useNavigation<NavigationProp<RootParamList>>();
 
   const [darkMode, setDarkMode] = useState(0);
   const [notifications, setNotifications] = useState(0);
