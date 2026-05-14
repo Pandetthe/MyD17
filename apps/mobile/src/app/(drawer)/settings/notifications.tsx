@@ -115,6 +115,8 @@ export default function Notifications() {
           { paddingTop: insets.top + theme.size.xl + theme.spacing.xl },
         ]}
       >
+        <TextCore variant="h1" style={styles.title}>Powiadomienia</TextCore>
+
         <Pressable style={styles.selectAllRow} onPress={toggleAll}>
           <TextCore variant="h2">Wszystkie</TextCore>
           <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
@@ -159,6 +161,9 @@ const styles = StyleSheet.create((theme: Theme) => ({
   content: {
     padding: theme.spacing.md,
     paddingBottom: 96,
+  },
+  title: {
+    marginBottom: theme.spacing.md,
   },
   selectAllRow: {
     flexDirection: "row",

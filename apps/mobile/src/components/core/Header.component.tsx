@@ -3,45 +3,35 @@ import { Pressable, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { Theme } from "@/styles/themes/theme";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
-import { BellIcon, ChevronLeftIcon, MenuIcon } from "lucide-react-native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { BellIcon, MenuIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-export default function Header({ onBack }: { onBack?: () => void }) {
-  const navigation = useNavigation();
-  const { theme } = useUnistyles();
+export default function Header() {
+  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
+  const { theme, rt } = useUnistyles();
+  const logoVariant = rt.themeName === "light" ? "color" : "white";
   const insets = useSafeAreaInsets();
   const menu = usePressAnimation(0.93);
   const bell = usePressAnimation(0.93);
 
-  const handleLeftPress = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigation.dispatch(DrawerActions.openDrawer());
-    }
-  };
-
   return (
     <View style={[styles.container, { paddingTop: insets.top + theme.spacing.sm }]}>
       <Pressable
-        onPress={handleLeftPress}
+        onPress={() => navigation.openDrawer()}
         onPressIn={menu.onPressIn}
         onPressOut={menu.onPressOut}
         style={styles.iconButton}
       >
         <Animated.View style={menu.animStyle}>
-          {onBack ? (
-            <ChevronLeftIcon color={theme.colors.dark.text.secondary} size={24} />
-          ) : (
-            <MenuIcon color={theme.colors.dark.text.secondary} size={24} />
-          )}
+          <MenuIcon color={theme.colors.dark.text.secondary} size={24} />
         </Animated.View>
       </Pressable>
 
-      <Logo height={45} />
+      <Logo height={45} variant={logoVariant} />
 
       <Pressable onPressIn={bell.onPressIn} onPressOut={bell.onPressOut} style={styles.iconButton}>
         <Animated.View style={bell.animStyle}>

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { Theme } from "@/styles/themes/theme";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { BellIcon, BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon } from "lucide-react-native";
+import { BellIcon, BellRingIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 type RootParamList = {

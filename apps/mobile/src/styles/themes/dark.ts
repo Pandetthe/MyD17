@@ -17,34 +17,33 @@ export function darkColorSet(color: Color) {
   };
 }
 
-// TODO (sc-100): Choose appropriate colors
 export const darkTheme: Theme = {
   colors: {
-    surface: colors.surface,
+    surface: colors.core.extraDark,
     primary: {
       main: colors.core.main,
       text: {
-        primary: colors.core.dark,
-        secondary: colors.core.muted,
+        primary: colors.white,
+        secondary: colors.core.light,
       },
       background: {
-        main: `linear-gradient(45deg, ${colors.core.extraLight} 0%, ${colors.core.surface} 100%)`,
-        accent: colors.core.light,
+        main: `linear-gradient(180deg, ${colors.core.dark} 0%, ${colors.core.extraDark} 100%)`,
+        accent: colors.core.dark,
       },
     },
     dark: {
-      main: colors.core.dark,
+      main: colors.core.light,
       text: {
-        primary: colors.core.dark,
-        secondary: colors.core.extraDark,
+        primary: colors.white,
+        secondary: colors.core.light,
       },
       background: {
-        main: colors.white,
-        accent: colors.core.surface,
+        main: colors.core.dark,
+        accent: colors.core.extraDark,
       },
     },
     gradients: {
-      settings: [colors.core.surface, colors.core.light],
+      settings: [colors.core.extraDark, colors.core.dark],
     },
     red: darkColorSet(colors.red),
     amber: darkColorSet(colors.amber),
@@ -54,7 +53,7 @@ export const darkTheme: Theme = {
     pink: darkColorSet(colors.pink),
     switch: {
       on: colors.core.main,
-      off: colors.core.disabled,
+      off: colors.core.muted,
     },
   },
   spacing,

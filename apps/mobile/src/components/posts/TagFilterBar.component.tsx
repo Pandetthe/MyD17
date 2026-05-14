@@ -1,6 +1,7 @@
 import React from "react";
 import { ScrollView, View, Pressable } from "react-native";
 import Tag from "@/components/core/Tag.component";
+import { colors } from "@/styles/colors";
 import TextCore from "@/components/core/Text.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { strapiColorToPalette } from "@/lib/strapiColors";
@@ -15,7 +16,7 @@ function ClearPill({ onPress }: { onPress: () => void }) {
   return (
     <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Animated.View style={[styles.clearPill, animStyle]}>
-        <TextCore variant="label" color={theme.colors.dark.background.main} numberOfLines={1}>
+        <TextCore variant="label" color={colors.white} numberOfLines={1}>
           Wyczyść
         </TextCore>
       </Animated.View>
