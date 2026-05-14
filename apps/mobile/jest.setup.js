@@ -4,22 +4,9 @@ import "@testing-library/jest-native/extend-expect";
 
 jest.mock("react-native-reanimated", () => require("react-native-reanimated/mock"));
 jest.mock("react-native-worklets", () => require("react-native-worklets/lib/module/mock"));
-jest.mock("@react-native-async-storage/async-storage", () => ({
-  __esModule: true,
-  default: {
-    setItem: jest.fn(() => Promise.resolve()),
-    getItem: jest.fn(() => Promise.resolve(null)),
-    removeItem: jest.fn(() => Promise.resolve()),
-    clear: jest.fn(() => Promise.resolve()),
-    getAllKeys: jest.fn(() => Promise.resolve([])),
-    multiSet: jest.fn(() => Promise.resolve()),
-    multiGet: jest.fn(() => Promise.resolve([])),
-    multiRemove: jest.fn(() => Promise.resolve()),
-    flushGetRequests: jest.fn(),
-    mergeItem: jest.fn(() => Promise.resolve()),
-    multiMerge: jest.fn(() => Promise.resolve()),
-  },
-}));
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
 
 const mockTheme = {
   colors: {
