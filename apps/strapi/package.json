@@ -17,10 +17,10 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.43.0",
-    "@strapi/plugin-documentation": "5.43.0",
+    "@strapi/plugin-cloud": "5.46.0",
+    "@strapi/plugin-documentation": "5.46.0",
     "@strapi/plugin-users-permissions": "5.45.0",
-    "@strapi/strapi": "5.43.0",
+    "@strapi/strapi": "5.46.0",
     "pg": "8.20.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
