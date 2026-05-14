@@ -60,12 +60,31 @@ export type PostContentBlock =
 // ─── Tag color ────────────────────────────────────────────────────────────────
 
 export type TailwindColorName =
-  | "red" | "orange" | "amber" | "yellow" | "lime" | "green" | "emerald"
-  | "teal" | "cyan" | "sky" | "blue" | "indigo" | "violet" | "purple"
-  | "fuchsia" | "pink" | "rose";
+  | "red"
+  | "orange"
+  | "amber"
+  | "yellow"
+  | "lime"
+  | "green"
+  | "emerald"
+  | "teal"
+  | "cyan"
+  | "sky"
+  | "blue"
+  | "indigo"
+  | "violet"
+  | "purple"
+  | "fuchsia"
+  | "pink"
+  | "rose";
 
 export type LocationValue = "s1.38" | "s2.41" | "s3.20" | "s4.21";
 
 export type DayOfWeek =
-  | "monday" | "tuesday" | "wednesday" | "thursday"
-  | "friday" | "saturday" | "sunday";
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
