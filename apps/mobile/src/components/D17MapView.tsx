@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { StyleSheet } from "react-native";
 import WebView from "react-native-webview";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 type RoomCoords = Record<string, { x: number; y: number }>;
 
 interface Props {
@@ -35,15 +34,13 @@ function buildHtml(glbBase64: string, textureBase64: string, bgColor: string, ro
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// ── Config ────────────────────────────────────────────────────────────────────
 const FOV = 55, NEAR = 0.1, FAR = 300;
 const ZOOM_MIN = 0.3, ZOOM_SENS = 0.005, ROT_SENS = 0.005;
 const FOV_RAD = FOV * Math.PI / 180;
-const INIT_PHI   = Math.PI / 4;        // 45° vertical
-const INIT_THETA = -Math.PI / 4;       // 45° left
+const INIT_PHI   = Math.PI / 4;
+const INIT_THETA = -Math.PI / 4;
 const SEARCH_PHI = Math.PI / 4.5;
 
-// ── Scene ─────────────────────────────────────────────────────────────────────
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -54,8 +51,6 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('${bgColor}');
 
-// ── Lighting (GI approximation) ───────────────────────────────────────────────
-// Hemisphere: cool sky from above, warm bounce from below
 const hemi = new THREE.HemisphereLight(0xddeeff, 0xfff0cc, 1.2);
 scene.add(hemi);
 
@@ -76,16 +71,14 @@ window.addEventListener('resize', () => {
   dirty = true;
 });
 
-// ── Camera state ──────────────────────────────────────────────────────────────
 const sph = new THREE.Spherical(2, INIT_PHI, INIT_THETA);
 const tgt = new THREE.Vector3(0, 0, 0);
 let zoomMax = 2;
-let modelBounds = null;   // Box3 in world space, set after model loads
+let modelBounds = null;
 let dirty = false;
 
 function markDirty() { dirty = true; }
 
-// Camera animation
 let anim = null;
 const ANIM_MS = 500;
 
@@ -120,7 +113,6 @@ function startAnim(toX, toZ, toTheta, toPhi) {
   renderer.render(scene, camera);
 })();
 
-// ── Model / texture ───────────────────────────────────────────────────────────
 let currentModel = null;
 
 function applyTexture(base64, mime) {
@@ -187,7 +179,6 @@ function loadGlb(glbB64, texB64, texMime) {
   }, err => console.error('GLTFLoader:', err));
 }
 
-// ── Touch controls ────────────────────────────────────────────────────────────
 const cv = renderer.domElement;
 let numT = 0, lastX = 0, lastY = 0, lastDist = 0, lastMidX = 0, lastMidY = 0;
 
@@ -249,12 +240,11 @@ cv.addEventListener('touchmove', e => {
 
 cv.addEventListener('touchend', e => { numT = e.touches.length; }, {passive:false});
 
-// ── Room label sprites ────────────────────────────────────────────────────────
 const ROOM_COORDS = ${JSON.stringify(roomCoords)};
-const labelSprites = {};   // key → THREE.Sprite
+const labelSprites = {};
 let selectedKey = null;
-const HIDE_DIST = 0.4;   // world-space cull distance per label
-const LABEL_H = 0.018;   // world-unit height
+const HIDE_DIST = 0.4;
+const LABEL_H = 0.018;
 
 function makeLabelTexture(text) {
   const DPR = 3;
@@ -308,7 +298,6 @@ function updateLabelVisibility() {
   }
 }
 
-// ── Messages from React Native ────────────────────────────────────────────────
 window.addEventListener('message', e => {
   const msg = JSON.parse(e.data);
   if (msg.type === 'texture') {
@@ -325,32 +314,27 @@ window.addEventListener('message', e => {
   }
 });
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
 loadGlb(${JSON.stringify(glbBase64)}, ${JSON.stringify(textureBase64)}, 'image/webp');
 </script>
 </body>
 </html>`;
 }
 
-// ── Component ──────────────────────────────────────────────────────────────────
 export default function D17MapView({ glbBase64, textureBase64, searchTargetX, searchTargetZ, bgColor = "#151C28", roomCoords = {}, searchKey }: Props) {
   const webViewRef = useRef<WebView>(null);
 
-  // Push texture changes into the running WebView page
   useEffect(() => {
     if (!textureBase64 || !webViewRef.current) return;
     const msg = JSON.stringify({ type: "texture", base64: textureBase64, mime: "image/webp" });
     webViewRef.current.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`);
   }, [textureBase64]);
 
-  // Push search target + marker selection
   useEffect(() => {
     if (searchTargetX === undefined || searchTargetZ === undefined || !webViewRef.current) return;
     const msg = JSON.stringify({ type: "search", x: searchTargetX, z: searchTargetZ, key: searchKey ?? null });
     webViewRef.current.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`);
   }, [searchTargetX, searchTargetZ, searchKey]);
 
-  // Reset marker highlight when searchKey is cleared
   useEffect(() => {
     if (searchKey !== undefined || !webViewRef.current) return;
     const msg = JSON.stringify({ type: "selectMarker", key: null });
