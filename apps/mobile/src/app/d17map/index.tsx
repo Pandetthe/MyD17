@@ -268,7 +268,7 @@ export default function D17MapScreen() {
       const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
       setTextureBase64(tex);
       const coords = (roomData as RoomCoords)[key];
-      if (coords) setSearchTarget({ x: coords.y, z: coords.x });
+      if (coords) setSearchTarget({ x: coords.x, z: coords.y });
       setSearchKey(key);
       setAppliedFloor(pendingFloor);
       setAppliedRoom(pendingRoom);
@@ -307,7 +307,7 @@ export default function D17MapScreen() {
           searchTargetX={searchTarget?.x}
           searchTargetZ={searchTarget?.z}
           bgColor={theme.colors.surface}
-          roomCoords={roomData as RoomCoords}
+          roomCoords={Object.fromEntries(Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES)) as RoomCoords}
           searchKey={searchKey}
         />
       </View>

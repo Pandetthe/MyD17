@@ -59,12 +59,10 @@ scene.background = new THREE.Color('${bgColor}');
 const hemi = new THREE.HemisphereLight(0xddeeff, 0xfff0cc, 1.2);
 scene.add(hemi);
 
-// Key light: warm-white from upper-right
 const sun = new THREE.DirectionalLight(0xfff8f0, 2.2);
 sun.position.set(4, 10, 6);
 scene.add(sun);
 
-// Fill light: cool blue from opposite side, softer
 const fill = new THREE.DirectionalLight(0x8fb4ff, 0.6);
 fill.position.set(-5, 6, -4);
 scene.add(fill);
@@ -87,8 +85,33 @@ let dirty = false;
 
 function markDirty() { dirty = true; }
 
-(function loop() {
+// Camera animation
+let anim = null;
+const ANIM_MS = 500;
+
+function startAnim(toX, toZ, toTheta, toPhi) {
+  anim = {
+    fromX: tgt.x, fromZ: tgt.z,
+    fromTheta: sph.theta, fromPhi: sph.phi,
+    toX, toZ, toTheta, toPhi,
+    t0: performance.now(),
+  };
+  markDirty();
+}
+
+(function loop(now) {
   requestAnimationFrame(loop);
+  if (anim) {
+    const t = Math.min((now - anim.t0) / ANIM_MS, 1);
+    const e = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    tgt.x   = anim.fromX     + (anim.toX     - anim.fromX)     * e;
+    tgt.z   = anim.fromZ     + (anim.toZ     - anim.fromZ)     * e;
+    sph.theta = anim.fromTheta + (anim.toTheta - anim.fromTheta) * e;
+    sph.phi   = anim.fromPhi   + (anim.toPhi   - anim.fromPhi)   * e;
+    sph.makeSafe();
+    if (t >= 1) anim = null;
+    dirty = true;
+  }
   if (!dirty) return;
   dirty = false;
   camera.position.setFromSpherical(sph).add(tgt);
@@ -159,7 +182,7 @@ function loadGlb(glbB64, texB64, texMime) {
 
     scene.add(currentModel);
     applyTexture(texB64, texMime);
-    createLabels(box.min.y);
+    try { createLabels(box.min.y); } catch(e) { console.error('createLabels:', e); }
     markDirty();
   }, err => console.error('GLTFLoader:', err));
 }
@@ -230,48 +253,46 @@ cv.addEventListener('touchend', e => { numT = e.touches.length; }, {passive:fals
 const ROOM_COORDS = ${JSON.stringify(roomCoords)};
 const labelSprites = {};   // key → THREE.Sprite
 let selectedKey = null;
-const HIDE_DIST_FACTOR = 0.42;  // fraction of zoomMax beyond which labels vanish
-const LABEL_H = 0.032;          // world-unit height of each label
+const HIDE_DIST = 0.4;   // world-space cull distance per label
+const LABEL_H = 0.018;   // world-unit height
 
-function makeLabelTexture(roomNum) {
-  const W = 180, H = 52, R = 10;
+function makeLabelTexture(text) {
+  const DPR = 3;
+  const H = 28, PAD_X = 9, FONT = 'bold 13px system-ui,sans-serif';
+  const tmp = document.createElement('canvas').getContext('2d');
+  tmp.font = FONT;
+  const W = Math.ceil(tmp.measureText(text).width) + PAD_X * 2;
+  const R = H / 2;
   const cv = document.createElement('canvas');
-  cv.width = W; cv.height = H;
+  cv.width = W * DPR; cv.height = H * DPR;
   const c = cv.getContext('2d');
-  // rounded-rect background
+  c.scale(DPR, DPR);
   c.beginPath();
-  c.moveTo(R, 0); c.lineTo(W-R, 0);
+  c.moveTo(R, 0); c.lineTo(W - R, 0);
   c.arcTo(W, 0, W, R, R);
-  c.lineTo(W, H-R);
-  c.arcTo(W, H, W-R, H, R);
+  c.arcTo(W, H, W - R, H, R);
   c.lineTo(R, H);
-  c.arcTo(0, H, 0, H-R, R);
-  c.lineTo(0, R);
+  c.arcTo(0, H, 0, H - R, R);
   c.arcTo(0, 0, R, 0, R);
   c.closePath();
-  c.fillStyle = 'rgba(12, 18, 32, 0.90)';
+  c.fillStyle = '#0C1220';
   c.fill();
-  c.strokeStyle = 'rgba(255,255,255,0.18)';
-  c.lineWidth = 1.5;
-  c.stroke();
-  // text
   c.fillStyle = '#ffffff';
-  c.font = 'bold 27px system-ui,sans-serif';
+  c.font = FONT;
   c.textAlign = 'center';
   c.textBaseline = 'middle';
-  c.fillText(roomNum, W / 2, H / 2);
-  return new THREE.CanvasTexture(cv);
+  c.fillText(text, W / 2, H / 2);
+  return { tex: new THREE.CanvasTexture(cv), aspect: W / H };
 }
 
 function createLabels(floorY) {
   for (const [key, c] of Object.entries(ROOM_COORDS)) {
-    const roomNum = key.includes('.') ? key.split('.')[1] : key;
-    const tex = makeLabelTexture(roomNum);
-    const aspect = 180 / 52;
-    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const { tex, aspect } = makeLabelTexture(key);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, alphaTest: 0.1, depthTest: false, depthWrite: false });
     const sprite = new THREE.Sprite(mat);
+    sprite.renderOrder = 999;
     sprite.scale.set(LABEL_H * aspect, LABEL_H, 1);
-    sprite.position.set(c.x, floorY + 0.2, c.y);
+    sprite.position.set(0.86 * c.x+0.25, floorY + 0.05, 0.88 * c.y - 0.45);
     scene.add(sprite);
     labelSprites[key] = sprite;
   }
@@ -280,11 +301,10 @@ function createLabels(floorY) {
 
 function updateLabelVisibility() {
   if (Object.keys(labelSprites).length === 0) return;
-  const hideDist = zoomMax * HIDE_DIST_FACTOR;
   for (const [key, sprite] of Object.entries(labelSprites)) {
     sprite.visible = key === selectedKey
       ? true
-      : camera.position.distanceTo(sprite.position) < hideDist;
+      : camera.position.distanceTo(sprite.position) < HIDE_DIST;
   }
 }
 
@@ -294,13 +314,11 @@ window.addEventListener('message', e => {
   if (msg.type === 'texture') {
     applyTexture(msg.base64, msg.mime);
   } else if (msg.type === 'search') {
-    tgt.x = msg.x; tgt.z = msg.z;
-    sph.radius = zoomMax * 0.22;
-    sph.phi = 0.05;   // nearly straight down
-    sph.theta = 0;
-    sph.makeSafe();
+    const tx = 0.86 * msg.x + 0.25, tz = 0.88 * msg.z - 0.45;
+    const dx = tx - tgt.x, dz = tz - tgt.z;
+    const toTheta = Math.atan2(dx, dz) + Math.PI;
+    startAnim(tx, tz, toTheta, INIT_PHI);
     selectedKey = msg.key ?? null;
-    markDirty();
   } else if (msg.type === 'selectMarker') {
     selectedKey = msg.key ?? null;
     markDirty();
