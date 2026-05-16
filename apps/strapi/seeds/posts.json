@@ -1,17 +1,39 @@
 [
   {
-    "title": "2 symfonia Mahlera",
-    "description": "Niezwykłe wykonanie II Symfonii c-moll 'Zmartwychwstanie' Gustava Mahlera.",
+    "title": "Godziny rektorskie w trakcie Juwenaliów 2026",
+    "description": "",
     "likesCount": 2137,
-    "tags": [1, 2],
+    "tags": [17],
     "content": [
+      {
+        "__component": "content.text",
+        "content": "Uprzejmie informujemy, że w związku z obchodami Juwenaliów Krakowskich 2026, Prorektor ds.Kształcienia prof. dr hab. inż. Krzysztof Mendrok w imieniu JM Rektora AGH prof. dr hab. inż. Jerzego Lisa, na prośbę Uczelnianej Rady Samorządu Studentów AGH, zarządził godziny rektorskie w następujący sposób:"
+      },
       {
         "__component": "content.calendar",
         "entries": [
           {
             "withDate": true,
-            "date": "2026-07-15",
-            "startTime": "18:00:00.000",
+            "date": "2026-05-15",
+            "startTime": "08:00:00.000",
+            "endTime": "20:00:00.000"
+          },
+          {
+            "withDate": true,
+            "date": "2026-05-20",
+            "startTime": "16::00.000",
+            "endTime": "20:00:00.000"
+          },
+          {
+            "withDate": true,
+            "date": "2026-05-21",
+            "startTime": "15:00:00.000",
+            "endTime": "20:00:00.000"
+          },
+          {
+            "withDate": true,
+            "date": "2026-05-22",
+            "startTime": "13:00:00.000",
             "endTime": "20:00:00.000"
           }
         ]
@@ -19,6 +41,54 @@
       {
         "__component": "content.section-title",
         "content": "nice"
+      }
+    ]
+  },
+  {
+    "title": "dr Alessandro Crimi",
+    "description": "Kolokwium habilitacyjne",
+    "likesCount": 132,
+    "tags": [1, 2, 13],
+    "content": [
+      {
+        "__component": "content.text",
+        "content": "W dniu 14 maja odbyło się kolokwium habilitacyjne w postępowaniu o nadanie stopnia doktora habilitowanego Panu Doktorowi Alessandro Crimi."
+      },
+      {
+        "__component": "content.text",
+        "content": "Podstawą ubiegania się o nadanie stopnia doktora habilitowanego było jego osiągnięcie naukowe pt. „Machine Learning and Complex Networks Methods for Brain Connectivity Analysis”, mieszczące się w dziedzinie nauk inżynieryjno-technicznych w dyscyplinie informatyka techniczna i telekomunikacja."
+      },
+      {
+        "__component": "content.text",
+        "content": "Recenzenci: prof. dr hab. inż. Piotr Formanowicz, prof. dr hab. inż. Andrzej Kazimierz Polański, prof. dr hab. Irena Roterman-Konieczna oraz prof. dr hab. Włodzisław Duch."
+      },
+      {
+        "__component": "content.text",
+        "content": "Serdecznie gratulujemy!"
+      }
+    ]
+  },
+  {
+    "title": "Zakończenie III edycji projektu Bit Matura",
+    "description": "Dziś w całej Polsce rozpoczęły się egzaminy maturalne. To doskonały moment, aby podsumować zaangażowanie społeczności naszego Wydziału w ramach III edycji autorskiego projektu Bit Matura (Matura x Diament).",
+    "likesCount": 93,
+    "tags": [3, 7, 13],
+    "content": [
+      {
+        "__component": "content.text",
+        "content": "Od września do maja studenci Wydziału pełnili rolę mentorów, oferując bezpłatne wsparcie maturzystom z całej Polski. W tym czasie zrealizowano łącznie 496 godzin zajęć dydaktycznych, w których uczestniczyły 133 osoby (w tym 24 stacjonarnie z Krakowa i okolic oraz 109 w formule zdalnej). Program ukończyło 88 uczestników. W ramach projektu odbyły się również 3 wykłady tematyczne oraz 3 próbne egzaminy maturalne.\n\nZajęcia prowadzone były w 11 grupach o różnym poziomie zaawansowania: 3 grupach podstawowych, 7 średniozaawansowanych oraz 1 zaawansowanej, przygotowującej do uzyskania Diamentowego Indeksu. Dodatkowo uczestnicy mogli rozwijać swoje kompetencje w ramach zajęć matematycznych oraz warsztatów z zakresu arkuszy kalkulacyjnych i baz danych.\n\nUroczysty finał projektu był okazją do podsumowania efektów pracy oraz wyróżnienia uczestników osiągających najlepsze wyniki. Był to również moment refleksji nad postępami uczniów, którzy dzięki systematycznej pracy i wsparciu mentorów znacząco rozwinęli swoje umiejętności.\n\nSzczególne podziękowania kierujemy do wszystkich prowadzących, a w szczególności do koordynatorów projektu: Piotra Polańskiego, Bartosza Wójcika oraz Krzysztofa Kopel, za ich zaangażowanie, profesjonalizm i wkład w rozwój inicjatywy.\n\nWszystkim maturzystom życzymy powodzenia na egzaminach oraz realizacji dalszych planów edukacyjnych. Jednocześnie zapraszamy do kontynuowania nauki na Wydziale Informatyki AGH."
+      }
+    ]
+  },
+  {
+    "title": "Erasmus+ 2026/2027",
+    "description": "Wyniki rekrutacji do programu",
+    "likesCount": 224,
+    "tags": [2, 5],
+    "content": [
+      {
+        "__component": "component.text",
+        "content": "W nawiązaniu do zakończonej rekrutacji do programu Erasmus+ informujemy, że wyniki kwalifikacji dla studentów Wydziału Informatyki AGH będą dostępne od 11 maja 2026 r. w Dziekanacie Wydziału Informatyki AGH.\n\nUprzejmie prosimy osoby biorące udział w rekrutacji o zgłoszenie się do Dziekanatu w celu zapoznania się z wynikami oraz dalszymi informacjami dotyczącymi procesu kwalifikacji."
       }
     ]
   }
