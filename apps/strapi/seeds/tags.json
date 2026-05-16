@@ -1,10 +1,122 @@
 [
   {
-    "title": "Koncert",
-    "color": "red"
+    "title": "Konferencja",
+    "color": {
+      "color": "blue"
+    }
   },
   {
-    "title": "Wydarzenie",
-    "color": "blue"
+    "title": "Warsztaty",
+    "color": {
+      "color": "cyan"
+    }
+  },
+  {
+    "title": "Seminarium",
+    "color": {
+      "color": "indigo"
+    }
+  },
+  {
+    "title": "Koło naukowe",
+    "color": {
+      "color": "purple"
+    }
+  },
+  {
+    "title": "Projekt badawczy",
+    "color": {
+      "color": "violet"
+    }
+  },
+  {
+    "title": "Stypendium",
+    "color": {
+      "color": "green"
+    }
+  },
+  {
+    "title": "Praktyki",
+    "color": {
+      "color": "amber"
+    }
+  },
+  {
+    "title": "Staż",
+    "color": {
+      "color": "orange"
+    }
+  },
+  {
+    "title": "Wymiana studencka",
+    "color": {
+      "color": "sky"
+    }
+  },
+  {
+    "title": "Rekrutacja",
+    "color": {
+      "color": "red"
+    }
+  },
+  {
+    "title": "Korepetycje",
+    "color": {
+      "color": "emerald"
+    }
+  },
+  {
+    "title": "Notatki",
+    "color": {
+      "color": "yellow"
+    }
+  },
+  {
+    "title": "Egzamin",
+    "color": {
+      "color": "rose"
+    }
+  },
+  {
+    "title": "Obrona",
+    "color": {
+      "color": "pink"
+    }
+  },
+  {
+    "title": "Publikacja",
+    "color": {
+      "color": "orange"
+    }
+  },
+  {
+    "title": "Hackathon",
+    "color": {
+      "color": "rose"
+    }
+  },
+  {
+    "title": "Networking",
+    "color": {
+      "color": "fuchsia"
+    }
+  },
+  {
+    "title": "Webinar",
+    "color": {
+      "color": "teal"
+    }
+  },
+  {
+    "title": "Konsultacje",
+    "color": {
+      "color": "lime"
+    }
+  },
+  {
+    "title": "Samorząd",
+    "color": {
+      "color": "emerald"
+    }
   }
 ]

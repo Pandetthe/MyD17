@@ -2,8 +2,12 @@
   {
     "title": "Godziny otwarcia",
     "isWide": true,
-    "color": "blue",
-    "icon": "clock",
+    "color": {
+      "color": "blue"
+    },
+    "Icon": {
+      "icon": "clock"
+    },
     "content": [
       {
         "__component": "content.text",
@@ -29,6 +33,144 @@
             "day": "wednesday",
             "startTime": "10:00:00.000",
             "endTime": "18:00:00.000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Informacje dla pierwszaków",
+    "isWide": false,
+    "color": {
+      "color": "red"
+    },
+    "Icon": {
+      "icon": "graduation-cap"
+    },
+    "content": [
+      {
+        "__component": "content.chip",
+        "title": "Wyrobienie legitymacji",
+        "content": "Aby wyrobić legitymację należy zgłosić się do dziekanatu.",
+        "icon": {
+          "icon": "building"
+        }
+      },
+      {
+        "__component": "content.chip",
+        "title": "Podbicie legitymacji",
+        "content": "W celu podbicia legitymacji należy udać się do łącznika A0-A1.",
+        "icon": {
+          "icon": "building"
+        }
+      }
+    ]
+  },
+  {
+    "title": "Dziekanat",
+    "isWide": true,
+    "color": {
+      "color": "yellow"
+    },
+    "Icon": {
+      "icon": "building"
+    },
+    "content": [
+      {
+        "__component": "content.text",
+        "content": "Dziekanat czynny jest w godzinach:"
+      },
+      {
+        "__component": "content.calendar",
+        "entries": [
+          {
+            "withDate": false,
+            "day": "monday",
+            "startTime": "09:00:00.000",
+            "endTime": "12:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "wednesday",
+            "startTime": "12:15:00.000",
+            "endTime": "14:15:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "thursday",
+            "startTime": "09:00:00.000",
+            "endTime": "12:00:00.000"
+          }
+        ]
+      },
+      {
+        "__component": "content.text",
+        "content": "Informacje kontaktowe:"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Email",
+        "content": "dziekanat-wi@agh.edu.pl",
+        "icon": {
+          "icon": "mail"
+        }
+      },
+      {
+        "__component": "content.text",
+        "content": "inż. Jolanta Konieczna"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Telefon",
+        "content": "(48) 12 328 34 04",
+        "icon": {
+          "icon": "phone"
+        }
+      },
+      {
+        "__component": "content.chip",
+        "title": "Adres email",
+        "content": "jkoniecz@agh.edu.pl",
+        "icon": {
+          "icon": "mail"
+        }
+      }
+    ]
+  },
+  {
+    "title": "Dyżury prodziekana",
+    "isWide": false,
+    "color": {
+      "color": "yellow"
+    },
+    "Icon": {
+      "icon": "users"
+    },
+    "content": [
+      {
+        "__component": "content.text",
+        "content": "Prodziekan przyjmuje w podanych godzinach pod nr telefonu +48 123 456 789:"
+      },
+      {
+        "__component": "content.calendar",
+        "entries": [
+          {
+            "withDate": false,
+            "day": "tuesday",
+            "startTime": "09:00:00.000",
+            "endTime": "10:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "wednesday",
+            "startTime": "10:30:00.000",
+            "endTime": "12:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "thursday",
+            "startTime": "09:00:00.000",
+            "endTime": "10:00:00.000"
           }
         ]
       }
