@@ -1,6 +1,3 @@
-import { Asset } from "expo-asset";
-import * as FileSystem from "expo-file-system/legacy";
-import { MapIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,6 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { colors } from "@/styles/colors";
+import roomData from "../../../assets/map/floor1/roomCoordinates.json";
+import D17MapView from "../../components/D17MapView";
+import { Asset } from "expo-asset";
+import * as FileSystem from "expo-file-system/legacy";
+import { MapIcon } from "lucide-react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -26,19 +29,15 @@ import Animated, {
 } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-import { colors } from "@/styles/colors";
-import D17MapView from "../../components/D17MapView";
-import roomData from "../../../assets/map/floor1/roomCoordinates.json";
-
-// require() must be static literals
+/* eslint-disable @typescript-eslint/no-require-imports */
 const TEXTURE_MODULES: Record<string, number> = {
-  none:   require("../../../assets/map/floor1/none.webp"),
-  "1.4":  require("../../../assets/map/floor1/1_4.webp"),
-  "1.5":  require("../../../assets/map/floor1/1_5.webp"),
-  "1.6":  require("../../../assets/map/floor1/1_6.webp"),
-  "1.7":  require("../../../assets/map/floor1/1_7.webp"),
-  "1.8":  require("../../../assets/map/floor1/1_8.webp"),
-  "1.9":  require("../../../assets/map/floor1/1_9.webp"),
+  none: require("../../../assets/map/floor1/none.webp"),
+  "1.4": require("../../../assets/map/floor1/1_4.webp"),
+  "1.5": require("../../../assets/map/floor1/1_5.webp"),
+  "1.6": require("../../../assets/map/floor1/1_6.webp"),
+  "1.7": require("../../../assets/map/floor1/1_7.webp"),
+  "1.8": require("../../../assets/map/floor1/1_8.webp"),
+  "1.9": require("../../../assets/map/floor1/1_9.webp"),
   "1.10": require("../../../assets/map/floor1/1_10.webp"),
   "1.11": require("../../../assets/map/floor1/1_11.webp"),
   "1.12": require("../../../assets/map/floor1/1_12.webp"),
@@ -294,7 +293,11 @@ export default function D17MapScreen() {
           searchTargetX={searchTarget?.x}
           searchTargetZ={searchTarget?.z}
           bgColor={theme.colors.surface}
-          roomCoords={Object.fromEntries(Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES)) as RoomCoords}
+          roomCoords={
+            Object.fromEntries(
+              Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES),
+            ) as RoomCoords
+          }
           searchKey={searchKey}
         />
       </View>
@@ -302,9 +305,7 @@ export default function D17MapScreen() {
       {loading && (
         <View style={[styles.loadingOverlay, { backgroundColor: theme.colors.surface + "CC" }]}>
           <ActivityIndicator color={colors.core.light} size="large" />
-          <Text style={[styles.loadingText, { color: colors.core.light }]}>
-            Ładowanie planu…
-          </Text>
+          <Text style={[styles.loadingText, { color: colors.core.light }]}>Ładowanie planu…</Text>
         </View>
       )}
 
@@ -370,11 +371,7 @@ export default function D17MapScreen() {
             </View>
 
             <View style={styles.actions}>
-              <TouchableOpacity
-                style={styles.btnDiscard}
-                onPress={closeDrawer}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity style={styles.btnDiscard} onPress={closeDrawer} activeOpacity={0.7}>
                 <Text style={styles.btnDiscardText}>Odrzuć</Text>
               </TouchableOpacity>
 

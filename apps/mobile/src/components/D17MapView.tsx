@@ -4,7 +4,7 @@ import WebView from "react-native-webview";
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 
-interface Props {
+type Props = {
   glbBase64: string;
   textureBase64: string;
   searchTargetX?: number;
@@ -12,9 +12,14 @@ interface Props {
   bgColor?: string;
   roomCoords?: RoomCoords;
   searchKey?: string;
-}
+};
 
-function buildHtml(glbBase64: string, textureBase64: string, bgColor: string, roomCoords: RoomCoords): string {
+function buildHtml(
+  glbBase64: string,
+  textureBase64: string,
+  bgColor: string,
+  roomCoords: RoomCoords,
+): string {
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -320,25 +325,44 @@ loadGlb(${JSON.stringify(glbBase64)}, ${JSON.stringify(textureBase64)}, 'image/w
 </html>`;
 }
 
-export default function D17MapView({ glbBase64, textureBase64, searchTargetX, searchTargetZ, bgColor = "#151C28", roomCoords = {}, searchKey }: Props) {
+export default function D17MapView({
+  glbBase64,
+  textureBase64,
+  searchTargetX,
+  searchTargetZ,
+  bgColor = "#151C28",
+  roomCoords = {},
+  searchKey,
+}: Props) {
   const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
     if (!textureBase64 || !webViewRef.current) return;
     const msg = JSON.stringify({ type: "texture", base64: textureBase64, mime: "image/webp" });
-    webViewRef.current.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`);
+    webViewRef.current.injectJavaScript(
+      `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
+    );
   }, [textureBase64]);
 
   useEffect(() => {
     if (searchTargetX === undefined || searchTargetZ === undefined || !webViewRef.current) return;
-    const msg = JSON.stringify({ type: "search", x: searchTargetX, z: searchTargetZ, key: searchKey ?? null });
-    webViewRef.current.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`);
+    const msg = JSON.stringify({
+      type: "search",
+      x: searchTargetX,
+      z: searchTargetZ,
+      key: searchKey ?? null,
+    });
+    webViewRef.current.injectJavaScript(
+      `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
+    );
   }, [searchTargetX, searchTargetZ, searchKey]);
 
   useEffect(() => {
     if (searchKey !== undefined || !webViewRef.current) return;
     const msg = JSON.stringify({ type: "selectMarker", key: null });
-    webViewRef.current.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`);
+    webViewRef.current.injectJavaScript(
+      `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
+    );
   }, [searchKey]);
 
   // Only build the HTML once — changes are pushed via injectJavaScript
