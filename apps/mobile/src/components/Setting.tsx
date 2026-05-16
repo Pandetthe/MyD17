@@ -2,12 +2,9 @@ import { View } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
-import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import { ArrowUpRight, LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-
-const SETTING_GRADIENT = ["#F2F9FF", "#ECF6FF"] as const;
 
 type SettingProps = {
   text: string;
@@ -23,7 +20,7 @@ export default function Setting({ text, icon: IconComponent, onPress, value }: S
     <Card
       circle="none"
       color="primary"
-      gradient={SETTING_GRADIENT}
+      gradient={theme.colors.gradients.settings}
       onPress={onPress}
       style={styles.outer}
       contentStyle={styles.shell}
@@ -53,10 +50,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   shell: {
     height: 72,
-    shadowOffset: { width: 10, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 8,
   },
   row: {
     flex: 1,
@@ -78,7 +71,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 38,
     height: 38,
     borderRadius: theme.borderRadius.sm,
-    backgroundColor: colors.core.extraLight,
+    backgroundColor: theme.colors.primary.background.accent,
     alignItems: "center",
     justifyContent: "center",
   },

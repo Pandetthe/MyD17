@@ -78,34 +78,38 @@ export function Card(props: CardProps) {
       ? { width: 110, height: 110 }
       : { width: HASH_CIRCLE_SIZE, height: HASH_CIRCLE_SIZE };
 
+  // shadowColor on the outer shell causes it to render as an inset glow when
+  // overflow:hidden is also present. Split into two views: outer carries the
+  // shadow/elevation (no clip), inner carries overflow:hidden (no shadow).
   const shell = (
     <View
       style={[
-        styles.shell,
-        { borderColor: c.main, shadowColor: c.main, backgroundColor: bg },
-        contentStyle,
+        styles.shadowShell,
+        { borderColor: c.main, shadowColor: c.main, backgroundColor: bg ?? gradient?.[0] },
       ]}
     >
-      {gradient && (
-        <LinearGradient
-          colors={[gradient[0], gradient[1]]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.absoluteFill}
-        />
-      )}
-      {circlePos && (
-        <View
-          pointerEvents="none"
-          style={[
-            styles.circle,
-            circleSizeStyle,
-            circlePos,
-            { backgroundColor: c.background.accent },
-          ]}
-        />
-      )}
-      {children}
+      <View style={[styles.contentShell, { backgroundColor: bg ?? gradient?.[0] }, contentStyle]}>
+        {gradient && (
+          <LinearGradient
+            colors={[gradient[0], gradient[1]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.absoluteFill}
+          />
+        )}
+        {circlePos && (
+          <View
+            pointerEvents="none"
+            style={[
+              styles.circle,
+              circleSizeStyle,
+              circlePos,
+              { backgroundColor: c.background.accent },
+            ]}
+          />
+        )}
+        {children}
+      </View>
     </View>
   );
 
@@ -121,14 +125,17 @@ export function Card(props: CardProps) {
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  shell: {
+  shadowShell: {
     borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
-    overflow: "hidden",
     shadowOffset: { width: 5, height: 5 },
     shadowOpacity: 0.18,
     shadowRadius: 16,
     elevation: 5,
+  },
+  contentShell: {
+    borderRadius: theme.borderRadius.lg - 1,
+    overflow: "hidden",
   },
   fill: {},
   absoluteFill: {
@@ -142,5 +149,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
     position: "absolute",
     borderRadius: 9999,
     opacity: 0.6,
+    overflow: "hidden",
   },
 }));

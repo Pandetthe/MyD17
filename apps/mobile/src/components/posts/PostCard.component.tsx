@@ -15,7 +15,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Heart, Share2 } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-const POST_GRADIENT = ["#F2F9FF", "#ECF6FF"] as const;
 // Mask: fully opaque top → transparent bottom so card background & circle show through
 const IMAGE_MASK_COLORS = ["black", "black", "transparent"] as const;
 const IMAGE_MASK_LOCATIONS = [0, 0.75, 1] as const;
@@ -47,7 +46,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   return (
     <Card
       color="primary"
-      gradient={POST_GRADIENT}
+      gradient={theme.colors.gradients.posts}
       circle="hash"
       hashKey={post.title ?? ""}
       onPress={onPress}
@@ -159,12 +158,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   wrapper: {
     alignSelf: "stretch",
   },
-  cardShell: {
-    shadowOffset: { width: 10, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 8,
-  },
+  cardShell: {},
   authorRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -16,7 +16,8 @@ export type SwitchColors = {
 };
 
 export type GradientGroup = {
-  settings: string[];
+  settings: readonly [string, string];
+  posts: readonly [string, string];
 };
 
 export type ThemeColors = {
@@ -34,6 +35,7 @@ export type ThemeColors = {
 };
 
 export type Theme = {
+  mode: "light" | "dark";
   colors: ThemeColors;
   spacing: Record<string, number>;
   size: Record<string, number>;

@@ -26,7 +26,11 @@ export default function Tag({ text, color = "primary", selected = false, onPress
 const stylesheet = StyleSheet.create((theme) => ({
   container: (color: ColorPalette, selected: boolean) => ({
     borderRadius: theme.borderRadius.full,
-    backgroundColor: selected ? theme.colors[color].main : theme.colors[color].background.accent,
+    backgroundColor: selected
+      ? theme.mode === "dark"
+        ? theme.colors[color].main
+        : theme.colors[color].background.accent
+      : theme.colors[color].background.main,
     borderColor: theme.colors[color].main,
     borderWidth: 1,
     alignItems: "center" as const,
@@ -40,7 +44,7 @@ const stylesheet = StyleSheet.create((theme) => ({
     elevation: 4,
   }),
   text: (color: ColorPalette, selected: boolean) => ({
-    color: selected ? theme.colors[color].background.accent : theme.colors[color].main,
+    color: selected ? theme.colors[color].text.primary : theme.colors[color].text.secondary,
     fontSize: 14,
     lineHeight: 18,
     fontFamily: theme.fonts.medium,

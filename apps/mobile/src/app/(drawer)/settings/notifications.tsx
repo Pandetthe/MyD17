@@ -101,21 +101,18 @@ export default function Notifications() {
 
   return (
     <View style={styles.wrapper}>
-      <Button
-        icon={ArrowLeft}
-        color="dark"
-        size="lg"
-        style={[styles.backButton, { top: insets.top + theme.spacing.sm }]}
-        onPress={() => router.back()}
-      />
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+        <Button
+          icon={ArrowLeft}
+          color="dark"
+          size="lg"
+          onPress={() => router.back()}
+        />
+        <TextCore variant="h2" style={styles.title}>Powiadomienia</TextCore>
+        <View style={styles.headerSpacer} />
+      </View>
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingTop: insets.top + theme.size.xl + theme.spacing.xl },
-        ]}
-      >
-        <TextCore variant="h1" style={styles.title}>Powiadomienia</TextCore>
+      <ScrollView contentContainerStyle={styles.content}>
 
         <Pressable style={styles.selectAllRow} onPress={toggleAll}>
           <TextCore variant="h2">Wszystkie</TextCore>
@@ -158,12 +155,22 @@ const styles = StyleSheet.create((theme: Theme) => ({
     flex: 1,
     backgroundColor: theme.colors.surface,
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  headerSpacer: {
+    width: theme.size.lg,
+  },
   content: {
     padding: theme.spacing.md,
     paddingBottom: 96,
   },
   title: {
-    marginBottom: theme.spacing.md,
+    flex: 1,
+    textAlign: "center",
   },
   selectAllRow: {
     flexDirection: "row",
@@ -184,10 +191,5 @@ const styles = StyleSheet.create((theme: Theme) => ({
   saveWrapper: {
     position: "absolute",
     right: theme.spacing.md,
-  },
-  backButton: {
-    position: "absolute",
-    left: theme.spacing.md,
-    zIndex: 10,
   },
 }));
