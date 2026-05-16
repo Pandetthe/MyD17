@@ -23,7 +23,6 @@ config.resolver.extraNodeModules = {
   three: path.resolve(workspaceRoot, "node_modules/three"),
 };
 
-const defaultResolver = config.resolver.resolverMainFields;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName.startsWith("three/examples/jsm/")) {
     const suffix = moduleName.slice("three/".length);
