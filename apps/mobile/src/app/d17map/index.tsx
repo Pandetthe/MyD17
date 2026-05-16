@@ -30,7 +30,7 @@ import { colors } from "@/styles/colors";
 import D17MapView from "../../components/D17MapView";
 import roomData from "../../../assets/map/floor1/roomCoordinates.json";
 
-// ── Texture registry — require() must be static literals ──────────────────────
+// require() must be static literals
 const TEXTURE_MODULES: Record<string, number> = {
   none:   require("../../../assets/map/floor1/none.webp"),
   "1.4":  require("../../../assets/map/floor1/1_4.webp"),
@@ -65,7 +65,6 @@ const TEXTURE_MODULES: Record<string, number> = {
   "1.39": require("../../../assets/map/floor1/1_39.webp"),
 };
 
-// ── Floor/room structure from keys ────────────────────────────────────────────
 function parseFloorRooms(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
   for (const key of Object.keys(TEXTURE_MODULES)) {
@@ -85,7 +84,6 @@ const FLOORS = Object.keys(FLOOR_ROOMS).sort();
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
 async function assetToBase64(module: number): Promise<string> {
   const asset = Asset.fromModule(module);
   await asset.downloadAsync();
@@ -95,7 +93,6 @@ async function assetToBase64(module: number): Promise<string> {
   });
 }
 
-// ── Slot picker ────────────────────────────────────────────────────────────────
 const ITEM_H = 52;
 const VISIBLE = 5;
 const PICKER_H = ITEM_H * VISIBLE;
@@ -120,7 +117,6 @@ function SlotPicker({
 
   return (
     <View style={{ height: PICKER_H, overflow: "hidden" }}>
-      {/* Selection band */}
       <View
         pointerEvents="none"
         style={{
@@ -166,7 +162,6 @@ function SlotPicker({
   );
 }
 
-// ── Drawer animation constants (mirrors InfoBottomDrawer) ─────────────────────
 const SPRING = { stiffness: 1000, damping: 500, mass: 3, overshootClamping: true } as const;
 const CLOSE_TIMING = { duration: 300, easing: Easing.in(Easing.ease) } as const;
 const CLOSE_THRESHOLD = 100;
@@ -174,33 +169,27 @@ const CLOSE_VELOCITY = 0.5;
 
 const FAB_SIZE = 52;
 
-// ── Screen ─────────────────────────────────────────────────────────────────────
 export default function D17MapScreen() {
   const { theme } = useUnistyles();
 
-  // Loaded assets
   const [glbBase64, setGlbBase64] = useState("");
   const [textureBase64, setTextureBase64] = useState("");
   const [searchTarget, setSearchTarget] = useState<{ x: number; z: number } | undefined>();
 
-  // Applied (what the map actually shows)
   const [appliedFloor, setAppliedFloor] = useState<number | null>(null);
   const [appliedRoom, setAppliedRoom] = useState<number | null>(null);
   const [searchKey, setSearchKey] = useState<string | undefined>(undefined);
 
-  // Drawer state
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerModalVisible, setDrawerModalVisible] = useState(false);
-  const [openSeq, setOpenSeq] = useState(0); // bumped each open, keys pickers
+  const [openSeq, setOpenSeq] = useState(0);
 
-  // Pending (what the pickers show, not yet applied)
   const [pendingFloor, setPendingFloor] = useState(0);
   const [pendingRoom, setPendingRoom] = useState(0);
   const pendingFloorRef = useRef(0);
 
   const loading = !glbBase64 || !textureBase64;
 
-  // Reanimated
   const translateY = useSharedValue(800);
 
   const finishClose = useCallback(() => {
@@ -226,7 +215,6 @@ export default function D17MapScreen() {
     translateY.value = withSpring(0, SPRING);
   }, [appliedFloor, appliedRoom, translateY]);
 
-  // Pan gesture to swipe-close (mirrors InfoBottomDrawer)
   const panGesture = Gesture.Pan()
     .activeOffsetY(5)
     .onChange((e) => {
@@ -248,7 +236,6 @@ export default function D17MapScreen() {
     opacity: interpolate(translateY.value, [0, 800], [1, 0], Extrapolation.CLAMP),
   }));
 
-  // Mount: load GLB + default texture
   useEffect(() => {
     (async () => {
       const [glb, tex] = await Promise.all([
@@ -321,7 +308,6 @@ export default function D17MapScreen() {
         </View>
       )}
 
-      {/* FAB */}
       {!drawerVisible && (
         <TouchableOpacity
           style={[styles.fab, { backgroundColor: theme.colors.primary.main }]}
@@ -332,7 +318,6 @@ export default function D17MapScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Bottom drawer */}
       <Modal
         transparent
         visible={drawerModalVisible}
@@ -340,21 +325,17 @@ export default function D17MapScreen() {
         onRequestClose={closeDrawer}
       >
         <GestureHandlerRootView style={styles.modalRoot}>
-          {/* Backdrop */}
           <Animated.View style={[styles.backdrop, backdropStyle]}>
             <Pressable style={styles.backdropPressable} onPress={closeDrawer} />
           </Animated.View>
 
-          {/* Sheet */}
           <Animated.View style={[styles.sheet, sheetStyle]}>
-            {/* Drag handle */}
             <GestureDetector gesture={panGesture}>
               <View style={styles.handleArea}>
                 <View style={styles.handle} />
               </View>
             </GestureDetector>
 
-            {/* Header */}
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Wybierz salę</Text>
               {appliedFloor !== null && appliedRoom !== null && (
@@ -364,7 +345,6 @@ export default function D17MapScreen() {
               )}
             </View>
 
-            {/* Pickers */}
             <View style={styles.pickersRow}>
               <View style={styles.pickerCol}>
                 <Text style={styles.pickerLabel}>Piętro</Text>
@@ -389,22 +369,21 @@ export default function D17MapScreen() {
               </View>
             </View>
 
-            {/* Action buttons */}
             <View style={styles.actions}>
               <TouchableOpacity
-                style={styles.btnOdrzuc}
+                style={styles.btnDiscard}
                 onPress={closeDrawer}
                 activeOpacity={0.7}
               >
-                <Text style={styles.btnOdrzucText}>Odrzuć</Text>
+                <Text style={styles.btnDiscardText}>Odrzuć</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.btnWybierz}
+                style={styles.btnSelect}
                 onPress={handleConfirm}
                 activeOpacity={0.85}
               >
-                <Text style={styles.btnWybierzText}>Wybierz</Text>
+                <Text style={styles.btnSelectText}>Wybierz</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -414,7 +393,6 @@ export default function D17MapScreen() {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create((theme) => ({
   root: {
     flex: 1,
@@ -445,7 +423,6 @@ const styles = StyleSheet.create((theme) => ({
     shadowOpacity: 0.35,
     shadowRadius: 6,
   },
-  // Modal
   modalRoot: {
     flex: 1,
   },
@@ -531,7 +508,7 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.md,
   },
-  btnOdrzuc: {
+  btnDiscard: {
     flex: 1,
     height: 48,
     borderRadius: theme.borderRadius.full,
@@ -540,12 +517,12 @@ const styles = StyleSheet.create((theme) => ({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.25)",
   },
-  btnOdrzucText: {
+  btnDiscardText: {
     color: "rgba(255,255,255,0.7)",
     fontSize: 15,
     fontWeight: "600",
   },
-  btnWybierz: {
+  btnSelect: {
     flex: 1,
     height: 48,
     borderRadius: theme.borderRadius.full,
@@ -553,7 +530,7 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: "center",
     backgroundColor: colors.white,
   },
-  btnWybierzText: {
+  btnSelectText: {
     color: theme.colors.primary.main,
     fontSize: 15,
     fontWeight: "700",
