@@ -11,6 +11,11 @@
       "minLength": 1,
       "required": true
     },
+    "icon": {
+      "type": "customField",
+      "customField": "plugin::strapi-lucide-icons.icon",
+      "required": true
+    },
     "content": {
       "type": "string",
       "minLength": 1,

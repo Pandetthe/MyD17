@@ -1859,6 +1859,7 @@ export interface components {
       __component?: "content.chip";
       title?: string;
       content?: string;
+      icon?: string;
     };
     CalendarEntryCalendarEntryComponent: {
       id?: string | number;

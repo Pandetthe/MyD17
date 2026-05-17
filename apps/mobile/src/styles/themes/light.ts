@@ -6,9 +6,10 @@ import { borderRadius, size, spacing } from "@/styles/tokens";
 export function lightColorSet(color: Color) {
   return {
     main: color.main,
+    icon: color.main,
     text: {
-      primary: color.extraDark,
-      secondary: color.dark,
+      primary: color.dark,
+      secondary: color.main,
     },
     background: {
       main: color.extraLight,
@@ -22,9 +23,10 @@ export const lightTheme: Theme = {
     surface: colors.surface,
     primary: {
       main: colors.core.main,
+      icon: colors.core.main,
       text: {
-        primary: colors.core.dark,
-        secondary: colors.core.muted,
+        primary: colors.core.main,
+        secondary: colors.core.dark,
       },
       background: {
         main: `linear-gradient(45deg, ${colors.core.extraLight} 0%, ${colors.core.surface} 100%)`,
@@ -33,9 +35,10 @@ export const lightTheme: Theme = {
     },
     dark: {
       main: colors.core.dark,
+      icon: colors.core.main,
       text: {
         primary: colors.core.dark,
-        secondary: colors.core.extraDark,
+        secondary: colors.core.muted,
       },
       background: {
         main: colors.core.dark,

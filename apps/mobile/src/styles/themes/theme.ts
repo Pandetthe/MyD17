@@ -1,5 +1,6 @@
 export type ColorGroup = {
   main: string;
+  icon: string;
   text: {
     primary: string;
     secondary: string;

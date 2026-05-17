@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
+import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type {
@@ -11,7 +12,8 @@ import type {
   PostContentBlock,
 } from "@repo/types";
 import { Clock, Info, MapPin } from "lucide-react-native";
-import { StyleSheet } from "react-native-unistyles";
+import type { LucideIcon } from "lucide-react-native";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 const LOCATION_LABELS: Record<LocationValue, string> = {
   "s1.38": "Budynek D-17, Sala 1.38",
@@ -36,8 +38,9 @@ type Props = {
 };
 
 export function InfoCard({ blocks, dark = false }: Props) {
+  const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
-  const iconColor = colors.core.dark;
+  const iconColor = dark ? colors.white : theme.colors.primary.main;
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -72,10 +75,11 @@ export function InfoCard({ blocks, dark = false }: Props) {
         />
       )}
       {chipBlocks.map((chip) => {
+        const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
         return (
           <InfoRow
             key={chip.id}
-            icon={<Info size={18} color={iconColor} />}
+            icon={<ChipIcon size={18} color={iconColor} />}
             label={chip.title ?? ""}
             value={chip.content ?? ""}
             dark={dark}
@@ -98,13 +102,13 @@ const styles = StyleSheet.create((theme: Theme) => ({
     elevation: 4,
   },
   cardLight: {
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.primary.background.main,
     borderColor: theme.colors.primary.main,
-    shadowColor: theme.colors.dark.main,
+    shadowColor: theme.colors.primary.main,
   },
   cardDark: {
-    backgroundColor: theme.colors.dark.main,
-    borderColor: colors.core.light,
-    shadowColor: theme.colors.dark.main,
+    backgroundColor: colors.core.dark,
+    borderColor: theme.colors.primary.main,
+    shadowColor: colors.core.extraDark,
   },
 }));

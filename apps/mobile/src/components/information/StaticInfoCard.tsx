@@ -3,66 +3,25 @@ import { Pressable, View } from "react-native";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
-import type { CardColor } from "@/lib/strapiColors";
 import { colors } from "@/styles/colors";
-import type { AppColor } from "@/styles/colors";
-import type { Theme } from "@/styles/themes/theme";
+import type { Theme, ColorPalette } from "@/styles/themes/theme";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   title: string;
   icon: LucideIcon;
-  color: CardColor;
+  color: ColorPalette;
   wide?: boolean;
   onPress: () => void;
 };
 
-type ColorScale = {
-  extraDark: string;
-  dark: string;
-  main: string;
-  light: string;
-  extraLight: string;
-};
-
-function paletteEntry(c: ColorScale, shadow: string) {
-  return {
-    bg: c.extraLight,
-    border: c.main,
-    iconBg: c.light as AppColor,
-    iconFg: c.main as AppColor,
-    text: c.extraDark,
-    shadow,
-    ellipseBg: c.light,
-    arrowBg: c.main,
-  };
-}
-
-const PALETTE: Record<CardColor, ReturnType<typeof paletteEntry>> = {
-  red: paletteEntry(colors.red, "rgba(231,0,11,0.2)"),
-  rose: paletteEntry(colors.rose, "rgba(244,63,94,0.2)"),
-  orange: paletteEntry(colors.orange, "rgba(249,115,22,0.2)"),
-  amber: paletteEntry(colors.amber, "rgba(246,162,0,0.2)"),
-  yellow: paletteEntry(colors.yellow, "rgba(234,179,8,0.2)"),
-  lime: paletteEntry(colors.lime, "rgba(132,204,22,0.2)"),
-  green: paletteEntry(colors.green, "rgba(94,165,0,0.2)"),
-  emerald: paletteEntry(colors.emerald, "rgba(16,185,129,0.2)"),
-  teal: paletteEntry(colors.teal, "rgba(0,146,184,0.2)"),
-  cyan: paletteEntry(colors.cyan, "rgba(6,182,212,0.2)"),
-  sky: paletteEntry(colors.sky, "rgba(14,165,233,0.2)"),
-  blue: paletteEntry(colors.blue, "rgba(59,130,246,0.2)"),
-  indigo: paletteEntry(colors.indigo, "rgba(99,102,241,0.2)"),
-  violet: paletteEntry(colors.violet, "rgba(139,92,246,0.2)"),
-  purple: paletteEntry(colors.purple, "rgba(118,61,169,0.2)"),
-  fuchsia: paletteEntry(colors.fuchsia, "rgba(217,70,239,0.2)"),
-  pink: paletteEntry(colors.pink, "rgba(222,38,112,0.2)"),
-};
-
 export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Props) {
-  const p = PALETTE[color];
+  const { theme } = useUnistyles();
+  const palette = theme.colors[color] as Theme["colors"]["red"]; // Use any color palette as they share the same structure
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
+  const isDark = theme.colors.surface === colors.core.extraDark;
 
   return (
     <Pressable
@@ -75,7 +34,11 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
         style={[
           styles.card,
           wide && styles.cardWide,
-          { backgroundColor: p.bg, borderColor: p.border, shadowColor: p.shadow },
+          {
+            backgroundColor: palette.background.main,
+            borderColor: palette.main,
+            shadowColor: palette.main,
+          },
           animStyle,
         ]}
       >
@@ -83,25 +46,31 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
           style={[
             styles.ellipseLarge,
             wide && styles.ellipseLargeWide,
-            { backgroundColor: p.ellipseBg },
+            { backgroundColor: palette.background.accent, opacity: isDark ? 0.5 : 1 },
           ]}
         />
 
         <View style={styles.iconWrapper}>
-          <IconPrimitive icon={icon} bg={p.iconBg} fg={p.iconFg} />
+          <IconPrimitive icon={icon} color={color} />
         </View>
 
         <View
           style={[
             styles.arrowButton,
             wide && styles.arrowButtonWide,
-            { backgroundColor: p.arrowBg },
+            { backgroundColor: palette.main },
           ]}
         >
           <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
         </View>
 
-        <TextCore variant="h3" weight="bold" color={p.text} numberOfLines={2} style={styles.title}>
+        <TextCore
+          variant="h3"
+          weight="bold"
+          color={palette.text.primary}
+          numberOfLines={2}
+          style={styles.title}
+        >
           {title}
         </TextCore>
       </Animated.View>
