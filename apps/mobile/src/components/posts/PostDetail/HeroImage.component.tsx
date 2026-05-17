@@ -45,7 +45,7 @@ export function HeroImage({ imageUrl, onBack, tags = [] }: Props) {
             <TagComponent
               key={tag.id}
               text={`#${tag.title}`}
-              color={strapiColorToPalette(tag.color?.color)}
+              color={strapiColorToPalette(tag.color)}
             />
           ))}
         </View>

@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
-import { ICON_MAP } from "@/lib/iconMap";
+import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type {
@@ -74,8 +74,7 @@ export function InfoCard({ blocks, dark = false }: Props) {
         />
       )}
       {chipBlocks.map((chip) => {
-        const ChipIcon: LucideIcon =
-          chip.icon?.icon && ICON_MAP[chip.icon.icon] ? ICON_MAP[chip.icon.icon] : Info;
+        const ChipIcon: LucideIcon = getIcon(chip.icon?.icon, Info);
         return (
           <InfoRow
             key={chip.id}

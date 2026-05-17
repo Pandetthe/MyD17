@@ -19,49 +19,39 @@ type Props = {
   onPress: () => void;
 };
 
-const PALETTE: Record<
-  CardColor,
-  {
-    bg: string;
-    border: string;
-    iconBg: AppColor;
-    iconFg: AppColor;
-    text: string;
-    shadow: string;
-    ellipseBg: string;
-    arrowBg: string;
-  }
-> = {
-  red: {
-    bg: colors.red.extraLight,
-    border: colors.red.main,
-    iconBg: colors.red.light,
-    iconFg: colors.red.main,
-    text: colors.red.extraDark,
-    shadow: "rgba(251,44,54,0.2)",
-    ellipseBg: colors.red.light,
-    arrowBg: colors.red.main,
-  },
-  green: {
-    bg: colors.white,
-    border: colors.green.main,
-    iconBg: colors.green.light,
-    iconFg: colors.green.main,
-    text: colors.green.extraDark,
-    shadow: "rgba(94,165,0,0.2)",
-    ellipseBg: colors.green.light,
-    arrowBg: colors.green.main,
-  },
-  teal: {
-    bg: colors.teal.extraLight,
-    border: colors.teal.main,
-    iconBg: colors.teal.light,
-    iconFg: colors.teal.main,
-    text: colors.teal.extraDark,
-    shadow: "rgba(0,146,184,0.2)",
-    ellipseBg: colors.teal.light,
-    arrowBg: colors.teal.main,
-  },
+type ColorScale = { extraDark: string; dark: string; main: string; light: string; extraLight: string };
+
+function paletteEntry(c: ColorScale, shadow: string) {
+  return {
+    bg: c.extraLight,
+    border: c.main,
+    iconBg: c.light as AppColor,
+    iconFg: c.main as AppColor,
+    text: c.extraDark,
+    shadow,
+    ellipseBg: c.light,
+    arrowBg: c.main,
+  };
+}
+
+const PALETTE: Record<CardColor, ReturnType<typeof paletteEntry>> = {
+  red:     paletteEntry(colors.red,     "rgba(231,0,11,0.2)"),
+  rose:    paletteEntry(colors.rose,    "rgba(244,63,94,0.2)"),
+  orange:  paletteEntry(colors.orange,  "rgba(249,115,22,0.2)"),
+  amber:   paletteEntry(colors.amber,   "rgba(246,162,0,0.2)"),
+  yellow:  paletteEntry(colors.yellow,  "rgba(234,179,8,0.2)"),
+  lime:    paletteEntry(colors.lime,    "rgba(132,204,22,0.2)"),
+  green:   paletteEntry(colors.green,   "rgba(94,165,0,0.2)"),
+  emerald: paletteEntry(colors.emerald, "rgba(16,185,129,0.2)"),
+  teal:    paletteEntry(colors.teal,    "rgba(0,146,184,0.2)"),
+  cyan:    paletteEntry(colors.cyan,    "rgba(6,182,212,0.2)"),
+  sky:     paletteEntry(colors.sky,     "rgba(14,165,233,0.2)"),
+  blue:    paletteEntry(colors.blue,    "rgba(59,130,246,0.2)"),
+  indigo:  paletteEntry(colors.indigo,  "rgba(99,102,241,0.2)"),
+  violet:  paletteEntry(colors.violet,  "rgba(139,92,246,0.2)"),
+  purple:  paletteEntry(colors.purple,  "rgba(118,61,169,0.2)"),
+  fuchsia: paletteEntry(colors.fuchsia, "rgba(217,70,239,0.2)"),
+  pink:    paletteEntry(colors.pink,    "rgba(222,38,112,0.2)"),
 };
 
 export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Props) {

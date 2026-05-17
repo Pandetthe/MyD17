@@ -3,6 +3,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import Notification from "@/components/core/Notification.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
+import { strapiColorToPalette } from "@/lib/strapiColors";
 import { ColorPalette, Theme } from "@/styles/themes/theme";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -17,10 +18,10 @@ export default function Notifications() {
     const res = await fetch("http://localhost:1337/api/tags");
     const json = await res.json();
 
-    return json.data.map((item: Tag) => ({
+    return json.data.map((item: { id: number; title: string; color?: string }) => ({
       id: item.id,
       title: item.title,
-      color: item.color ?? undefined,
+      color: strapiColorToPalette(item.color),
     }));
   };
 

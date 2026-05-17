@@ -5,8 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 
 const URL =
   "/api/information-page?" +
-  "populate[staticInformation][populate][color]=true&" +
-  "populate[staticInformation][populate][Icon]=true&" +
   "populate[staticInformation][populate][content][on][content.text]=true&" +
   "populate[staticInformation][populate][content][on][content.section-title]=true&" +
   "populate[staticInformation][populate][content][on][content.location]=true&" +

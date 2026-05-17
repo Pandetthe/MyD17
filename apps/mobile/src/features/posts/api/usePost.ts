@@ -8,7 +8,7 @@ function postUrl(documentId: string) {
     `/api/posts/${documentId}?` +
     "populate[images]=true&" +
     "populate[author][populate][avatar]=true&" +
-    "populate[tags][populate][color]=true&" +
+    "populate[tags]=true&" +
     "populate[content][on][content.text]=true&" +
     "populate[content][on][content.location]=true&" +
     "populate[content][on][content.event-date-time]=true&" +

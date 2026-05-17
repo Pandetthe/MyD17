@@ -1,7 +1,7 @@
 {
   "collectionName": "components_content_event_date_times",
   "info": {
-    "displayName": "EventDateTime",
+    "displayName": "Event Date & Time",
     "icon": "clock"
   },
   "options": {},

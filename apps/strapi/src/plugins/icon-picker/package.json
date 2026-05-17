@@ -1,0 +1,13 @@
+{
+  "name": "strapi-plugin-lucide-icons",
+  "version": "1.0.0",
+  "strapi": {
+    "kind": "plugin",
+    "name": "strapi-lucide-icons",
+    "displayName": "Lucide Icons",
+    "description": "Lucide icon picker custom field for Strapi."
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0"
+  }
+}
