@@ -1,10 +1,10 @@
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { Theme } from "@/styles/themes/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
