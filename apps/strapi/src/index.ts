@@ -105,5 +105,47 @@ export default {
     );
 
     strapi.db.createdIds = createdIds;
+
+    await setupPublicPermissions(strapi);
   },
 };
+
+async function setupPublicPermissions(strapi: any) {
+  const publicRole = await strapi.db
+    .query("plugin::users-permissions.role")
+    .findOne({ where: { type: "public" } });
+
+  if (!publicRole) {
+    strapi.log.warn("Public role not found, skipping permission setup");
+    return;
+  }
+
+  const publicActions = [
+    "api::post.post.find",
+    "api::post.post.findOne",
+    "api::tag.tag.find",
+    "api::tag.tag.findOne",
+    "api::information-page.information-page.find",
+    "api::information-page.information-page.findOne",
+    "api::static-information.static-information.find",
+    "api::static-information.static-information.findOne",
+  ];
+
+  for (const action of publicActions) {
+    const permission = await strapi.db
+      .query("plugin::users-permissions.permission")
+      .findOne({ where: { action, role: publicRole.id } });
+
+    if (!permission) {
+      await strapi.db
+        .query("plugin::users-permissions.permission")
+        .create({ data: { action, role: publicRole.id, enabled: true } });
+      strapi.log.info(`Created public permission: ${action}`);
+    } else if (!permission.enabled) {
+      await strapi.db
+        .query("plugin::users-permissions.permission")
+        .update({ where: { id: permission.id }, data: { enabled: true } });
+      strapi.log.info(`Enabled public permission: ${action}`);
+    }
+  }
+}
