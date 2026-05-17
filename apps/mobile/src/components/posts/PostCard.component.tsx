@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Pressable } from "react-native";
+import { View, Pressable, Share } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
@@ -33,6 +33,8 @@ function formatDate(dateStr: string): string {
   });
 }
 
+const STRAPI_BASE_URL = process.env.EXPO_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
+
 export function PostCard({ post, onPress, onTagPress }: Props) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
@@ -49,6 +51,11 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const authorColor = isDark ? colors.white : colors.core.dark;
   const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
+
+  const handleShare = async () => {
+    const url = `${STRAPI_BASE_URL}/api/share/post/${post.documentId}`;
+    await Share.share({ message: url, title: post.title });
+  };
 
   return (
     <Card
@@ -133,7 +140,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
-        <Pressable style={styles.iconButton} hitSlop={8}>
+        <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
           <Share2 size={theme.size.md} color={colors.core.main} />
         </Pressable>
         <Pressable style={styles.iconButton} hitSlop={8}>

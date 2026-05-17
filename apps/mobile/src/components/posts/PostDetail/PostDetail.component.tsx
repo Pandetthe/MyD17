@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { View, Pressable, StatusBar } from "react-native";
+import { View, Pressable, StatusBar, Share } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
@@ -22,6 +22,8 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 type Props = {
   post: Post;
 };
+
+const STRAPI_BASE_URL = process.env.EXPO_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 
 export function PostDetail({ post }: Props) {
   const router = useRouter();
@@ -55,6 +57,11 @@ export function PostDetail({ post }: Props) {
         runOnJS(goBack)();
       }
     });
+
+  const handleShare = async () => {
+    const url = `${STRAPI_BASE_URL}/api/share/post/${post.documentId}`;
+    await Share.share({ message: url, title: post.title });
+  };
 
   return (
     <View style={styles.screen}>
@@ -96,7 +103,7 @@ export function PostDetail({ post }: Props) {
             )}
 
             <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
-              <Pressable style={styles.iconButton} hitSlop={8}>
+              <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
                 <Share2 size={theme.size.md} color={colors.core.main} />
               </Pressable>
               <Pressable style={styles.iconButton} hitSlop={8}>
