@@ -4,6 +4,7 @@
     "description": "",
     "likesCount": 2137,
     "tags": [17],
+    "author": 1,
     "content": [
       {
         "__component": "content.text",
@@ -49,6 +50,7 @@
     "description": "Kolokwium habilitacyjne",
     "likesCount": 132,
     "tags": [1, 2, 13],
+    "author": 2,
     "content": [
       {
         "__component": "content.text",
@@ -73,6 +75,7 @@
     "description": "Dziś w całej Polsce rozpoczęły się egzaminy maturalne. To doskonały moment, aby podsumować zaangażowanie społeczności naszego Wydziału w ramach III edycji autorskiego projektu Bit Matura (Matura x Diament).",
     "likesCount": 93,
     "tags": [3, 7, 13],
+    "author": 1,
     "content": [
       {
         "__component": "content.text",
@@ -85,9 +88,10 @@
     "description": "Wyniki rekrutacji do programu",
     "likesCount": 224,
     "tags": [2, 5],
+    "author": 2,
     "content": [
       {
-        "__component": "component.text",
+        "__component": "content.text",
         "content": "W nawiązaniu do zakończonej rekrutacji do programu Erasmus+ informujemy, że wyniki kwalifikacji dla studentów Wydziału Informatyki AGH będą dostępne od 11 maja 2026 r. w Dziekanacie Wydziału Informatyki AGH.\n\nUprzejmie prosimy osoby biorące udział w rekrutacji o zgłoszenie się do Dziekanatu w celu zapoznania się z wynikami oraz dalszymi informacjami dotyczącymi procesu kwalifikacji."
       }
     ]
