@@ -2,7 +2,8 @@ import type { Core } from "@strapi/strapi";
 
 const icons = ({ strapi }: { strapi: Core.Strapi }) => ({
   async list() {
-    const { default: dynamicIconImports } = await import("lucide-react/dynamicIconImports");
+    const { default: dynamicIconImports } =
+      await import("lucide-react/dynamicIconImports");
     return Object.keys(dynamicIconImports as Record<string, unknown>);
   },
 

@@ -78,49 +78,59 @@ export default function Information() {
 
   const isEmpty = !isLoading && items.length === 0;
 
-  return (
-    <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />
-      ) : isEmpty ? (
+  const renderContent = () => {
+    if (isLoading) {
+      return <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />;
+    }
+
+    if (isEmpty) {
+      return (
         <View style={[styles.container, styles.centered]}>
           <TextCore variant="body" color={theme.colors.primary.text.secondary}>
             Brak dostępnych informacji.
           </TextCore>
           <Button text="Odśwież" color="primary" onPress={() => refetch()} />
         </View>
-      ) : (
-        <ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-        >
-          {rows.map((row) =>
-            row.wide ? (
-              <StaticInfoCard
-                key={row.key}
-                title={row.items[0].title}
-                icon={resolveIcon(row.items[0], row.startIndex)}
-                color={strapiColorToCard(row.items[0].color)}
-                wide
-                onPress={() => setSelectedItem(row.items[0])}
-              />
-            ) : (
-              <View key={row.key} style={styles.row}>
-                {row.items.map((item, j) => (
-                  <StaticInfoCard
-                    key={item.documentId ?? j}
-                    title={item.title}
-                    icon={resolveIcon(item, row.startIndex + j)}
-                    color={strapiColorToCard(item.color)}
-                    onPress={() => setSelectedItem(item)}
-                  />
-                ))}
-              </View>
-            ),
-          )}
-        </ScrollView>
-      )}
+      );
+    }
+
+    return (
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
+      >
+        {rows.map((row) =>
+          row.wide ? (
+            <StaticInfoCard
+              key={row.key}
+              title={row.items[0].title}
+              icon={resolveIcon(row.items[0], row.startIndex)}
+              color={strapiColorToCard(row.items[0].color)}
+              wide
+              onPress={() => setSelectedItem(row.items[0])}
+            />
+          ) : (
+            <View key={row.key} style={styles.row}>
+              {row.items.map((item, j) => (
+                <StaticInfoCard
+                  key={item.documentId ?? j}
+                  title={item.title}
+                  icon={resolveIcon(item, row.startIndex + j)}
+                  color={strapiColorToCard(item.color)}
+                  onPress={() => setSelectedItem(item)}
+                />
+              ))}
+            </View>
+          ),
+        )}
+      </ScrollView>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderContent()}
 
       <InfoBottomDrawer
         visible={selectedItem !== null}

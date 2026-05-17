@@ -38,7 +38,7 @@ export default {
                 },
                 description: {
                   id: getTranslation(
-                    "form.attribute.item.requiredField.description"
+                    "form.attribute.item.requiredField.description",
                   ),
                   defaultMessage:
                     "You won't be able to create an entry if this field is empty",
@@ -53,7 +53,7 @@ export default {
                 },
                 description: {
                   id: getTranslation(
-                    "form.attribute.item.privateField.description"
+                    "form.attribute.item.privateField.description",
                   ),
                   defaultMessage:
                     "This field will not show up in the API response",
@@ -84,7 +84,7 @@ export default {
         } catch {
           return { data: {}, locale };
         }
-      })
+      }),
     );
   },
 };

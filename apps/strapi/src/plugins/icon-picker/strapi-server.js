@@ -37,9 +37,8 @@ module.exports = {
   services: {
     icons: () => ({
       async list() {
-        const { default: dynamicIconImports } = await import(
-          "lucide-react/dynamicIconImports"
-        );
+        const { default: dynamicIconImports } =
+          await import("lucide-react/dynamicIconImports");
         return Object.keys(dynamicIconImports);
       },
       normalize(value) {

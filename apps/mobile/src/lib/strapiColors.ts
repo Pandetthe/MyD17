@@ -4,8 +4,23 @@ import type { TailwindColorName } from "@repo/types";
 export type CardColor = TailwindColorName;
 
 const VALID_COLORS: TailwindColorName[] = [
-  "red", "rose", "orange", "amber", "yellow", "lime", "green", "emerald",
-  "teal", "cyan", "sky", "blue", "indigo", "violet", "purple", "fuchsia", "pink",
+  "red",
+  "rose",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
 ];
 
 export function strapiColorToPalette(color?: string): ColorPalette {

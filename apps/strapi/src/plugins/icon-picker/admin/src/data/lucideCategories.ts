@@ -1,13 +1,18 @@
-export type LucideCategory = { name: string; title: string; icon: string; icons: string[] };
+export type LucideCategory = {
+  name: string;
+  title: string;
+  icon: string;
+  icons: string[];
+};
 
 export const LUCIDE_ICON_ALIASES: Record<string, string[]> = {};
 
 export const LUCIDE_CATEGORIES: LucideCategory[] = [
   {
-    "name": "all",
-    "title": "All icons",
-    "icon": "grid",
-    "icons": [
+    name: "all",
+    title: "All icons",
+    icon: "grid",
+    icons: [
       "a-arrow-down",
       "a-arrow-up",
       "a-large-small",
@@ -1710,14 +1715,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "zodiac-taurus",
       "zodiac-virgo",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "accessibility",
-    "title": "Accessibility",
-    "icon": "accessibility",
-    "icons": [
+    name: "accessibility",
+    title: "Accessibility",
+    icon: "accessibility",
+    icons: [
       "accessibility",
       "baby",
       "badge-info",
@@ -1747,14 +1752,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "sun-moon",
       "transgender",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "account",
-    "title": "Accounts & access",
-    "icon": "user",
-    "icons": [
+    name: "account",
+    title: "Accounts & access",
+    icon: "user",
+    icons: [
       "activity",
       "at-sign",
       "award",
@@ -1892,14 +1897,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "waypoints",
       "webhook",
       "webhook-off",
-      "wrench"
-    ]
+      "wrench",
+    ],
   },
   {
-    "name": "animals",
-    "title": "Animals",
-    "icon": "dog",
-    "icons": [
+    name: "animals",
+    title: "Animals",
+    icon: "dog",
+    icons: [
       "bird",
       "birdhouse",
       "bone",
@@ -1922,14 +1927,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "snail",
       "squirrel",
       "turtle",
-      "worm"
-    ]
+      "worm",
+    ],
   },
   {
-    "name": "arrows",
-    "title": "Arrows",
-    "icon": "arrow-left-right",
-    "icons": [
+    name: "arrows",
+    title: "Arrows",
+    icon: "arrow-left-right",
+    icons: [
       "arrow-big-down",
       "arrow-big-down-dash",
       "arrow-big-left",
@@ -2141,14 +2146,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "undo-dot",
       "unfold-horizontal",
       "unfold-vertical",
-      "upload"
-    ]
+      "upload",
+    ],
   },
   {
-    "name": "buildings",
-    "title": "Buildings",
-    "icon": "building",
-    "icons": [
+    name: "buildings",
+    title: "Buildings",
+    icon: "building",
+    icons: [
       "anvil",
       "brick-wall",
       "building",
@@ -2172,14 +2177,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "theater",
       "university",
       "utility-pole",
-      "warehouse"
-    ]
+      "warehouse",
+    ],
   },
   {
-    "name": "charts",
-    "title": "Charts",
-    "icon": "chart-pie",
-    "icons": [
+    name: "charts",
+    title: "Charts",
+    icon: "chart-pie",
+    icons: [
       "chart-area",
       "chart-bar",
       "chart-bar-big",
@@ -2210,14 +2215,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "square-kanban",
       "trending-down",
       "trending-up",
-      "trending-up-down"
-    ]
+      "trending-up-down",
+    ],
   },
   {
-    "name": "communication",
-    "title": "Communication",
-    "icon": "message-circle",
-    "icons": [
+    name: "communication",
+    title: "Communication",
+    icon: "message-circle",
+    icons: [
       "antenna",
       "audio-lines",
       "audio-waveform",
@@ -2272,14 +2277,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "volume-2",
       "volume-off",
       "volume-x",
-      "webcam"
-    ]
+      "webcam",
+    ],
   },
   {
-    "name": "connectivity",
-    "title": "Connectivity",
-    "icon": "wifi",
-    "icons": [
+    name: "connectivity",
+    title: "Connectivity",
+    icon: "wifi",
+    icons: [
       "airplay",
       "battery",
       "battery-charging",
@@ -2372,14 +2377,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "wifi-sync",
       "wifi-zero",
       "zap",
-      "zap-off"
-    ]
+      "zap-off",
+    ],
   },
   {
-    "name": "cursors",
-    "title": "Cursors",
-    "icon": "mouse-pointer-2",
-    "icons": [
+    name: "cursors",
+    title: "Cursors",
+    icon: "mouse-pointer-2",
+    icons: [
       "circle-plus",
       "hand",
       "hand-grab",
@@ -2412,14 +2417,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "stamp",
       "text-cursor",
       "wand",
-      "wand-sparkles"
-    ]
+      "wand-sparkles",
+    ],
   },
   {
-    "name": "design",
-    "title": "Design",
-    "icon": "palette",
-    "icons": [
+    name: "design",
+    title: "Design",
+    icon: "palette",
+    icons: [
       "a-arrow-down",
       "a-arrow-up",
       "a-large-small",
@@ -2564,14 +2569,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "wand",
       "wand-sparkles",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "development",
-    "title": "Coding & development",
-    "icon": "code-xml",
-    "icons": [
+    name: "development",
+    title: "Coding & development",
+    icon: "code-xml",
+    icons: [
       "ampersand",
       "ampersands",
       "app-window",
@@ -2813,14 +2818,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "webhook",
       "webhook-off",
       "workflow",
-      "wrench"
-    ]
+      "wrench",
+    ],
   },
   {
-    "name": "devices",
-    "title": "Devices",
-    "icon": "smartphone",
-    "icons": [
+    name: "devices",
+    title: "Devices",
+    icon: "smartphone",
+    icons: [
       "alarm-clock",
       "alarm-clock-check",
       "alarm-clock-minus",
@@ -2991,14 +2996,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "wifi-sync",
       "wifi-zero",
       "zap",
-      "zap-off"
-    ]
+      "zap-off",
+    ],
   },
   {
-    "name": "emoji",
-    "title": "Emoji",
-    "icon": "smile",
-    "icons": [
+    name: "emoji",
+    title: "Emoji",
+    icon: "smile",
+    icons: [
       "angry",
       "annoyed",
       "balloon",
@@ -3039,14 +3044,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "zodiac-sagittarius",
       "zodiac-scorpio",
       "zodiac-taurus",
-      "zodiac-virgo"
-    ]
+      "zodiac-virgo",
+    ],
   },
   {
-    "name": "files",
-    "title": "File icons",
-    "icon": "panels-top-left",
-    "icons": [
+    name: "files",
+    title: "File icons",
+    icon: "panels-top-left",
+    icons: [
       "app-window",
       "app-window-mac",
       "archive",
@@ -3209,14 +3214,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "ungroup",
       "upload",
       "videotape",
-      "wifi-cog"
-    ]
+      "wifi-cog",
+    ],
   },
   {
-    "name": "finance",
-    "title": "Finance",
-    "icon": "piggy-bank",
-    "icons": [
+    name: "finance",
+    title: "Finance",
+    icon: "piggy-bank",
+    icons: [
       "badge-cent",
       "badge-dollar-sign",
       "badge-euro",
@@ -3272,14 +3277,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "turkish-lira",
       "wallet",
       "wallet-cards",
-      "wallet-minimal"
-    ]
+      "wallet-minimal",
+    ],
   },
   {
-    "name": "food-beverage",
-    "title": "Food & beverage",
-    "icon": "coffee",
-    "icons": [
+    name: "food-beverage",
+    title: "Food & beverage",
+    icon: "coffee",
+    icons: [
       "amphora",
       "apple",
       "banana",
@@ -3350,14 +3355,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "wheat",
       "wheat-off",
       "wine",
-      "wine-off"
-    ]
+      "wine-off",
+    ],
   },
   {
-    "name": "gaming",
-    "title": "Gaming",
-    "icon": "gamepad-2",
-    "icons": [
+    name: "gaming",
+    title: "Gaming",
+    icon: "gamepad-2",
+    icons: [
       "amphora",
       "anvil",
       "arrow-big-down",
@@ -3506,14 +3511,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "venetian-mask",
       "volleyball",
       "wand",
-      "wand-sparkles"
-    ]
+      "wand-sparkles",
+    ],
   },
   {
-    "name": "home",
-    "title": "Home",
-    "icon": "house",
-    "icons": [
+    name: "home",
+    title: "Home",
+    icon: "house",
+    icons: [
       "air-vent",
       "alarm-smoke",
       "armchair",
@@ -3574,14 +3579,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "utility-pole",
       "vault",
       "washing-machine",
-      "waves-ladder"
-    ]
+      "waves-ladder",
+    ],
   },
   {
-    "name": "layout",
-    "title": "Layout",
-    "icon": "panels-top-left",
-    "icons": [
+    name: "layout",
+    title: "Layout",
+    icon: "panels-top-left",
+    icons: [
       "align-center-horizontal",
       "align-center-vertical",
       "align-end-horizontal",
@@ -3723,14 +3728,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "unfold-horizontal",
       "unfold-vertical",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "mail",
-    "title": "Mail",
-    "icon": "mail",
-    "icons": [
+    name: "mail",
+    title: "Mail",
+    icon: "mail",
+    icons: [
       "archive",
       "archive-restore",
       "archive-x",
@@ -3756,14 +3761,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "send-horizontal",
       "shredder",
       "trash",
-      "trash-2"
-    ]
+      "trash-2",
+    ],
   },
   {
-    "name": "math",
-    "title": "Mathematics",
-    "icon": "divide",
-    "icons": [
+    name: "math",
+    title: "Mathematics",
+    icon: "divide",
+    icons: [
       "asterisk",
       "astroid",
       "badge-percent",
@@ -3839,14 +3844,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "weight",
       "weight-tilde",
       "x",
-      "x-line-top"
-    ]
+      "x-line-top",
+    ],
   },
   {
-    "name": "medical",
-    "title": "Medical",
-    "icon": "heart",
-    "icons": [
+    name: "medical",
+    title: "Medical",
+    icon: "heart",
+    icons: [
       "accessibility",
       "activity",
       "ambulance",
@@ -3888,14 +3893,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "tablets",
       "transgender",
       "venus",
-      "venus-and-mars"
-    ]
+      "venus-and-mars",
+    ],
   },
   {
-    "name": "multimedia",
-    "title": "Multimedia",
-    "icon": "circle-play",
-    "icons": [
+    name: "multimedia",
+    title: "Multimedia",
+    icon: "circle-play",
+    icons: [
       "activity",
       "airplay",
       "album",
@@ -4038,14 +4043,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "volume-2",
       "volume-off",
       "volume-x",
-      "waves-horizontal"
-    ]
+      "waves-horizontal",
+    ],
   },
   {
-    "name": "nature",
-    "title": "Nature",
-    "icon": "sprout",
-    "icons": [
+    name: "nature",
+    title: "Nature",
+    icon: "sprout",
+    icons: [
       "binoculars",
       "birdhouse",
       "cannabis",
@@ -4068,14 +4073,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "tree-deciduous",
       "tree-palm",
       "tree-pine",
-      "trees"
-    ]
+      "trees",
+    ],
   },
   {
-    "name": "navigation",
-    "title": "Navigation, Maps, and POIs",
-    "icon": "compass",
-    "icons": [
+    name: "navigation",
+    title: "Navigation, Maps, and POIs",
+    icon: "compass",
+    icons: [
       "barrel",
       "binoculars",
       "birdhouse",
@@ -4162,14 +4167,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "utensils-crossed",
       "warehouse",
       "waves-horizontal",
-      "waypoints"
-    ]
+      "waypoints",
+    ],
   },
   {
-    "name": "notifications",
-    "title": "Notification",
-    "icon": "triangle-alert",
-    "icons": [
+    name: "notifications",
+    title: "Notification",
+    icon: "triangle-alert",
+    icons: [
       "alarm-clock",
       "alarm-clock-check",
       "alarm-clock-minus",
@@ -4210,24 +4215,20 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "triangle-alert",
       "vibrate",
       "x",
-      "x-line-top"
-    ]
+      "x-line-top",
+    ],
   },
   {
-    "name": "people",
-    "title": "People",
-    "icon": "person-standing",
-    "icons": [
-      "baby",
-      "hand-platter",
-      "person-standing"
-    ]
+    name: "people",
+    title: "People",
+    icon: "person-standing",
+    icons: ["baby", "hand-platter", "person-standing"],
   },
   {
-    "name": "photography",
-    "title": "Photography",
-    "icon": "camera",
-    "icons": [
+    name: "photography",
+    title: "Photography",
+    icon: "camera",
+    icons: [
       "album",
       "aperture",
       "backpack",
@@ -4302,14 +4303,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "zap",
       "zap-off",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "science",
-    "title": "Science",
-    "icon": "flask-conical",
-    "icons": [
+    name: "science",
+    title: "Science",
+    icon: "flask-conical",
+    icons: [
       "activity",
       "atom",
       "beaker",
@@ -4345,26 +4346,20 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "telescope",
       "test-tube",
       "test-tube-diagonal",
-      "test-tubes"
-    ]
+      "test-tubes",
+    ],
   },
   {
-    "name": "seasons",
-    "title": "Seasons",
-    "icon": "leaf",
-    "icons": [
-      "flower-2",
-      "leaf",
-      "rose",
-      "snowflake",
-      "sun"
-    ]
+    name: "seasons",
+    title: "Seasons",
+    icon: "leaf",
+    icons: ["flower-2", "leaf", "rose", "snowflake", "sun"],
   },
   {
-    "name": "security",
-    "title": "Security",
-    "icon": "shield",
-    "icons": [
+    name: "security",
+    title: "Security",
+    icon: "shield",
+    icons: [
       "bomb",
       "book-key",
       "book-lock",
@@ -4422,14 +4417,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "user-lock",
       "vault",
       "waypoints",
-      "worm"
-    ]
+      "worm",
+    ],
   },
   {
-    "name": "shapes",
-    "title": "Shapes",
-    "icon": "triangle",
-    "icons": [
+    name: "shapes",
+    title: "Shapes",
+    icon: "triangle",
+    icons: [
       "astroid",
       "badge",
       "badge-question-mark",
@@ -4486,14 +4481,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "triangle-dashed",
       "triangle-right",
       "ungroup",
-      "vector-square"
-    ]
+      "vector-square",
+    ],
   },
   {
-    "name": "shopping",
-    "title": "Shopping",
-    "icon": "shopping-bag",
-    "icons": [
+    name: "shopping",
+    title: "Shopping",
+    icon: "shopping-bag",
+    icons: [
       "badge-cent",
       "badge-dollar-sign",
       "badge-euro",
@@ -4520,14 +4515,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "shopping-cart",
       "square-percent",
       "store",
-      "ticket-percent"
-    ]
+      "ticket-percent",
+    ],
   },
   {
-    "name": "social",
-    "title": "Social",
-    "icon": "thumbs-up",
-    "icons": [
+    name: "social",
+    title: "Social",
+    icon: "thumbs-up",
+    icons: [
       "activity",
       "badge",
       "badge-alert",
@@ -4655,14 +4650,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "zodiac-sagittarius",
       "zodiac-scorpio",
       "zodiac-taurus",
-      "zodiac-virgo"
-    ]
+      "zodiac-virgo",
+    ],
   },
   {
-    "name": "sports",
-    "title": "Sports",
-    "icon": "type",
-    "icons": [
+    name: "sports",
+    title: "Sports",
+    icon: "type",
+    icons: [
       "award",
       "circle-gauge",
       "circle-star",
@@ -4677,14 +4672,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "square-star",
       "trophy",
       "volleyball",
-      "waves-ladder"
-    ]
+      "waves-ladder",
+    ],
   },
   {
-    "name": "sustainability",
-    "title": "Sustainability",
-    "icon": "recycle",
-    "icons": [
+    name: "sustainability",
+    title: "Sustainability",
+    icon: "recycle",
+    icons: [
       "dam",
       "flower",
       "flower-2",
@@ -4709,14 +4704,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "waves-horizontal",
       "waves-vertical",
       "wind",
-      "wind-arrow-down"
-    ]
+      "wind-arrow-down",
+    ],
   },
   {
-    "name": "text",
-    "title": "Text formatting",
-    "icon": "type",
-    "icons": [
+    name: "text",
+    title: "Text formatting",
+    icon: "type",
+    icons: [
       "a-arrow-down",
       "a-arrow-up",
       "a-large-small",
@@ -4963,14 +4958,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "unlink-2",
       "whole-word",
       "zoom-in",
-      "zoom-out"
-    ]
+      "zoom-out",
+    ],
   },
   {
-    "name": "time",
-    "title": "Time & calendar",
-    "icon": "calendar",
-    "icons": [
+    name: "time",
+    title: "Time & calendar",
+    icon: "calendar",
+    icons: [
       "alarm-clock",
       "alarm-clock-check",
       "alarm-clock-minus",
@@ -5030,14 +5025,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "timer",
       "timer-off",
       "timer-reset",
-      "watch"
-    ]
+      "watch",
+    ],
   },
   {
-    "name": "tools",
-    "title": "Tools",
-    "icon": "hammer",
-    "icons": [
+    name: "tools",
+    title: "Tools",
+    icon: "hammer",
+    icons: [
       "anvil",
       "axe",
       "between-horizontal-end",
@@ -5108,14 +5103,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "toolbox",
       "torus",
       "vector-square",
-      "wrench"
-    ]
+      "wrench",
+    ],
   },
   {
-    "name": "transportation",
-    "title": "Transportation",
-    "icon": "train-front",
-    "icons": [
+    name: "transportation",
+    title: "Transportation",
+    icon: "train-front",
+    icons: [
       "ambulance",
       "anchor",
       "arrows-up-from-line",
@@ -5179,14 +5174,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "tram-front",
       "truck",
       "truck-electric",
-      "van"
-    ]
+      "van",
+    ],
   },
   {
-    "name": "travel",
-    "title": "Travel",
-    "icon": "backpack",
-    "icons": [
+    name: "travel",
+    title: "Travel",
+    icon: "backpack",
+    icons: [
       "alarm-smoke",
       "backpack",
       "baggage-claim",
@@ -5256,14 +5251,14 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "utensils-crossed",
       "vault",
       "volleyball",
-      "washing-machine"
-    ]
+      "washing-machine",
+    ],
   },
   {
-    "name": "weather",
-    "title": "Weather",
-    "icon": "cloud-sun",
-    "icons": [
+    name: "weather",
+    title: "Weather",
+    icon: "cloud-sun",
+    icons: [
       "bubbles",
       "cloud",
       "cloud-drizzle",
@@ -5309,7 +5304,7 @@ export const LUCIDE_CATEGORIES: LucideCategory[] = [
       "wind",
       "wind-arrow-down",
       "zap",
-      "zap-off"
-    ]
-  }
+      "zap-off",
+    ],
+  },
 ];

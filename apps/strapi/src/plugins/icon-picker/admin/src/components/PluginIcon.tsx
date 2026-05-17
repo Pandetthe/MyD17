@@ -15,7 +15,14 @@ const IconBox = styled(Flex)`
 
 export const PluginIcon = () => {
   return (
-    <IconBox justifyContent="center" alignItems="center" width={7} height={6} hasRadius aria-hidden>
+    <IconBox
+      justifyContent="center"
+      alignItems="center"
+      width={7}
+      height={6}
+      hasRadius
+      aria-hidden
+    >
       <Sparkles size={16} />
     </IconBox>
   );

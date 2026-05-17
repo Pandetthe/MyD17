@@ -96,9 +96,13 @@ export default {
       "api::static-information.static-information",
       "static-information.json",
     );
-    await seedFromFile("api::information-page.information-page", "information-page.json", {
-      staticInformation: "api::static-information.static-information",
-    });
+    await seedFromFile(
+      "api::information-page.information-page",
+      "information-page.json",
+      {
+        staticInformation: "api::static-information.static-information",
+      },
+    );
 
     strapi.db.createdIds = createdIds;
   },

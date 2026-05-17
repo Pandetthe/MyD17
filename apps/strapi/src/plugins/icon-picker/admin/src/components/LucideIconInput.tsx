@@ -17,14 +17,22 @@ import { type InputProps, useField } from "@strapi/strapi/admin";
 import styled from "styled-components";
 import { Cross } from "@strapi/icons";
 import { getTranslation } from "../utils/getTranslation";
-import { LUCIDE_CATEGORIES, LUCIDE_ICON_ALIASES } from "../data/lucideCategories";
+import {
+  LUCIDE_CATEGORIES,
+  LUCIDE_ICON_ALIASES,
+} from "../data/lucideCategories";
 
-type StrapiChangeEvent = { target: { name: string; value: string; type?: string } };
+type StrapiChangeEvent = {
+  target: { name: string; value: string; type?: string };
+};
 
 type IconComponent = ComponentType<LucideProps>;
 
 type DynamicIconImport = () => Promise<{ default: IconComponent }>;
-const dynamicIconImportsTyped = dynamicIconImports as Record<string, DynamicIconImport>;
+const dynamicIconImportsTyped = dynamicIconImports as Record<
+  string,
+  DynamicIconImport
+>;
 
 const DEFAULT_MAX_RESULTS = 2000;
 
@@ -59,7 +67,8 @@ const IconGrid = styled(Box)`
 
 const IconTile = styled.button<{ $active: boolean }>`
   border: 1px solid
-    ${({ theme, $active }) => ($active ? theme.colors.primary600 : theme.colors.neutral200)};
+    ${({ theme, $active }) =>
+      $active ? theme.colors.primary600 : theme.colors.neutral200};
   border-radius: ${({ theme }) => theme.borderRadius};
   padding: 0;
   background: ${({ theme, $active }) =>
@@ -203,10 +212,13 @@ const DialogHeaderText = styled(Dialog.Header)`
 
 const CategoryButton = styled.button<{ $active: boolean }>`
   width: 100%;
-  border: 1px solid ${({ theme, $active }) => ($active ? theme.colors.primary600 : "transparent")};
+  border: 1px solid
+    ${({ theme, $active }) =>
+      $active ? theme.colors.primary600 : "transparent"};
   border-radius: ${({ theme }) => theme.borderRadius};
   padding: ${({ theme }) => theme.spaces[2]};
-  background: ${({ theme, $active }) => ($active ? theme.colors.primary100 : "transparent")};
+  background: ${({ theme, $active }) =>
+    $active ? theme.colors.primary100 : "transparent"};
   text-align: left;
   cursor: pointer;
   transition:
@@ -241,7 +253,10 @@ const loadIcon = async (iconName: string) => {
     return iconComponent;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn(`[strapi-lucide-icons] Failed to load icon: ${iconName}`, error);
+      console.warn(
+        `[strapi-lucide-icons] Failed to load icon: ${iconName}`,
+        error,
+      );
     }
     return null;
   }
@@ -308,11 +323,15 @@ const LucideIconInput = ({
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [SelectedIcon, setSelectedIcon] = useState<IconComponent>(() => NullIcon);
+  const [SelectedIcon, setSelectedIcon] = useState<IconComponent>(
+    () => NullIcon,
+  );
   const searchRef = useRef<HTMLInputElement | null>(null);
 
   const allIcons = useMemo(() => {
-    return LUCIDE_CATEGORIES.find((category) => category.name === "all")?.icons ?? [];
+    return (
+      LUCIDE_CATEGORIES.find((category) => category.name === "all")?.icons ?? []
+    );
   }, []);
 
   const maxResults =
@@ -356,7 +375,8 @@ const LucideIconInput = ({
 
   const activeCategoryData = useMemo(() => {
     return (
-      LUCIDE_CATEGORIES.find((category) => category.name === activeCategory) ?? LUCIDE_CATEGORIES[0]
+      LUCIDE_CATEGORIES.find((category) => category.name === activeCategory) ??
+      LUCIDE_CATEGORIES[0]
     );
   }, [activeCategory]);
 
@@ -420,13 +440,17 @@ const LucideIconInput = ({
       id={name}
       hint={hint}
       required={required}
-      disabled={disabled}
       error={field.error}
     >
       <Flex direction="column" alignItems="stretch" gap={2}>
         <Field.Label action={labelAction}>{label}</Field.Label>
         <PreviewCard>
-          <Flex direction="row" alignItems="center" gap={3} justifyContent="space-between">
+          <Flex
+            direction="row"
+            alignItems="center"
+            gap={3}
+            justifyContent="space-between"
+          >
             <Flex direction="row" alignItems="center" gap={3}>
               <Flex
                 background="neutral100"
@@ -440,28 +464,48 @@ const LucideIconInput = ({
                 <SelectedIcon size={20} />
               </Flex>
               <Typography variant="pi" fontWeight="bold" textColor="neutral700">
-                {value || formatMessage({ id: getTranslation("input.none"), defaultMessage: "No icon selected" })}
+                {value ||
+                  formatMessage({
+                    id: getTranslation("input.none"),
+                    defaultMessage: "No icon selected",
+                  })}
               </Typography>
             </Flex>
             <Flex gap={2}>
               {value ? (
-                <Button variant="tertiary" onClick={handleClear} disabled={disabled}>
-                  {formatMessage({ id: getTranslation("input.clear"), defaultMessage: "Clear" })}
+                <Button
+                  variant="tertiary"
+                  onClick={handleClear}
+                  disabled={disabled}
+                >
+                  {formatMessage({
+                    id: getTranslation("input.clear"),
+                    defaultMessage: "Clear",
+                  })}
                 </Button>
               ) : null}
               <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
                 <Dialog.Trigger>
                   <Button variant="secondary" disabled={disabled}>
-                    {formatMessage({ id: getTranslation("input.browse"), defaultMessage: "Browse" })}
+                    {formatMessage({
+                      id: getTranslation("input.browse"),
+                      defaultMessage: "Browse",
+                    })}
                   </Button>
                 </Dialog.Trigger>
                 <WideDialogContent>
                   <DialogHeaderRow>
                     <DialogHeaderText>
-                      {formatMessage({ id: getTranslation("input.browse"), defaultMessage: "Browse" })}
+                      {formatMessage({
+                        id: getTranslation("input.browse"),
+                        defaultMessage: "Browse",
+                      })}
                     </DialogHeaderText>
                     <IconButton
-                      label={formatMessage({ id: getTranslation("input.close"), defaultMessage: "Close" })}
+                      label={formatMessage({
+                        id: getTranslation("input.close"),
+                        defaultMessage: "Close",
+                      })}
                       variant="tertiary"
                       withTooltip={false}
                       onClick={() => setIsOpen(false)}
@@ -486,9 +530,15 @@ const LucideIconInput = ({
                                 justifyContent="space-between"
                                 gap={2}
                               >
-                                <Typography variant="pi" fontWeight="bold" textColor="neutral600">
+                                <Typography
+                                  variant="pi"
+                                  fontWeight="bold"
+                                  textColor="neutral600"
+                                >
                                   {formatMessage({
-                                    id: getTranslation("input.category." + category.name),
+                                    id: getTranslation(
+                                      "input.category." + category.name,
+                                    ),
                                     defaultMessage: category.title,
                                   })}
                                 </Typography>
@@ -505,38 +555,61 @@ const LucideIconInput = ({
                       <IconPaneWrapper>
                         <IconPane direction="column" gap={3}>
                           <FullWidthTextInput
-                            aria-label={formatMessage({ id: getTranslation("input.search"), defaultMessage: "Search icons" })}
+                            aria-label={formatMessage({
+                              id: getTranslation("input.search"),
+                              defaultMessage: "Search icons",
+                            })}
                             placeholder={formatMessage({
                               id: getTranslation("input.search_placeholder"),
-                              defaultMessage: "Search by name (e.g. arrow-right)",
+                              defaultMessage:
+                                "Search by name (e.g. arrow-right)",
                             })}
                             value={search}
-                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                            onChange={(
+                              event: ChangeEvent<HTMLInputElement>,
+                            ) => {
                               setSearch(event.target.value);
                             }}
                             ref={searchRef}
                           />
-                          <Flex direction="row" alignItems="center" justifyContent="space-between" gap={2}>
+                          <Flex
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            gap={2}
+                          >
                             <Typography variant="pi" textColor="neutral600">
                               {formatMessage(
-                                { id: getTranslation("input.showing"), defaultMessage: "Showing {count} of {total}" },
+                                {
+                                  id: getTranslation("input.showing"),
+                                  defaultMessage: "Showing {count} of {total}",
+                                },
                                 {
                                   count: filteredIcons.length,
                                   total:
                                     activeCategory === "all"
                                       ? allIcons.length
                                       : (activeCategoryData?.icons.length ?? 0),
-                                }
+                                },
                               )}
                             </Typography>
                             <Typography variant="pi" textColor="neutral600">
-                              {formatMessage({ id: getTranslation("input.category." + activeCategory), defaultMessage: activeCategoryData?.title ?? activeCategory })}
+                              {formatMessage({
+                                id: getTranslation(
+                                  "input.category." + activeCategory,
+                                ),
+                                defaultMessage:
+                                  activeCategoryData?.title ?? activeCategory,
+                              })}
                             </Typography>
                           </Flex>
                           {filteredIcons.length === 0 ? (
                             <EmptyState>
                               <Typography variant="pi">
-                                {formatMessage({ id: getTranslation("input.empty"), defaultMessage: "No icons match your search." })}
+                                {formatMessage({
+                                  id: getTranslation("input.empty"),
+                                  defaultMessage: "No icons match your search.",
+                                })}
                               </Typography>
                             </EmptyState>
                           ) : (

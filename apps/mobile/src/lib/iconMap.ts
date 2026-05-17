@@ -8,9 +8,13 @@ function kebabToPascal(name: string): string {
     .join("");
 }
 
-export function getIcon(name?: string | null, fallback: LucideIcon = LucideIcons.HelpCircle): LucideIcon {
+export function getIcon(
+  name?: string | null,
+  fallback: LucideIcon = LucideIcons.HelpCircle,
+): LucideIcon {
   if (!name) return fallback;
   const icon = (LucideIcons as Record<string, unknown>)[kebabToPascal(name)];
-  if (icon != null && (typeof icon === "function" || typeof icon === "object")) return icon as LucideIcon;
+  if (icon != null && (typeof icon === "function" || typeof icon === "object"))
+    return icon as LucideIcon;
   return fallback;
 }

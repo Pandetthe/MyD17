@@ -72,13 +72,16 @@ const ColorSwatch = styled.button<{
   }
 
   &:hover:not(:disabled) {
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.neutral0},
+    box-shadow:
+      0 0 0 2px ${({ theme }) => theme.colors.neutral0},
       0 0 0 4px currentColor;
   }
 `;
 
 type ColorPickerInputProps = InputProps & {
-  onChange: (event: { target: { name: string; value: string; type?: string } }) => void;
+  onChange: (event: {
+    target: { name: string; value: string; type?: string };
+  }) => void;
 };
 
 const ColorPickerInput = ({
@@ -105,7 +108,6 @@ const ColorPickerInput = ({
       id={name}
       hint={hint}
       required={required}
-      disabled={disabled}
       error={field.error}
     >
       <Flex direction="column" alignItems="stretch" gap={2}>
