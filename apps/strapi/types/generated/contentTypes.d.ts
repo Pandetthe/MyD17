@@ -550,6 +550,7 @@ export interface ApiStaticInformationStaticInformation
         'content.event-date-time',
         'content.chip',
         'content.calendar',
+        'content.section-title',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;

@@ -22,7 +22,7 @@ export default function PostDetailScreen() {
     );
   }
 
-  if (isError || !data) {
+  if (isError || !data || !data.data) {
     return (
       <View style={styles.centered}>
         <TextCore variant="body" color={theme.colors.primary.text.secondary}>

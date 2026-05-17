@@ -37,7 +37,8 @@
         "content.location",
         "content.event-date-time",
         "content.chip",
-        "content.calendar"
+        "content.calendar",
+        "content.section-title"
       ]
     }
   }

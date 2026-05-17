@@ -28,37 +28,6 @@ export interface CalendarEntryCalendarEntry extends Struct.ComponentSchema {
   };
 }
 
-export interface ColorPickerColorPicker extends Struct.ComponentSchema {
-  collectionName: 'components_color_picker_color_pickers';
-  info: {
-    displayName: 'Color Picker';
-    icon: 'brush';
-  };
-  attributes: {
-    color: Schema.Attribute.Enumeration<
-      [
-        'red',
-        'orange',
-        'amber',
-        'yellow',
-        'lime',
-        'green',
-        'emerald',
-        'teal',
-        'cyan',
-        'sky',
-        'blue',
-        'indigo',
-        'violet',
-        'purple',
-        'fuchsia',
-        'pink',
-        'rose',
-      ]
-    >;
-  };
-}
-
 export interface ContentCalendar extends Struct.ComponentSchema {
   collectionName: 'components_content_calendars';
   info: {
@@ -88,8 +57,6 @@ export interface ContentChip extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
-    icon: Schema.Attribute.Component<'icon-picker.icon', false> &
-      Schema.Attribute.Required;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -148,42 +115,6 @@ export interface ContentText extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
-    isHeader: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
-  };
-}
-
-export interface IconPickerIcon extends Struct.ComponentSchema {
-  collectionName: 'components_icon_picker_icons';
-  info: {
-    displayName: 'Icon';
-  };
-  attributes: {
-    icon: Schema.Attribute.Enumeration<
-      [
-        'graduation-cap',
-        'book-open',
-        'scroll-text',
-        'info',
-        'music',
-        'calendar',
-        'map-pin',
-        'clock',
-        'users',
-        'trophy',
-        'bell',
-        'file-text',
-        'building',
-        'mic',
-        'library',
-        'coffee',
-        'wifi',
-        'parking',
-        'phone',
-        'mail',
-      ]
-    >;
   };
 }
 
@@ -191,14 +122,12 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'calendar-entry.calendar-entry': CalendarEntryCalendarEntry;
-      'color-picker.color-picker': ColorPickerColorPicker;
       'content.calendar': ContentCalendar;
       'content.chip': ContentChip;
       'content.event-date-time': ContentEventDateTime;
       'content.location': ContentLocation;
       'content.section-title': ContentSectionTitle;
       'content.text': ContentText;
-      'icon-picker.icon': IconPickerIcon;
     }
   }
 }

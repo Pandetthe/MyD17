@@ -76,10 +76,19 @@ export default function Information() {
     );
   }
 
+  const isEmpty = !isLoading && items.length === 0;
+
   return (
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />
+      ) : isEmpty ? (
+        <View style={[styles.container, styles.centered]}>
+          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+            Brak dostępnych informacji.
+          </TextCore>
+          <Button text="Odśwież" color="primary" onPress={() => refetch()} />
+        </View>
       ) : (
         <ScrollView
           contentContainerStyle={styles.content}

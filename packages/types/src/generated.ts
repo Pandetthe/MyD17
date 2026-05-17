@@ -1587,8 +1587,8 @@ export interface components {
                 title?: string;
                 isWide?: boolean;
                 color?: string;
-                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
                 icon?: string;
+                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
                 /** Format: date-time */
                 createdAt?: string;
                 /** Format: date-time */
@@ -1829,7 +1829,6 @@ export interface components {
             /** @enum {string} */
             __component?: "content.text";
             content?: string;
-            isHeader?: boolean;
         };
         ContentLocationComponent: {
             id?: string | number;
@@ -1847,18 +1846,12 @@ export interface components {
             /** Format: date-time */
             endDateTime?: string;
         };
-        IconPickerIconComponent: {
-            id?: string | number;
-            /** @enum {string} */
-            icon?: "graduation-cap" | "book-open" | "scroll-text" | "info" | "music" | "calendar" | "map-pin" | "clock" | "users" | "trophy" | "bell" | "file-text" | "building" | "mic" | "library" | "coffee" | "wifi" | "parking" | "phone" | "mail";
-        };
         ContentChipComponent: {
             id?: string | number;
             /** @enum {string} */
             __component?: "content.chip";
             title?: string;
             content?: string;
-            icon?: components["schemas"]["IconPickerIconComponent"];
         };
         CalendarEntryCalendarEntryComponent: {
             id?: string | number;
@@ -1883,6 +1876,12 @@ export interface components {
             /** @enum {string} */
             __component?: "content.calendar";
             entries?: components["schemas"]["CalendarEntryCalendarEntryComponent"][];
+        };
+        ContentSectionTitleComponent: {
+            id?: string | number;
+            /** @enum {string} */
+            __component?: "content.section-title";
+            content?: string;
         };
         PostRequest: {
             data: {
@@ -2479,19 +2478,13 @@ export interface components {
             data?: components["schemas"]["Post"];
             meta?: Record<string, never>;
         };
-        ContentSectionTitleComponent: {
-            id?: string | number;
-            /** @enum {string} */
-            __component?: "content.section-title";
-            content?: string;
-        };
         StaticInformationRequest: {
             data: {
                 title: string;
                 isWide: boolean;
                 color: string;
-                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
                 icon: string;
+                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
                 locale?: string;
                 localizations?: (number | string)[];
             };
@@ -2513,8 +2506,8 @@ export interface components {
             title: string;
             isWide: boolean;
             color: string;
-            content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
             icon: string;
+            content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
@@ -2704,8 +2697,8 @@ export interface components {
                 title?: string;
                 isWide?: boolean;
                 color?: string;
-                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"])[];
                 icon?: string;
+                content?: (components["schemas"]["ContentTextComponent"] | components["schemas"]["ContentLocationComponent"] | components["schemas"]["ContentEventDateTimeComponent"] | components["schemas"]["ContentChipComponent"] | components["schemas"]["ContentCalendarComponent"] | components["schemas"]["ContentSectionTitleComponent"])[];
                 /** Format: date-time */
                 createdAt?: string;
                 /** Format: date-time */
