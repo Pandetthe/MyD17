@@ -23,6 +23,22 @@ cp apps/strapi/.env.example apps/strapi/.env
 
 Edit `.env` and `apps/strapi/.env` if needed (default values should work for local development).
 
+**Mobile app — Strapi URL:**
+
+```bash
+pnpm mobile:setup            # physical phone over WiFi (auto-detects your LAN IP)
+pnpm mobile:setup emulator   # Android emulator
+```
+
+This generates `apps/mobile/.env.local` with `EXPO_PUBLIC_STRAPI_URL` pointing at your running Strapi instance. The file is gitignored — each developer runs this once.
+
+Alternatively, copy a template manually:
+
+```bash
+cp apps/mobile/.env.example.phone apps/mobile/.env.local
+# then edit .env.local and replace YOUR_LAN_IP with your actual IP
+```
+
 ### 2. Start Database
 
 Start PostgreSQL database in Docker:
@@ -54,8 +70,9 @@ cd apps/mobile
 **First time setup** (or after native code changes):
 
 ```bash
-pnpm android -d  # For Android Emulator
-pnpm ios -d      # For iOS Simulator
+pnpm mobile:setup            # generate .env.local (see Quick Start above)
+pnpm android -d              # Android Emulator
+pnpm ios -d                  # iOS Simulator
 ```
 
 The `-d` flag allows you to select your device/emulator.

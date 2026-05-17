@@ -12,7 +12,8 @@
     "types:check": "turbo run types:check",
     "release:prepare": "node scripts/prepare-release.mjs",
     "release:validate": "node scripts/validate-release.mjs",
-    "android:configure-signing": "node scripts/configure-android-signing.mjs"
+    "android:configure-signing": "node scripts/configure-android-signing.mjs",
+    "mobile:setup": "node scripts/setup-mobile-env.mjs"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
