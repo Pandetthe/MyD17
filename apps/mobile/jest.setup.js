@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* global jest, require */
+/* global jest, require, afterEach, setImmediate */
 import "@testing-library/jest-native/extend-expect";
 
 jest.mock("react-native-reanimated", () => require("react-native-reanimated/mock"));
@@ -107,4 +107,3 @@ afterEach(async () => {
     await new Promise((resolve) => setImmediate(resolve));
   });
 });
-
