@@ -15,7 +15,9 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
     "test": "jest --forceExit --detectOpenHandles",
     "check-types": "tsc --noEmit && tsc --noEmit -p src/admin/tsconfig.json",
-    "lint": "prettier --check \"src/plugins/**/*.{ts,tsx,js}\"",
+    "lint": "pnpm lint:fix && pnpm lint:check",
+    "lint:check": "prettier --check \"src/plugins/**/*.{ts,tsx,js}\"",
+    "lint:fix": "prettier --write \"src/plugins/**/*.{ts,tsx,js}\"",
     "format": "prettier --write \"src/plugins/**/*.{ts,tsx,js}\""
   },
   "dependencies": {
