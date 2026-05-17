@@ -99,3 +99,12 @@ jest.mock("lucide-react-native", () => ({
   Users: mockIcon,
   Wifi: mockIcon,
 }));
+
+const { act } = require("@testing-library/react-native");
+
+afterEach(async () => {
+  await act(async () => {
+    await new Promise((resolve) => setImmediate(resolve));
+  });
+});
+
