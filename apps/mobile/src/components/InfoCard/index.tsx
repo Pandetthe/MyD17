@@ -102,7 +102,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     elevation: 4,
   },
   cardLight: {
-    backgroundColor: theme.colors.primary.background.main,
+    backgroundColor: theme.colors.primary.background.accent,
     borderColor: theme.colors.primary.main,
     shadowColor: theme.colors.primary.main,
   },

@@ -1,22 +1,22 @@
-import type { Schema, Struct } from "@strapi/strapi";
+import type { Schema, Struct } from '@strapi/strapi';
 
 export interface CalendarEntryCalendarEntry extends Struct.ComponentSchema {
-  collectionName: "components_calendar_entry_calendar_entries";
+  collectionName: 'components_calendar_entry_calendar_entries';
   info: {
-    displayName: "Calendar Entry";
-    icon: "clock";
+    displayName: 'Calendar Entry';
+    icon: 'clock';
   };
   attributes: {
     date: Schema.Attribute.Date & Schema.Attribute.Required;
     day: Schema.Attribute.Enumeration<
       [
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday',
       ]
     > &
       Schema.Attribute.Required;
@@ -29,13 +29,13 @@ export interface CalendarEntryCalendarEntry extends Struct.ComponentSchema {
 }
 
 export interface ContentCalendar extends Struct.ComponentSchema {
-  collectionName: "components_content_calendars";
+  collectionName: 'components_content_calendars';
   info: {
-    displayName: "Calendar";
-    icon: "calendar";
+    displayName: 'Calendar';
+    icon: 'calendar';
   };
   attributes: {
-    entries: Schema.Attribute.Component<"calendar-entry.calendar-entry", true> &
+    entries: Schema.Attribute.Component<'calendar-entry.calendar-entry', true> &
       Schema.Attribute.SetMinMax<
         {
           min: 1;
@@ -46,10 +46,10 @@ export interface ContentCalendar extends Struct.ComponentSchema {
 }
 
 export interface ContentChip extends Struct.ComponentSchema {
-  collectionName: "components_content_chips";
+  collectionName: 'components_content_chips';
   info: {
-    displayName: "Chip";
-    icon: "bulletList";
+    displayName: 'Chip';
+    icon: 'bulletList';
   };
   attributes: {
     content: Schema.Attribute.String &
@@ -59,7 +59,7 @@ export interface ContentChip extends Struct.ComponentSchema {
       }>;
     icon: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.CustomField<"plugin::strapi-lucide-icons.icon">;
+      Schema.Attribute.CustomField<'plugin::strapi-lucide-icons.icon'>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -69,10 +69,10 @@ export interface ContentChip extends Struct.ComponentSchema {
 }
 
 export interface ContentEventDateTime extends Struct.ComponentSchema {
-  collectionName: "components_content_event_date_times";
+  collectionName: 'components_content_event_date_times';
   info: {
-    displayName: "Event Date & Time";
-    icon: "clock";
+    displayName: 'Event Date & Time';
+    icon: 'clock';
   };
   attributes: {
     endDateTime: Schema.Attribute.DateTime;
@@ -81,21 +81,21 @@ export interface ContentEventDateTime extends Struct.ComponentSchema {
 }
 
 export interface ContentLocation extends Struct.ComponentSchema {
-  collectionName: "components_content_locations";
+  collectionName: 'components_content_locations';
   info: {
-    displayName: "Location";
-    icon: "pinMap";
+    displayName: 'Location';
+    icon: 'pinMap';
   };
   attributes: {
-    content: Schema.Attribute.Enumeration<["s1.38", "s2.41", "s3.20", "s4.21"]>;
+    content: Schema.Attribute.Enumeration<['s1.38', 's2.41', 's3.20', 's4.21']>;
   };
 }
 
 export interface ContentSectionTitle extends Struct.ComponentSchema {
-  collectionName: "components_content_section_titles";
+  collectionName: 'components_content_section_titles';
   info: {
-    displayName: "Section Title";
-    icon: "information";
+    displayName: 'Section Title';
+    icon: 'information';
   };
   attributes: {
     content: Schema.Attribute.String &
@@ -107,10 +107,10 @@ export interface ContentSectionTitle extends Struct.ComponentSchema {
 }
 
 export interface ContentText extends Struct.ComponentSchema {
-  collectionName: "components_content_texts";
+  collectionName: 'components_content_texts';
   info: {
-    displayName: "Text";
-    icon: "file";
+    displayName: 'Text';
+    icon: 'file';
   };
   attributes: {
     content: Schema.Attribute.Text &
@@ -121,16 +121,16 @@ export interface ContentText extends Struct.ComponentSchema {
   };
 }
 
-declare module "@strapi/strapi" {
+declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
-      "calendar-entry.calendar-entry": CalendarEntryCalendarEntry;
-      "content.calendar": ContentCalendar;
-      "content.chip": ContentChip;
-      "content.event-date-time": ContentEventDateTime;
-      "content.location": ContentLocation;
-      "content.section-title": ContentSectionTitle;
-      "content.text": ContentText;
+      'calendar-entry.calendar-entry': CalendarEntryCalendarEntry;
+      'content.calendar': ContentCalendar;
+      'content.chip': ContentChip;
+      'content.event-date-time': ContentEventDateTime;
+      'content.location': ContentLocation;
+      'content.section-title': ContentSectionTitle;
+      'content.text': ContentText;
     }
   }
 }

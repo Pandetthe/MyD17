@@ -43,13 +43,13 @@ export default function PostDetailScreen() {
 const styles = StyleSheet.create((theme: Theme) => ({
   screen: {
     flex: 1,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
     gap: theme.spacing.sm,
   },
 }));

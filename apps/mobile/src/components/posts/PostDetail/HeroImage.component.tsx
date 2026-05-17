@@ -81,7 +81,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 900,
     height: 900,
     borderRadius: 999999,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
     borderWidth: 6,
     borderColor: theme.colors.primary.main,
     shadowColor: theme.colors.primary.main,
