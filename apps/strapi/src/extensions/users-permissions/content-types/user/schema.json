@@ -24,11 +24,13 @@
       "type": "email",
       "minLength": 6,
       "configurable": false,
-      "required": true
+      "required": true,
+      "private": true
     },
     "provider": {
       "type": "string",
-      "configurable": false
+      "configurable": false,
+      "private": true
     },
     "password": {
       "type": "password",
@@ -52,12 +54,14 @@
     "confirmed": {
       "type": "boolean",
       "default": false,
-      "configurable": false
+      "configurable": false,
+      "private": true
     },
     "blocked": {
       "type": "boolean",
       "default": false,
-      "configurable": false
+      "configurable": false,
+      "private": true
     },
     "role": {
       "type": "relation",

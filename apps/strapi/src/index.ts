@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import { tmpdir } from "os";
 import path from "path";
 
 export default {
@@ -19,6 +20,28 @@ export default {
    */
   async bootstrap({ strapi }: { strapi: any }) {
     const createdIds: Record<string, number[]> = {};
+
+    const uploadImageFromUrl = async (url: string): Promise<number | null> => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const contentType = response.headers.get("content-type") || "image/jpeg";
+        const ext = contentType.split("/")[1] ?? "jpg";
+        const filename = `seed-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const tmpPath = path.join(tmpdir(), filename);
+        await fs.writeFile(tmpPath, buffer);
+        const [uploaded] = await strapi.plugins["upload"].services.upload.upload({
+          data: { fileInfo: { name: filename } },
+          files: { path: tmpPath, name: filename, type: contentType, size: buffer.length },
+        });
+        await fs.unlink(tmpPath).catch(() => {});
+        return uploaded?.id ?? null;
+      } catch (err) {
+        strapi.log.warn(`Image upload failed for ${url}: ${err.message}`);
+        return null;
+      }
+    };
 
     const seedIfNeeded = async (
       uid: string,
@@ -51,9 +74,18 @@ export default {
 
         createdIds[uid] = [];
         for (const item of processedItems) {
+          // handle _imageUrls: upload each URL and collect file IDs
+          const { _imageUrls, ...itemData } = item;
+          let imageIds: number[] = [];
+          if (Array.isArray(_imageUrls) && _imageUrls.length > 0) {
+            const results = await Promise.all(_imageUrls.map(uploadImageFromUrl));
+            imageIds = results.filter((id): id is number => id !== null);
+          }
+
           const created = await strapi.entityService.create(uid, {
             data: {
-              ...item,
+              ...itemData,
+              ...(imageIds.length > 0 ? { images: imageIds } : {}),
               publishedAt: new Date(),
             },
           });
@@ -129,6 +161,9 @@ async function setupPublicPermissions(strapi: any) {
     "api::information-page.information-page.findOne",
     "api::static-information.static-information.find",
     "api::static-information.static-information.findOne",
+    // required for populate[author] to work in public post queries;
+    // sensitive user fields (email, password, tokens, confirmed, blocked) are marked private in the schema
+    "plugin::users-permissions.user.find",
   ];
 
   for (const action of publicActions) {
