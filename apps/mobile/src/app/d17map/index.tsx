@@ -10,12 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import roomData from "@/assets/map/floor1/roomCoordinates.json";
 import { colors } from "@/styles/colors";
-import roomData from "../../../assets/map/floor1/roomCoordinates.json";
 import D17MapView from "../../components/D17MapView";
 import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
-import { MapIcon } from "lucide-react-native";
+import { SearchIcon } from "lucide-react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -27,41 +27,42 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const TEXTURE_MODULES: Record<string, number> = {
-  none: require("../../../assets/map/floor1/none.webp"),
-  "1.4": require("../../../assets/map/floor1/1_4.webp"),
-  "1.5": require("../../../assets/map/floor1/1_5.webp"),
-  "1.6": require("../../../assets/map/floor1/1_6.webp"),
-  "1.7": require("../../../assets/map/floor1/1_7.webp"),
-  "1.8": require("../../../assets/map/floor1/1_8.webp"),
-  "1.9": require("../../../assets/map/floor1/1_9.webp"),
-  "1.10": require("../../../assets/map/floor1/1_10.webp"),
-  "1.11": require("../../../assets/map/floor1/1_11.webp"),
-  "1.12": require("../../../assets/map/floor1/1_12.webp"),
-  "1.15": require("../../../assets/map/floor1/1_15.webp"),
-  "1.16": require("../../../assets/map/floor1/1_16.webp"),
-  "1.17": require("../../../assets/map/floor1/1_17.webp"),
-  "1.18": require("../../../assets/map/floor1/1_18.webp"),
-  "1.19": require("../../../assets/map/floor1/1_19.webp"),
-  "1.20": require("../../../assets/map/floor1/1_20.webp"),
-  "1.21": require("../../../assets/map/floor1/1_21.webp"),
-  "1.22": require("../../../assets/map/floor1/1_22.webp"),
-  "1.23": require("../../../assets/map/floor1/1_23.webp"),
-  "1.26": require("../../../assets/map/floor1/1_26.webp"),
-  "1.27": require("../../../assets/map/floor1/1_27.webp"),
-  "1.28": require("../../../assets/map/floor1/1_28.webp"),
-  "1.29": require("../../../assets/map/floor1/1_29.webp"),
-  "1.30": require("../../../assets/map/floor1/1_30.webp"),
-  "1.31": require("../../../assets/map/floor1/1_31.webp"),
-  "1.33": require("../../../assets/map/floor1/1_33.webp"),
-  "1.34": require("../../../assets/map/floor1/1_34.webp"),
-  "1.35": require("../../../assets/map/floor1/1_35.webp"),
-  "1.36": require("../../../assets/map/floor1/1_36.webp"),
-  "1.38": require("../../../assets/map/floor1/1_38.webp"),
-  "1.39": require("../../../assets/map/floor1/1_39.webp"),
+  none: require("@/assets/map/floor1/none.webp"),
+  "1.4": require("@/assets/map/floor1/1_4.webp"),
+  "1.5": require("@/assets/map/floor1/1_5.webp"),
+  "1.6": require("@/assets/map/floor1/1_6.webp"),
+  "1.7": require("@/assets/map/floor1/1_7.webp"),
+  "1.8": require("@/assets/map/floor1/1_8.webp"),
+  "1.9": require("@/assets/map/floor1/1_9.webp"),
+  "1.10": require("@/assets/map/floor1/1_10.webp"),
+  "1.11": require("@/assets/map/floor1/1_11.webp"),
+  "1.12": require("@/assets/map/floor1/1_12.webp"),
+  "1.15": require("@/assets/map/floor1/1_15.webp"),
+  "1.16": require("@/assets/map/floor1/1_16.webp"),
+  "1.17": require("@/assets/map/floor1/1_17.webp"),
+  "1.18": require("@/assets/map/floor1/1_18.webp"),
+  "1.19": require("@/assets/map/floor1/1_19.webp"),
+  "1.20": require("@/assets/map/floor1/1_20.webp"),
+  "1.21": require("@/assets/map/floor1/1_21.webp"),
+  "1.22": require("@/assets/map/floor1/1_22.webp"),
+  "1.23": require("@/assets/map/floor1/1_23.webp"),
+  "1.26": require("@/assets/map/floor1/1_26.webp"),
+  "1.27": require("@/assets/map/floor1/1_27.webp"),
+  "1.28": require("@/assets/map/floor1/1_28.webp"),
+  "1.29": require("@/assets/map/floor1/1_29.webp"),
+  "1.30": require("@/assets/map/floor1/1_30.webp"),
+  "1.31": require("@/assets/map/floor1/1_31.webp"),
+  "1.33": require("@/assets/map/floor1/1_33.webp"),
+  "1.34": require("@/assets/map/floor1/1_34.webp"),
+  "1.35": require("@/assets/map/floor1/1_35.webp"),
+  "1.36": require("@/assets/map/floor1/1_36.webp"),
+  "1.38": require("@/assets/map/floor1/1_38.webp"),
+  "1.39": require("@/assets/map/floor1/1_39.webp"),
 };
 
 function parseFloorRooms(): Record<string, string[]> {
@@ -105,6 +106,8 @@ function SlotPicker({
   initialIndex: number;
   onIndexChange: (i: number) => void;
 }) {
+  const flatListRef = useRef<FlatList>(null);
+
   const clamp = (i: number) => Math.max(0, Math.min(i, items.length - 1));
 
   const handleScrollEnd = useCallback(
@@ -114,8 +117,16 @@ function SlotPicker({
     [items.length, onIndexChange],
   );
 
+  const handleItemPress = useCallback(
+    (index: number) => {
+      flatListRef.current?.scrollToIndex({ index, animated: true });
+      onIndexChange(index);
+    },
+    [onIndexChange],
+  );
+
   return (
-    <View style={{ height: PICKER_H, overflow: "hidden" }}>
+    <View style={{ height: PICKER_H, overflow: "hidden", width: "100%" }}>
       <View
         pointerEvents="none"
         style={{
@@ -126,12 +137,14 @@ function SlotPicker({
           height: ITEM_H,
           borderTopWidth: 1,
           borderBottomWidth: 1,
-          borderColor: "rgba(255,255,255,0.35)",
-          backgroundColor: "rgba(255,255,255,0.07)",
+          borderColor: "rgba(255,255,255,0.5)",
+          backgroundColor: "rgba(255,255,255,0.15)",
           borderRadius: 10,
+          zIndex: 0,
         }}
       />
       <FlatList
+        ref={flatListRef}
         data={items}
         keyExtractor={(item) => item}
         snapToInterval={ITEM_H}
@@ -143,18 +156,22 @@ function SlotPicker({
         onMomentumScrollEnd={handleScrollEnd}
         onScrollEndDrag={handleScrollEnd}
         renderItem={({ item, index }) => (
-          <View style={{ height: ITEM_H, justifyContent: "center", alignItems: "center" }}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => handleItemPress(index)}
+            style={{ height: ITEM_H, justifyContent: "center", alignItems: "center", zIndex: 1 }}
+          >
             <Text
               style={{
-                color: index === initialIndex ? colors.white : "rgba(255,255,255,0.3)",
-                fontSize: index === initialIndex ? 22 : 15,
-                fontWeight: index === initialIndex ? "700" : "400",
+                color: index === initialIndex ? colors.white : "rgba(255,255,255,0.4)",
+                fontSize: index === initialIndex ? 22 : 16,
+                fontWeight: index === initialIndex ? "700" : "500",
                 letterSpacing: index === initialIndex ? 0.4 : 0,
               }}
             >
               {item}
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -170,6 +187,7 @@ const FAB_SIZE = 52;
 
 export default function D17MapScreen() {
   const { theme } = useUnistyles();
+  const insets = useSafeAreaInsets();
 
   const [glbBase64, setGlbBase64] = useState("");
   const [textureBase64, setTextureBase64] = useState("");
@@ -238,7 +256,7 @@ export default function D17MapScreen() {
   useEffect(() => {
     (async () => {
       const [glb, tex] = await Promise.all([
-        assetToBase64(require("../../../assets/map/floor1/model.glb")),
+        assetToBase64(require("@/assets/map/floor1/model.glb")),
         assetToBase64(TEXTURE_MODULES.none),
       ]);
       setGlbBase64(glb);
@@ -282,6 +300,27 @@ export default function D17MapScreen() {
     setPendingRoom(idx);
   }, []);
 
+  const handleMapRoomClick = useCallback(async (key: string) => {
+    const [floorStr, roomStr] = key.split(".");
+    const floorIndex = FLOORS.indexOf(floorStr);
+    const roomIndex = (FLOOR_ROOMS[floorStr] ?? []).indexOf(roomStr);
+
+    if (floorIndex !== -1 && roomIndex !== -1) {
+      setAppliedFloor(floorIndex);
+      setAppliedRoom(roomIndex);
+      setPendingFloor(floorIndex);
+      pendingFloorRef.current = floorIndex;
+      setPendingRoom(roomIndex);
+    }
+
+    setSearchKey(key);
+    const coords = (roomData as RoomCoords)[key];
+    if (coords) setSearchTarget({ x: coords.x, z: coords.y });
+
+    const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
+    setTextureBase64(tex);
+  }, []);
+
   const currentPendingRooms = FLOOR_ROOMS[FLOORS[pendingFloor]] ?? [];
 
   return (
@@ -292,7 +331,7 @@ export default function D17MapScreen() {
           textureBase64={textureBase64}
           searchTargetX={searchTarget?.x}
           searchTargetZ={searchTarget?.z}
-          bgColor={theme.colors.surface}
+          onRoomPress={handleMapRoomClick}
           roomCoords={
             Object.fromEntries(
               Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES),
@@ -311,11 +350,17 @@ export default function D17MapScreen() {
 
       {!drawerVisible && (
         <TouchableOpacity
-          style={[styles.fab, { backgroundColor: theme.colors.primary.main }]}
+          style={[
+            styles.fab,
+            {
+              backgroundColor: theme.colors.primary.main,
+              bottom: 28 + insets.bottom,
+            },
+          ]}
           onPress={openDrawer}
           activeOpacity={0.85}
         >
-          <MapIcon color={colors.white} size={22} strokeWidth={2} />
+          <SearchIcon color={colors.white} size={22} strokeWidth={2} />
         </TouchableOpacity>
       )}
 
@@ -330,7 +375,9 @@ export default function D17MapScreen() {
             <Pressable style={styles.backdropPressable} onPress={closeDrawer} />
           </Animated.View>
 
-          <Animated.View style={[styles.sheet, sheetStyle]}>
+          <Animated.View
+            style={[styles.sheet, sheetStyle, { paddingBottom: theme.spacing.lg + insets.bottom }]}
+          >
             <GestureDetector gesture={panGesture}>
               <View style={styles.handleArea}>
                 <View style={styles.handle} />
@@ -407,7 +454,6 @@ const styles = StyleSheet.create((theme) => ({
   },
   fab: {
     position: "absolute",
-    bottom: 28,
     right: 20,
     width: FAB_SIZE,
     height: FAB_SIZE,
@@ -439,7 +485,6 @@ const styles = StyleSheet.create((theme) => ({
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.lg,
     shadowColor: theme.colors.dark.main,
     shadowOffset: { width: 0, height: -10 },
     shadowOpacity: 1,
