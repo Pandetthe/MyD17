@@ -3,52 +3,47 @@ import { Pressable, ScrollView, View } from "react-native";
 import Notification from "@/components/core/Notification.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
+import { apiClient } from "@/lib/apiClient";
 import { strapiColorToPalette } from "@/lib/strapiColors";
-import { ColorPalette, Theme } from "@/styles/themes/theme";
+import type { Theme } from "@/styles/themes/theme";
+import type { StrapiListResponse, Tag } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
-
-type Tag = {
-  id: number;
-  title: string;
-  color?: ColorPalette;
-};
 
 export default function Notifications() {
   const fetchTags = async (): Promise<Tag[]> => {
-    const res = await fetch("http://localhost:1337/api/tags");
-    const json = await res.json();
-
-    return json.data.map((item: { id: number; title: string; color?: string }) => ({
-      id: item.id,
-      title: item.title,
-      color: strapiColorToPalette(item.color),
-    }));
+    const res = await apiClient.get<StrapiListResponse<Tag>>("/api/tags");
+    return res.data.data;
   };
 
   const [tags, setTags] = useState<Tag[]>([]);
-  const [notifications, setNotifications] = useState<Record<number, boolean>>({});
+  const [notifications, setNotifications] = useState<Record<string | number, boolean>>({});
 
   useEffect(() => {
     const init = async () => {
-      const data = await fetchTags();
+      try {
+        const data = await fetchTags();
+        setTags(data);
 
-      setTags(data);
+        const initialState = data.reduce(
+          (acc, tag) => {
+            if (tag.id !== undefined) {
+              acc[tag.id] = false;
+            }
+            return acc;
+          },
+          {} as Record<string | number, boolean>,
+        );
 
-      const initialState = data.reduce(
-        (acc, tag) => {
-          acc[tag.id] = false;
-          return acc;
-        },
-        {} as Record<number, boolean>,
-      );
-
-      setNotifications(initialState);
+        setNotifications(initialState);
+      } catch (error) {
+        console.error("Failed to fetch tags for notifications:", error);
+      }
     };
 
     init();
   }, []);
 
-  const toggle = (id: number) => {
+  const toggle = (id: string | number) => {
     setNotifications((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -61,10 +56,10 @@ export default function Notifications() {
 
     const updated = Object.keys(notifications).reduce(
       (acc, key) => {
-        acc[Number(key)] = nextValue;
+        acc[key] = nextValue;
         return acc;
       },
-      {} as Record<number, boolean>,
+      {} as Record<string | number, boolean>,
     );
 
     setNotifications(updated);
@@ -76,18 +71,20 @@ export default function Notifications() {
         <TextCore variant="h3">SELECT ALL</TextCore>
         <SwitchCore
           onPress={() => toggleAll()}
-          value={Object.values(notifications).every(Boolean)}
+          value={
+            Object.values(notifications).length > 0 && Object.values(notifications).every(Boolean)
+          }
         />
       </Pressable>
 
-      <View style={styles.horizontal_line}></View>
+      <View style={styles.horizontal_line} />
       {tags.map((tag) => (
         <Notification
           key={tag.id}
           text={tag.title}
-          color={tag.color}
-          value={notifications[tag.id]}
-          onPress={() => toggle(tag.id)}
+          color={strapiColorToPalette(tag.color)}
+          value={tag.id !== undefined ? notifications[tag.id] : false}
+          onPress={() => tag.id !== undefined && toggle(tag.id)}
         />
       ))}
     </ScrollView>
