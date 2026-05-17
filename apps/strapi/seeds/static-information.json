@@ -2,12 +2,8 @@
   {
     "title": "Godziny otwarcia",
     "isWide": true,
-    "color": {
-      "color": "blue"
-    },
-    "Icon": {
-      "icon": "clock"
-    },
+    "color": "blue",
+    "icon": "clock",
     "content": [
       {
         "__component": "content.text",
@@ -41,40 +37,28 @@
   {
     "title": "Informacje dla pierwszaków",
     "isWide": false,
-    "color": {
-      "color": "red"
-    },
-    "Icon": {
-      "icon": "graduation-cap"
-    },
+    "color": "red",
+    "icon": "graduation-cap",
     "content": [
       {
         "__component": "content.chip",
         "title": "Wyrobienie legitymacji",
         "content": "Aby wyrobić legitymację należy zgłosić się do dziekanatu.",
-        "icon": {
-          "icon": "building"
-        }
+        "icon": "building"
       },
       {
         "__component": "content.chip",
         "title": "Podbicie legitymacji",
         "content": "W celu podbicia legitymacji należy udać się do łącznika A0-A1.",
-        "icon": {
-          "icon": "building"
-        }
+        "icon": "building"
       }
     ]
   },
   {
     "title": "Dziekanat",
     "isWide": true,
-    "color": {
-      "color": "yellow"
-    },
-    "Icon": {
-      "icon": "building"
-    },
+    "color": "yellow",
+    "icon": "building",
     "content": [
       {
         "__component": "content.text",
@@ -111,9 +95,7 @@
         "__component": "content.chip",
         "title": "Email",
         "content": "dziekanat-wi@agh.edu.pl",
-        "icon": {
-          "icon": "mail"
-        }
+        "icon": "mail"
       },
       {
         "__component": "content.text",
@@ -123,29 +105,21 @@
         "__component": "content.chip",
         "title": "Telefon",
         "content": "(48) 12 328 34 04",
-        "icon": {
-          "icon": "phone"
-        }
+        "icon": "phone"
       },
       {
         "__component": "content.chip",
         "title": "Adres email",
         "content": "jkoniecz@agh.edu.pl",
-        "icon": {
-          "icon": "mail"
-        }
+        "icon": "mail"
       }
     ]
   },
   {
     "title": "Dyżury prodziekana",
     "isWide": false,
-    "color": {
-      "color": "yellow"
-    },
-    "Icon": {
-      "icon": "users"
-    },
+    "color": "yellow",
+    "icon": "users",
     "content": [
       {
         "__component": "content.text",
