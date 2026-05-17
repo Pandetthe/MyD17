@@ -1,0 +1,12 @@
+{
+  "name": "strapi-plugin-color-picker",
+  "version": "1.0.0",
+  "strapi": {
+    "kind": "plugin",
+    "name": "color-picker",
+    "displayName": "Color Picker"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0"
+  }
+}

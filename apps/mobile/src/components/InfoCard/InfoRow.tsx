@@ -3,7 +3,7 @@ import { View } from "react-native";
 import TextCore from "@/components/core/Text.component";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   icon: React.ReactNode;
@@ -13,12 +13,20 @@ type Props = {
 };
 
 export function InfoRow({ icon, label, value, dark = false }: Props) {
-  const labelColor = dark ? colors.amber.main : colors.core.main;
-  const valueColor = dark ? colors.white : colors.core.dark;
+  const { theme } = useUnistyles();
+  const labelColor = dark ? colors.amber.main : theme.colors.primary.main;
+  const valueColor = dark ? colors.white : theme.colors.dark.text.primary;
 
   return (
     <View style={styles.row}>
-      <View style={styles.iconContainer}>{icon}</View>
+      <View
+        style={[
+          styles.iconContainer,
+          { backgroundColor: dark ? colors.core.extraDark : theme.colors.primary.background.main },
+        ]}
+      >
+        {icon}
+      </View>
       <View style={styles.textColumn}>
         <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}
@@ -41,7 +49,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 37,
     height: 37,
     borderRadius: theme.borderRadius.sm,
-    backgroundColor: colors.core.extraLight,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,

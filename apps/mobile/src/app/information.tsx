@@ -5,13 +5,15 @@ import TextCore from "@/components/core/Text.component";
 import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
 import { StaticInfoCard } from "@/components/information/StaticInfoCard";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
-import { ICON_MAP } from "@/lib/iconMap";
+import { getIcon } from "@/lib/iconMap";
 import { strapiColorToCard } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { StaticInformation } from "@repo/types";
 import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
+
+const ICON_FALLBACKS: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
 
 function buildRows(items: StaticInformation[]) {
   const rows: Array<{
@@ -44,11 +46,8 @@ function buildRows(items: StaticInformation[]) {
   return rows;
 }
 
-function getIcon(item: StaticInformation, index: number): LucideIcon {
-  const name = item.Icon?.icon;
-  if (name && ICON_MAP[name]) return ICON_MAP[name];
-  const fallback: LucideIcon[] = [GraduationCap, BookOpen, ScrollText, Info];
-  return fallback[index % fallback.length];
+function resolveIcon(item: StaticInformation, index: number): LucideIcon {
+  return getIcon(item.icon, ICON_FALLBACKS[index % ICON_FALLBACKS.length]);
 }
 
 export default function Information() {
@@ -77,42 +76,61 @@ export default function Information() {
     );
   }
 
+  const isEmpty = !isLoading && items.length === 0;
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />;
+    }
+
+    if (isEmpty) {
+      return (
+        <View style={[styles.container, styles.centered]}>
+          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+            Brak dostępnych informacji.
+          </TextCore>
+          <Button text="Odśwież" color="primary" onPress={() => refetch()} />
+        </View>
+      );
+    }
+
+    return (
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
+      >
+        {rows.map((row) =>
+          row.wide ? (
+            <StaticInfoCard
+              key={row.key}
+              title={row.items[0].title}
+              icon={resolveIcon(row.items[0], row.startIndex)}
+              color={strapiColorToCard(row.items[0].color)}
+              wide
+              onPress={() => setSelectedItem(row.items[0])}
+            />
+          ) : (
+            <View key={row.key} style={styles.row}>
+              {row.items.map((item, j) => (
+                <StaticInfoCard
+                  key={item.documentId ?? j}
+                  title={item.title}
+                  icon={resolveIcon(item, row.startIndex + j)}
+                  color={strapiColorToCard(item.color)}
+                  onPress={() => setSelectedItem(item)}
+                />
+              ))}
+            </View>
+          ),
+        )}
+      </ScrollView>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />
-      ) : (
-        <ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-        >
-          {rows.map((row) =>
-            row.wide ? (
-              <StaticInfoCard
-                key={row.key}
-                title={row.items[0].title}
-                icon={getIcon(row.items[0], row.startIndex)}
-                color={strapiColorToCard(row.items[0].color?.color)}
-                wide
-                onPress={() => setSelectedItem(row.items[0])}
-              />
-            ) : (
-              <View key={row.key} style={styles.row}>
-                {row.items.map((item, j) => (
-                  <StaticInfoCard
-                    key={item.documentId ?? j}
-                    title={item.title}
-                    icon={getIcon(item, row.startIndex + j)}
-                    color={strapiColorToCard(item.color?.color)}
-                    onPress={() => setSelectedItem(item)}
-                  />
-                ))}
-              </View>
-            ),
-          )}
-        </ScrollView>
-      )}
+      {renderContent()}
 
       <InfoBottomDrawer
         visible={selectedItem !== null}

@@ -70,7 +70,7 @@ export function PostDetail({ post }: Props) {
 const styles = StyleSheet.create((theme: Theme) => ({
   scroll: {
     flex: 1,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
   },
   content: {
     paddingBottom: theme.spacing.xl + theme.spacing.md,

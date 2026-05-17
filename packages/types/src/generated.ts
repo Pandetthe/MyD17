@@ -1586,15 +1586,16 @@ export interface components {
         documentId?: string;
         title?: string;
         isWide?: boolean;
-        color?: components["schemas"]["ColorPickerColorPickerComponent"];
+        color?: string;
+        icon?: string;
         content?: (
           | components["schemas"]["ContentTextComponent"]
           | components["schemas"]["ContentLocationComponent"]
           | components["schemas"]["ContentEventDateTimeComponent"]
           | components["schemas"]["ContentChipComponent"]
           | components["schemas"]["ContentCalendarComponent"]
+          | components["schemas"]["ContentSectionTitleComponent"]
         )[];
-        Icon?: components["schemas"]["IconPickerIconComponent"];
         /** Format: date-time */
         createdAt?: string;
         /** Format: date-time */
@@ -1633,6 +1634,79 @@ export interface components {
               role?: {
                 id?: string | number;
                 documentId?: string;
+              };
+              apiToken?: {
+                id?: string | number;
+                documentId?: string;
+                name?: string;
+                description?: string;
+                /** @enum {string} */
+                kind?: "content-api" | "admin";
+                /** @enum {string} */
+                type?: "read-only" | "full-access" | "custom";
+                accessKey?: string;
+                encryptedKey?: string;
+                /** Format: date-time */
+                lastUsedAt?: string;
+                permissions?: {
+                  id?: string | number;
+                  documentId?: string;
+                  action?: string;
+                  token?: {
+                    id?: string | number;
+                    documentId?: string;
+                  };
+                  /** Format: date-time */
+                  createdAt?: string;
+                  /** Format: date-time */
+                  updatedAt?: string;
+                  /** Format: date-time */
+                  publishedAt?: string;
+                  createdBy?: {
+                    id?: string | number;
+                    documentId?: string;
+                  };
+                  updatedBy?: {
+                    id?: string | number;
+                    documentId?: string;
+                  };
+                  locale?: string;
+                  localizations?: {
+                    id?: string | number;
+                    documentId?: string;
+                  }[];
+                }[];
+                adminPermissions?: {
+                  id?: string | number;
+                  documentId?: string;
+                }[];
+                adminUserOwner?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                /** Format: date-time */
+                expiresAt?: string;
+                /** @example 123456789 */
+                lifespan?: string;
+                /** Format: date-time */
+                createdAt?: string;
+                /** Format: date-time */
+                updatedAt?: string;
+                /** Format: date-time */
+                publishedAt?: string;
+                createdBy?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                updatedBy?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                locale?: string;
+                localizations?: {
+                  id?: string | number;
+                  documentId?: string;
+                }[];
               };
               /** Format: date-time */
               createdAt?: string;
@@ -1673,6 +1747,10 @@ export interface components {
               id?: string | number;
               documentId?: string;
             }[];
+          }[];
+          apiTokens?: {
+            id?: string | number;
+            documentId?: string;
           }[];
           blocked?: boolean;
           preferedLanguage?: string;
@@ -1753,34 +1831,11 @@ export interface components {
       data?: components["schemas"]["InformationPage"];
       meta?: Record<string, never>;
     };
-    ColorPickerColorPickerComponent: {
-      id?: string | number;
-      /** @enum {string} */
-      color?:
-        | "red"
-        | "orange"
-        | "amber"
-        | "yellow"
-        | "lime"
-        | "green"
-        | "emerald"
-        | "teal"
-        | "cyan"
-        | "sky"
-        | "blue"
-        | "indigo"
-        | "violet"
-        | "purple"
-        | "fuchsia"
-        | "pink"
-        | "rose";
-    };
     ContentTextComponent: {
       id?: string | number;
       /** @enum {string} */
       __component?: "content.text";
       content?: string;
-      isHeader?: boolean;
     };
     ContentLocationComponent: {
       id?: string | number;
@@ -1804,7 +1859,7 @@ export interface components {
       __component?: "content.chip";
       title?: string;
       content?: string;
-      icon?: components["schemas"]["IconPickerIconComponent"];
+      icon?: string;
     };
     CalendarEntryCalendarEntryComponent: {
       id?: string | number;
@@ -1837,30 +1892,11 @@ export interface components {
       __component?: "content.calendar";
       entries?: components["schemas"]["CalendarEntryCalendarEntryComponent"][];
     };
-    IconPickerIconComponent: {
+    ContentSectionTitleComponent: {
       id?: string | number;
       /** @enum {string} */
-      icon?:
-        | "graduation-cap"
-        | "book-open"
-        | "scroll-text"
-        | "info"
-        | "music"
-        | "calendar"
-        | "map-pin"
-        | "clock"
-        | "users"
-        | "trophy"
-        | "bell"
-        | "file-text"
-        | "building"
-        | "mic"
-        | "library"
-        | "coffee"
-        | "wifi"
-        | "parking"
-        | "phone"
-        | "mail";
+      __component?: "content.section-title";
+      content?: string;
     };
     PostRequest: {
       data: {
@@ -2002,6 +2038,79 @@ export interface components {
                     id?: string | number;
                     documentId?: string;
                   };
+                  apiToken?: {
+                    id?: string | number;
+                    documentId?: string;
+                    name?: string;
+                    description?: string;
+                    /** @enum {string} */
+                    kind?: "content-api" | "admin";
+                    /** @enum {string} */
+                    type?: "read-only" | "full-access" | "custom";
+                    accessKey?: string;
+                    encryptedKey?: string;
+                    /** Format: date-time */
+                    lastUsedAt?: string;
+                    permissions?: {
+                      id?: string | number;
+                      documentId?: string;
+                      action?: string;
+                      token?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      /** Format: date-time */
+                      createdAt?: string;
+                      /** Format: date-time */
+                      updatedAt?: string;
+                      /** Format: date-time */
+                      publishedAt?: string;
+                      createdBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      updatedBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      locale?: string;
+                      localizations?: {
+                        id?: string | number;
+                        documentId?: string;
+                      }[];
+                    }[];
+                    adminPermissions?: {
+                      id?: string | number;
+                      documentId?: string;
+                    }[];
+                    adminUserOwner?: {
+                      id?: string | number;
+                      documentId?: string;
+                    };
+                    /** Format: date-time */
+                    expiresAt?: string;
+                    /** @example 123456789 */
+                    lifespan?: string;
+                    /** Format: date-time */
+                    createdAt?: string;
+                    /** Format: date-time */
+                    updatedAt?: string;
+                    /** Format: date-time */
+                    publishedAt?: string;
+                    createdBy?: {
+                      id?: string | number;
+                      documentId?: string;
+                    };
+                    updatedBy?: {
+                      id?: string | number;
+                      documentId?: string;
+                    };
+                    locale?: string;
+                    localizations?: {
+                      id?: string | number;
+                      documentId?: string;
+                    }[];
+                  };
                   /** Format: date-time */
                   createdAt?: string;
                   /** Format: date-time */
@@ -2041,6 +2150,10 @@ export interface components {
                   id?: string | number;
                   documentId?: string;
                 }[];
+              }[];
+              apiTokens?: {
+                id?: string | number;
+                documentId?: string;
               }[];
               blocked?: boolean;
               preferedLanguage?: string;
@@ -2120,7 +2233,7 @@ export interface components {
         id?: string | number;
         documentId?: string;
         title?: string;
-        color?: components["schemas"]["ColorPickerColorPickerComponent"];
+        color?: string;
         posts?: {
           id?: string | number;
           documentId?: string;
@@ -2401,25 +2514,20 @@ export interface components {
       data?: components["schemas"]["Post"];
       meta?: Record<string, never>;
     };
-    ContentSectionTitleComponent: {
-      id?: string | number;
-      /** @enum {string} */
-      __component?: "content.section-title";
-      content?: string;
-    };
     StaticInformationRequest: {
       data: {
         title: string;
         isWide: boolean;
-        color: components["schemas"]["ColorPickerColorPickerComponent"];
+        color: string;
+        icon: string;
         content?: (
           | components["schemas"]["ContentTextComponent"]
           | components["schemas"]["ContentLocationComponent"]
           | components["schemas"]["ContentEventDateTimeComponent"]
           | components["schemas"]["ContentChipComponent"]
           | components["schemas"]["ContentCalendarComponent"]
+          | components["schemas"]["ContentSectionTitleComponent"]
         )[];
-        Icon: components["schemas"]["IconPickerIconComponent"];
         locale?: string;
         localizations?: (number | string)[];
       };
@@ -2440,15 +2548,16 @@ export interface components {
       documentId?: string;
       title: string;
       isWide: boolean;
-      color: components["schemas"]["ColorPickerColorPickerComponent"];
+      color: string;
+      icon: string;
       content?: (
         | components["schemas"]["ContentTextComponent"]
         | components["schemas"]["ContentLocationComponent"]
         | components["schemas"]["ContentEventDateTimeComponent"]
         | components["schemas"]["ContentChipComponent"]
         | components["schemas"]["ContentCalendarComponent"]
+        | components["schemas"]["ContentSectionTitleComponent"]
       )[];
-      Icon: components["schemas"]["IconPickerIconComponent"];
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
@@ -2487,6 +2596,79 @@ export interface components {
             role?: {
               id?: string | number;
               documentId?: string;
+            };
+            apiToken?: {
+              id?: string | number;
+              documentId?: string;
+              name?: string;
+              description?: string;
+              /** @enum {string} */
+              kind?: "content-api" | "admin";
+              /** @enum {string} */
+              type?: "read-only" | "full-access" | "custom";
+              accessKey?: string;
+              encryptedKey?: string;
+              /** Format: date-time */
+              lastUsedAt?: string;
+              permissions?: {
+                id?: string | number;
+                documentId?: string;
+                action?: string;
+                token?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                /** Format: date-time */
+                createdAt?: string;
+                /** Format: date-time */
+                updatedAt?: string;
+                /** Format: date-time */
+                publishedAt?: string;
+                createdBy?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                updatedBy?: {
+                  id?: string | number;
+                  documentId?: string;
+                };
+                locale?: string;
+                localizations?: {
+                  id?: string | number;
+                  documentId?: string;
+                }[];
+              }[];
+              adminPermissions?: {
+                id?: string | number;
+                documentId?: string;
+              }[];
+              adminUserOwner?: {
+                id?: string | number;
+                documentId?: string;
+              };
+              /** Format: date-time */
+              expiresAt?: string;
+              /** @example 123456789 */
+              lifespan?: string;
+              /** Format: date-time */
+              createdAt?: string;
+              /** Format: date-time */
+              updatedAt?: string;
+              /** Format: date-time */
+              publishedAt?: string;
+              createdBy?: {
+                id?: string | number;
+                documentId?: string;
+              };
+              updatedBy?: {
+                id?: string | number;
+                documentId?: string;
+              };
+              locale?: string;
+              localizations?: {
+                id?: string | number;
+                documentId?: string;
+              }[];
             };
             /** Format: date-time */
             createdAt?: string;
@@ -2528,6 +2710,10 @@ export interface components {
             documentId?: string;
           }[];
         }[];
+        apiTokens?: {
+          id?: string | number;
+          documentId?: string;
+        }[];
         blocked?: boolean;
         preferedLanguage?: string;
         /** Format: date-time */
@@ -2560,15 +2746,16 @@ export interface components {
         documentId?: string;
         title?: string;
         isWide?: boolean;
-        color?: components["schemas"]["ColorPickerColorPickerComponent"];
+        color?: string;
+        icon?: string;
         content?: (
           | components["schemas"]["ContentTextComponent"]
           | components["schemas"]["ContentLocationComponent"]
           | components["schemas"]["ContentEventDateTimeComponent"]
           | components["schemas"]["ContentChipComponent"]
           | components["schemas"]["ContentCalendarComponent"]
+          | components["schemas"]["ContentSectionTitleComponent"]
         )[];
-        Icon?: components["schemas"]["IconPickerIconComponent"];
         /** Format: date-time */
         createdAt?: string;
         /** Format: date-time */
@@ -2597,7 +2784,7 @@ export interface components {
     TagRequest: {
       data: {
         title: string;
-        color: components["schemas"]["ColorPickerColorPickerComponent"];
+        color: string;
         posts?: (number | string)[];
         locale?: string;
         localizations?: (number | string)[];
@@ -2618,7 +2805,7 @@ export interface components {
       id?: string | number;
       documentId?: string;
       title: string;
-      color: components["schemas"]["ColorPickerColorPickerComponent"];
+      color: string;
       posts?: {
         id?: string | number;
         documentId?: string;
@@ -2727,6 +2914,79 @@ export interface components {
                       id?: string | number;
                       documentId?: string;
                     };
+                    apiToken?: {
+                      id?: string | number;
+                      documentId?: string;
+                      name?: string;
+                      description?: string;
+                      /** @enum {string} */
+                      kind?: "content-api" | "admin";
+                      /** @enum {string} */
+                      type?: "read-only" | "full-access" | "custom";
+                      accessKey?: string;
+                      encryptedKey?: string;
+                      /** Format: date-time */
+                      lastUsedAt?: string;
+                      permissions?: {
+                        id?: string | number;
+                        documentId?: string;
+                        action?: string;
+                        token?: {
+                          id?: string | number;
+                          documentId?: string;
+                        };
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                        /** Format: date-time */
+                        publishedAt?: string;
+                        createdBy?: {
+                          id?: string | number;
+                          documentId?: string;
+                        };
+                        updatedBy?: {
+                          id?: string | number;
+                          documentId?: string;
+                        };
+                        locale?: string;
+                        localizations?: {
+                          id?: string | number;
+                          documentId?: string;
+                        }[];
+                      }[];
+                      adminPermissions?: {
+                        id?: string | number;
+                        documentId?: string;
+                      }[];
+                      adminUserOwner?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      /** Format: date-time */
+                      expiresAt?: string;
+                      /** @example 123456789 */
+                      lifespan?: string;
+                      /** Format: date-time */
+                      createdAt?: string;
+                      /** Format: date-time */
+                      updatedAt?: string;
+                      /** Format: date-time */
+                      publishedAt?: string;
+                      createdBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      updatedBy?: {
+                        id?: string | number;
+                        documentId?: string;
+                      };
+                      locale?: string;
+                      localizations?: {
+                        id?: string | number;
+                        documentId?: string;
+                      }[];
+                    };
                     /** Format: date-time */
                     createdAt?: string;
                     /** Format: date-time */
@@ -2766,6 +3026,10 @@ export interface components {
                     id?: string | number;
                     documentId?: string;
                   }[];
+                }[];
+                apiTokens?: {
+                  id?: string | number;
+                  documentId?: string;
                 }[];
                 blocked?: boolean;
                 preferedLanguage?: string;
@@ -2845,7 +3109,7 @@ export interface components {
           id?: string | number;
           documentId?: string;
           title?: string;
-          color?: components["schemas"]["ColorPickerColorPickerComponent"];
+          color?: string;
           posts?: {
             id?: string | number;
             documentId?: string;
@@ -3557,7 +3821,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -3624,7 +3888,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -3695,7 +3959,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -3919,7 +4183,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -3986,7 +4250,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -4057,7 +4321,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -4281,7 +4545,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -4348,7 +4612,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };
@@ -4419,7 +4683,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        id: number;
+        id: string;
       };
       cookie?: never;
     };

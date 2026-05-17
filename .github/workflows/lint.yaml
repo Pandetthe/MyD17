@@ -3,9 +3,6 @@ name: Lint
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "apps/mobile/**"
-      - ".github/workflows/lint.yaml"
 
 concurrency:
   group: lint-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -15,9 +12,6 @@ jobs:
   lint:
     if: ${{ github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

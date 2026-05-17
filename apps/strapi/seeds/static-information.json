@@ -2,9 +2,8 @@
   {
     "title": "Godziny otwarcia",
     "isWide": true,
-    "color": {
-      "color": "blue"
-    },
+    "color": "blue",
+    "icon": "clock",
     "content": [
       {
         "__component": "content.text",

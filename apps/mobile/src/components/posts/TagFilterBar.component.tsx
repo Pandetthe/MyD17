@@ -50,7 +50,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
           <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
             <Tag
               text={`#${tag.title}`}
-              color={strapiColorToPalette(tag.color?.color)}
+              color={strapiColorToPalette(tag.color)}
               onPress={tag.id != null ? () => onSelect(tagId) : undefined}
             />
           </View>

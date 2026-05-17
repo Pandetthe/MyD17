@@ -1,0 +1,8 @@
+{
+  "color-picker.label": "Kolor",
+  "color-picker.description": "Wybierz kolor z dostępnego zestawu",
+  "color-picker.form.attribute.item.requiredField": "Pole wymagane",
+  "color-picker.form.attribute.item.requiredField.description": "Nie będzie możliwe utworzenie wpisu, jeśli to pole jest puste",
+  "color-picker.form.attribute.item.privateField": "Pole prywatne",
+  "color-picker.form.attribute.item.privateField.description": "To pole nie będzie widoczne w odpowiedzi API"
+}
