@@ -11,8 +11,6 @@ module.exports = {
     "^react/(.*)$": "<rootDir>/node_modules/react/$1",
     "^react-dom$": "<rootDir>/node_modules/react-dom",
     "^react-dom/(.*)$": "<rootDir>/node_modules/react-dom/$1",
-    "^react-native$": "<rootDir>/node_modules/react-native",
-    "^react-native/(.*)$": "<rootDir>/node_modules/react-native/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
