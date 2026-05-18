@@ -18,7 +18,12 @@ function escape(str: string): string {
   );
 }
 
-function ogMeta(title: string, description: string, imageUrl: string | null, pageUrl: string): string {
+function ogMeta(
+  title: string,
+  description: string,
+  imageUrl: string | null,
+  pageUrl: string,
+): string {
   const safeTitle = escape(title);
   const safeDesc = escape(description);
   return `
@@ -176,8 +181,11 @@ export default factories.createCoreController(
       const description = (post.description as string | undefined) ?? "";
       const websiteUrl = post.websiteUrl as string | undefined;
 
-      const strapiBaseUrl = process.env.STRAPI_URL ?? strapi.config.get<string>("server.url", "");
-      const firstImage = (post.images as Array<{ url: string }> | undefined)?.[0];
+      const strapiBaseUrl =
+        process.env.STRAPI_URL ?? strapi.config.get<string>("server.url", "");
+      const firstImage = (
+        post.images as Array<{ url: string }> | undefined
+      )?.[0];
       const imageUrl = firstImage
         ? firstImage.url.startsWith("http")
           ? firstImage.url
@@ -197,7 +205,13 @@ export default factories.createCoreController(
         return;
       }
 
-      ctx.body = mobileRedirectHtml(documentId, title, description, imageUrl, pageUrl);
+      ctx.body = mobileRedirectHtml(
+        documentId,
+        title,
+        description,
+        imageUrl,
+        pageUrl,
+      );
     },
   }),
 );
