@@ -3,6 +3,65 @@ import { tmpdir } from "os";
 import path from "path";
 import type { Core, UID } from "@strapi/strapi";
 
+type AdminPermission = {
+  action: string;
+  subject?: string | null;
+  properties?: Record<string, unknown>;
+  conditions?: string[];
+};
+
+const ALL_CONTENT_TYPES = [
+  "api::post.post",
+  "api::tag.tag",
+  "api::static-information.static-information",
+  "api::information-page.information-page",
+];
+
+const CREATOR_CONTENT_TYPES = ["api::post.post", "api::tag.tag"];
+
+const CONTENT_ACTIONS = [
+  "plugin::content-manager.explorer.create",
+  "plugin::content-manager.explorer.read",
+  "plugin::content-manager.explorer.update",
+  "plugin::content-manager.explorer.delete",
+  "plugin::content-manager.explorer.publish",
+];
+
+const ALL_UPLOAD_ACTIONS = [
+  "plugin::upload.read",
+  "plugin::upload.configure-view",
+  "plugin::upload.assets.create",
+  "plugin::upload.assets.update",
+  "plugin::upload.assets.download",
+  "plugin::upload.assets.copy-link",
+];
+
+const BASIC_UPLOAD_ACTIONS = [
+  "plugin::upload.read",
+  "plugin::upload.assets.create",
+  "plugin::upload.assets.update",
+  "plugin::upload.assets.download",
+  "plugin::upload.assets.copy-link",
+];
+
+function buildContentPermissions(
+  contentTypes: string[],
+  actions: string[],
+): AdminPermission[] {
+  return contentTypes.flatMap((subject) =>
+    actions.map((action) => ({ action, subject, properties: {}, conditions: [] })),
+  );
+}
+
+function buildUploadPermissions(actions: string[]): AdminPermission[] {
+  return actions.map((action) => ({
+    action,
+    subject: null,
+    properties: {},
+    conditions: [],
+  }));
+}
+
 type SeedItem = Record<string, unknown>;
 
 export default {
@@ -142,8 +201,116 @@ export default {
     );
 
     await setupPublicPermissions(strapi);
+    await setupAdminRoles(strapi);
+    await seedAdminUsers(strapi);
   },
 };
+
+async function setupAdminRoles(strapi: Core.Strapi) {
+  const roles: { name: string; description: string; permissions: AdminPermission[] }[] = [
+    {
+      name: "Admin",
+      description: "Pełny CRUD na wszystkich kolekcjach i mediach",
+      permissions: [
+        ...buildContentPermissions(ALL_CONTENT_TYPES, CONTENT_ACTIONS),
+        ...buildUploadPermissions(ALL_UPLOAD_ACTIONS),
+      ],
+    },
+    {
+      name: "Creator",
+      description: "Pełny CRUD na postach, tagach i mediach",
+      permissions: [
+        ...buildContentPermissions(CREATOR_CONTENT_TYPES, CONTENT_ACTIONS),
+        ...buildUploadPermissions(BASIC_UPLOAD_ACTIONS),
+      ],
+    },
+  ];
+
+  for (const { name, description, permissions } of roles) {
+    const existing = await strapi.db
+      .query("admin::role")
+      .findOne({ where: { name } });
+
+    if (existing) {
+      strapi.log.info(`Skipping role "${name}": already exists`);
+      continue;
+    }
+
+    const role = (await strapi.service("admin::role").create({ name, description })) as {
+      id: number;
+    };
+    await strapi.service("admin::role").addPermissions(role.id, permissions);
+    strapi.log.info(`Created admin role: ${name}`);
+  }
+}
+
+async function seedAdminUsers(strapi: Core.Strapi) {
+  const superAdminRole = (await strapi.db
+    .query("admin::role")
+    .findOne({ where: { code: "strapi-super-admin" } })) as { id: number } | null;
+
+  const adminRole = (await strapi.db
+    .query("admin::role")
+    .findOne({ where: { name: "Admin" } })) as { id: number } | null;
+
+  const creatorRole = (await strapi.db
+    .query("admin::role")
+    .findOne({ where: { name: "Creator" } })) as { id: number } | null;
+
+  const DEFAULT_USERS = [
+    {
+      firstname: "Super",
+      lastname: "Admin",
+      email: "superadmin@myd17.pl",
+      password: "SuperAdmin123!",
+      role: superAdminRole,
+    },
+    {
+      firstname: "Admin",
+      lastname: "MYD17",
+      email: "admin@myd17.pl",
+      password: "Admin123!",
+      role: adminRole,
+    },
+    {
+      firstname: "Creator",
+      lastname: "MYD17",
+      email: "creator@myd17.pl",
+      password: "Creator123!",
+      role: creatorRole,
+    },
+  ];
+
+  let created = false;
+  for (const { firstname, lastname, email, password, role } of DEFAULT_USERS) {
+    if (!role) continue;
+
+    const existing = await strapi.db
+      .query("admin::user")
+      .findOne({ where: { email } });
+
+    if (existing) continue;
+
+    await strapi.service("admin::user").create({
+      firstname,
+      lastname,
+      email,
+      password,
+      roles: [role.id],
+      isActive: true,
+      registrationToken: null,
+    });
+
+    strapi.log.info(`Created admin user: ${email}`);
+    created = true;
+  }
+
+  if (created) {
+    strapi.log.warn(
+      "Default admin passwords were set — change them before going to production!",
+    );
+  }
+}
 
 async function setupPublicPermissions(strapi: Core.Strapi) {
   const publicRole = await strapi.db
