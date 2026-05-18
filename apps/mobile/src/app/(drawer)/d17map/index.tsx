@@ -348,7 +348,10 @@ export default function D17MapScreen() {
 
       {!drawerVisible && (
         <TouchableOpacity
-          style={[styles.fab, { backgroundColor: theme.colors.primary.main, bottom: 28 + insets.bottom }]}
+          style={[
+            styles.fab,
+            { backgroundColor: theme.colors.primary.main, bottom: 28 + insets.bottom },
+          ]}
           onPress={openDrawer}
           activeOpacity={0.85}
         >
@@ -413,7 +416,11 @@ export default function D17MapScreen() {
               <TouchableOpacity style={styles.btnDiscard} onPress={closeDrawer} activeOpacity={0.7}>
                 <Text style={styles.btnDiscardText}>Odrzuć</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btnSelect} onPress={handleConfirm} activeOpacity={0.85}>
+              <TouchableOpacity
+                style={styles.btnSelect}
+                onPress={handleConfirm}
+                activeOpacity={0.85}
+              >
                 <Text style={styles.btnSelectText}>Wybierz</Text>
               </TouchableOpacity>
             </View>

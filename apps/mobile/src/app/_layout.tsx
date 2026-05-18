@@ -49,17 +49,17 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <SafeAreaProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <QueryProvider>
-          <StatusBar style="auto" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(drawer)" />
-            <Stack.Screen name="post" options={{ animation: "slide_from_right" }} />
-          </Stack>
-        </QueryProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+      <SafeAreaProvider>
+        <ThemeProvider value={DefaultTheme}>
+          <QueryProvider>
+            <StatusBar style="auto" />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(drawer)" />
+              <Stack.Screen name="post" options={{ animation: "slide_from_right" }} />
+            </Stack>
+          </QueryProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

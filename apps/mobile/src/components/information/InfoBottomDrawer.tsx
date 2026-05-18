@@ -5,7 +5,6 @@ import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { PostContentBlock, StaticInformation } from "@repo/types";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   Extrapolation,
@@ -16,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -97,7 +97,10 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
 
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={[styles.content, { paddingBottom: Math.max(32, insets.bottom + 16) }]}
+            contentContainerStyle={[
+              styles.content,
+              { paddingBottom: Math.max(32, insets.bottom + 16) },
+            ]}
             showsVerticalScrollIndicator={false}
           >
             {blocks.length > 0 && <ContentRenderer blocks={blocks} textColor={colors.white} dark />}

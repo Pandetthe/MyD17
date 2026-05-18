@@ -9,10 +9,7 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type AbsPos = { top?: number; bottom?: number; left?: number; right?: number };
 
-type CircleMode =
-  | { circle?: "none" }
-  | { circle: "fixed" }
-  | { circle: "hash"; hashKey: string };
+type CircleMode = { circle?: "none" } | { circle: "fixed" } | { circle: "hash"; hashKey: string };
 
 type CardProps = {
   color?: ColorPalette;
@@ -35,13 +32,17 @@ function djb2(s: string): number {
 function hashToPos(key: string): AbsPos & { size: number } {
   const h = djb2(key);
   const corner = h % 4;
-  const size   = 280 + ((h >> 4) % 180);         // 280–459
+  const size = 280 + ((h >> 4) % 180); // 280–459
   const offset = -(size / 6 + ((h >> 12) % 20)); // proportional peek, small variation
   switch (corner) {
-    case 0: return { top: offset,    left:  offset, size };
-    case 1: return { top: offset,    right: offset, size };
-    case 2: return { bottom: offset, left:  offset, size };
-    default: return { bottom: offset, right: offset, size };
+    case 0:
+      return { top: offset, left: offset, size };
+    case 1:
+      return { top: offset, right: offset, size };
+    case 2:
+      return { bottom: offset, left: offset, size };
+    default:
+      return { bottom: offset, right: offset, size };
   }
 }
 
@@ -52,20 +53,25 @@ export function Card(props: CardProps) {
 
   const isDark = theme.mode === "dark";
   const isRaw = color !== "primary" && color !== "dark" && color in palette;
-  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+  const tcKey = color === "primary" || color === "dark" ? color : "primary";
   const rawC = isRaw ? palette[color as PaletteColor] : null;
   const tc = !isRaw ? theme.colors[tcKey] : null;
 
   const main = rawC ? rawC.main : tc!.main;
-  const circleColor = rawC ? (isDark ? rawC.dark : rawC.light) : tc!.bgAccent;
-  const bg = gradient
-    ? undefined
-    : rawC
-      ? (isDark ? rawC.extraDark : rawC.extraLight)
-      : theme.colors.surface;
 
-  const circleMode = (props as any).circle ?? "none";
-  const hashKey: string | undefined = circleMode === "hash" ? (props as any).hashKey : undefined;
+  let circleColor: string;
+  if (rawC) circleColor = isDark ? rawC.dark : rawC.light;
+  else circleColor = tc!.bgAccent;
+
+  let bg: string | undefined;
+  if (gradient) bg = undefined;
+  else if (rawC) bg = isDark ? rawC.extraDark : rawC.extraLight;
+  else bg = theme.colors.surface;
+
+  type RawCircleProps = { circle?: "none" | "fixed" | "hash"; hashKey?: string };
+  const circleMode = (props as RawCircleProps).circle ?? "none";
+  const hashKey: string | undefined =
+    circleMode === "hash" ? (props as RawCircleProps).hashKey : undefined;
 
   const circlePos = useMemo((): (AbsPos & { size?: number }) | null => {
     if (circleMode === "fixed") return { bottom: -25, right: -26 };
@@ -73,9 +79,10 @@ export function Card(props: CardProps) {
     return null;
   }, [circleMode, hashKey]);
 
-  const circleSizeStyle: ViewStyle = circleMode === "fixed"
-    ? { width: 110, height: 110 }
-    : { width: circlePos?.size ?? 300, height: circlePos?.size ?? 300 };
+  const circleSizeStyle: ViewStyle =
+    circleMode === "fixed"
+      ? { width: 110, height: 110 }
+      : { width: circlePos?.size ?? 300, height: circlePos?.size ?? 300 };
 
   const shell = (
     <View

@@ -1,15 +1,15 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
-import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
-import type { Theme } from "@/styles/themes/theme";
-import type { Tag as PostTag } from "@repo/types";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
+import type { Theme } from "@/styles/themes/theme";
+import type { Tag as PostTag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -59,15 +59,10 @@ export function HeroImage({ imageUrl, tags = [] }: Props) {
       {tags.length > 0 && (
         <View style={styles.tagsContainer}>
           {tags.map((tag) => (
-            <TagComponent
-              key={tag.id}
-              text={`#${tag.title}`}
-              color={tagColor(tag.color)}
-            />
+            <TagComponent key={tag.id} text={`#${tag.title}`} color={tagColor(tag.color)} />
           ))}
         </View>
       )}
-
     </View>
   );
 }

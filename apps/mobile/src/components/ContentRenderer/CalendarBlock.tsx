@@ -37,7 +37,7 @@ function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean
   const timeRange = [fmt(entry.startTime), fmt(entry.endTime)].filter(Boolean).join(" – ");
   const isClosed = timeRange.length === 0;
 
-  const textColor = (dark || theme.mode === "dark") ? colors.core.extraLight : colors.core.dark;
+  const textColor = dark || theme.mode === "dark" ? colors.core.extraLight : colors.core.dark;
   const closedColor = colors.core.main;
 
   return (

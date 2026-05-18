@@ -1,16 +1,11 @@
 import React, { useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
-import {
-  addEventToCalendar,
-  type CalendarEvent,
-} from "@/features/posts/hooks/useAddToCalendar";
+import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
@@ -18,6 +13,8 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -64,7 +61,9 @@ export function PostDetail({ post }: Props) {
           style={styles.scroll}
           contentContainerStyle={[
             styles.content,
-            !hasHero && { paddingTop: insets.top + theme.size.xl + theme.spacing.xl + theme.spacing.lg },
+            !hasHero && {
+              paddingTop: insets.top + theme.size.xl + theme.spacing.xl + theme.spacing.lg,
+            },
           ]}
           showsVerticalScrollIndicator={false}
         >
@@ -88,13 +87,13 @@ export function PostDetail({ post }: Props) {
             </TextCore>
 
             <View style={styles.body}>
-              {!hasContentBlocks && description.length > 0 && (
+              {description.length > 0 && (
                 <TextCore variant="body" color={subtextColor} style={styles.justify}>
                   {description}
                 </TextCore>
               )}
 
-              <View style={styles.footer}>
+              <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
                 <Pressable style={styles.iconButton} hitSlop={8}>
                   <Share2 size={theme.size.md} color={colors.core.main} />
                 </Pressable>
@@ -166,6 +165,9 @@ const styles = StyleSheet.create((theme: Theme) => ({
     paddingTop: theme.spacing.xxs,
     paddingBottom: theme.spacing.md,
     marginBottom: theme.spacing.sm,
+  },
+  footerWithDescription: {
+    paddingTop: theme.spacing.md,
   },
   iconButton: {
     padding: theme.spacing.xxs,

@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, FlatList, ActivityIndicator, RefreshControl } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
 import { PostCard } from "@/components/posts/PostCard.component";
@@ -8,6 +7,7 @@ import { TagFilterBar } from "@/components/posts/TagFilterBar.component";
 import { usePosts } from "@/features/posts/api/usePosts";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag } from "@repo/types";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -115,11 +115,7 @@ export default function PostsScreen() {
           />
         }
         ListEmptyComponent={
-          <TextCore
-            variant="body"
-            color={theme.colors.primary.subtext}
-            style={styles.emptyText}
-          >
+          <TextCore variant="body" color={theme.colors.primary.subtext} style={styles.emptyText}>
             Brak postów pasujących do wybranych filtrów.
           </TextCore>
         }

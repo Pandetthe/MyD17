@@ -38,13 +38,7 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
         <ArrowRight size={13} color="#ffffff" strokeWidth={2.5} />
       </View>
 
-      <TextCore
-        variant="h3"
-        weight="bold"
-        color={textColor}
-        numberOfLines={2}
-        style={styles.title}
-      >
+      <TextCore variant="h3" weight="bold" color={textColor} numberOfLines={2} style={styles.title}>
         {title}
       </TextCore>
     </Card>

@@ -1,8 +1,9 @@
 import React from "react";
 import { View } from "react-native";
+import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
-import { InfoRow } from "@/components/InfoCard/InfoRow";
+import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
@@ -13,7 +14,6 @@ import type {
   LocationValue,
   PostContentBlock,
 } from "@repo/types";
-import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";

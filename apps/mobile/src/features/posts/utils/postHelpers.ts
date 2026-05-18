@@ -34,7 +34,7 @@ export function getPostHeroImage(post: Post): string | null {
   const image = resolveFirstImage(post.images);
   if (!image) return null;
   const formats = image.formats as StrapiImageFormats | null;
-  const url = formats?.large?.url ?? formats?.medium?.url ?? (image.url as string | undefined);
+  const url = formats?.large?.url ?? (image.url as string | undefined);
   if (!url) return null;
   return strapiUrl(url);
 }

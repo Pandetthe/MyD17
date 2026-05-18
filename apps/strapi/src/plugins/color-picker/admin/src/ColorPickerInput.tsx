@@ -4,12 +4,12 @@ import { Box, Field, Flex } from "@strapi/design-system";
 import styled from "styled-components";
 
 const COLORS: { name: string; hex: string; label: string }[] = [
-  { name: "red",    hex: "#EF4444", label: "Red" },
-  { name: "amber",  hex: "#F59E0B", label: "Amber" },
-  { name: "green",  hex: "#22C55E", label: "Green" },
-  { name: "teal",   hex: "#06B6D4", label: "Teal" },
+  { name: "red", hex: "#EF4444", label: "Red" },
+  { name: "amber", hex: "#F59E0B", label: "Amber" },
+  { name: "green", hex: "#22C55E", label: "Green" },
+  { name: "teal", hex: "#06B6D4", label: "Teal" },
   { name: "purple", hex: "#8B5CF6", label: "Purple" },
-  { name: "pink",   hex: "#EC4899", label: "Pink" },
+  { name: "pink", hex: "#EC4899", label: "Pink" },
 ];
 
 const ColorSwatch = styled.button<{

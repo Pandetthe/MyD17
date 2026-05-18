@@ -1,26 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 import Button from "@/components/core/Button.component";
-import { apiClient } from "@/lib/apiClient";
-import { tagColor } from "@/lib/tagColor";
 import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
+import { apiClient } from "@/lib/apiClient";
+import { tagColor } from "@/lib/tagColor";
 import { Theme } from "@/styles/themes/theme";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationAction, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ArrowLeft, SaveIcon } from "lucide-react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-interface TagData {
+type TagData = {
   id: number;
   title: string;
   color: string;
-}
+};
 
 export default function Notifications() {
   const navigation = useNavigation();
@@ -32,7 +38,7 @@ export default function Notifications() {
   const [selected, setSelected] = useState<Record<number, boolean>>({});
   const [saved, setSaved] = useState<Record<number, boolean>>({});
   const [showModal, setShowModal] = useState(false);
-  const pendingAction = useRef<any>(null);
+  const pendingAction = useRef<NavigationAction | null>(null);
 
   const hasUnsaved = JSON.stringify(selected) !== JSON.stringify(saved);
   const hasUnsavedRef = useRef(false);
@@ -76,8 +82,7 @@ export default function Notifications() {
     });
   }, [navigation]);
 
-  const toggle = (id: number) =>
-    setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggle = (id: number) => setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const toggleAll = () => {
     const allOn = Object.values(selected).every(Boolean);
@@ -111,57 +116,53 @@ export default function Notifications() {
 
   return (
     <GestureDetector gesture={swipeBack}>
-    <View style={styles.wrapper}>
-      <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
-        <Button
-          icon={ArrowLeft}
-          color="dark"
-          size="lg"
-          onPress={() => router.back()}
-        />
-        <TextCore variant="h2" style={styles.title}>Powiadomienia</TextCore>
-        <View style={styles.headerSpacer} />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-
-        <Pressable style={styles.selectAllRow} onPress={toggleAll}>
-          <TextCore variant="h2">Wszystkie</TextCore>
-          <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
-        </Pressable>
-
-        <View style={styles.divider} />
-
-        <View style={styles.tagsGrid}>
-          {tags.map((tag) => {
-            const isSelected = selected[tag.id] ?? false;
-            const dimmed = !isSelected;
-            return (
-              <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
-                <Tag
-                  text={`#${tag.title}`}
-                  color={tagColor(tag.color)}
-                  onPress={() => toggle(tag.id)}
-                />
-              </View>
-            );
-          })}
+      <View style={styles.wrapper}>
+        <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
+          <Button icon={ArrowLeft} color="dark" size="lg" onPress={() => router.back()} />
+          <TextCore variant="h2" style={styles.title}>
+            Powiadomienia
+          </TextCore>
+          <View style={styles.headerSpacer} />
         </View>
-      </ScrollView>
 
-      <Animated.View
-        style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
-        pointerEvents={hasUnsaved ? "auto" : "none"}
-      >
-        <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} />
-      </Animated.View>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Pressable style={styles.selectAllRow} onPress={toggleAll}>
+            <TextCore variant="h2">Wszystkie</TextCore>
+            <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
+          </Pressable>
 
-      <UnsavedChangesModal
-        visible={showModal}
-        onKeep={() => setShowModal(false)}
-        onDiscard={handleDiscard}
-      />
-    </View>
+          <View style={styles.divider} />
+
+          <View style={styles.tagsGrid}>
+            {tags.map((tag) => {
+              const isSelected = selected[tag.id] ?? false;
+              const dimmed = !isSelected;
+              return (
+                <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
+                  <Tag
+                    text={`#${tag.title}`}
+                    color={tagColor(tag.color)}
+                    onPress={() => toggle(tag.id)}
+                  />
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
+
+        <Animated.View
+          style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
+          pointerEvents={hasUnsaved ? "auto" : "none"}
+        >
+          <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} />
+        </Animated.View>
+
+        <UnsavedChangesModal
+          visible={showModal}
+          onKeep={() => setShowModal(false)}
+          onDiscard={handleDiscard}
+        />
+      </View>
     </GestureDetector>
   );
 }

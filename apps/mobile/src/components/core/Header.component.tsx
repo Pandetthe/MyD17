@@ -13,7 +13,7 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function Header() {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const { theme, rt } = useUnistyles();
+  const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
   const logoVariant = isDark ? "white" : "color";
   const iconColor = isDark ? colors.core.extraLight : colors.core.dark;

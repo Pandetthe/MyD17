@@ -1,18 +1,17 @@
 import React from "react";
 import { ScrollView, View, Pressable } from "react-native";
 import Tag from "@/components/core/Tag.component";
-import { colors } from "@/styles/colors";
 import TextCore from "@/components/core/Text.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
+import { tagColor } from "@/lib/tagColor";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
-import { tagColor } from "@/lib/tagColor";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 function ClearPill({ onPress }: { onPress: () => void }) {
-  const { theme } = useUnistyles();
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
   return (
     <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>

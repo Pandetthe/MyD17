@@ -43,12 +43,15 @@ export default function RadioButton({
   };
 
   const isRaw = color !== "primary" && color !== "dark" && color in palette;
-  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+  const tcKey = color === "primary" || color === "dark" ? color : "primary";
   const rawC = isRaw ? palette[color as PaletteColor] : null;
   const tc = !isRaw ? theme.colors[tcKey] : null;
 
   const accent = rawC ? rawC.main : tc!.main;
-  const borderColor = isChecked ? accent : (rawC ? rawC.light : tc!.bgAccent);
+  let borderColor: string;
+  if (isChecked) borderColor = accent;
+  else if (rawC) borderColor = rawC.light;
+  else borderColor = tc!.bgAccent;
 
   const radioCircle = (
     <Animated.View

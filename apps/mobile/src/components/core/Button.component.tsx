@@ -38,10 +38,8 @@ export default function Button({
   const pressProgress = useSharedValue(0);
 
   const isRaw = color !== "primary" && color !== "dark" && color in palette;
-  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
-  const main = isRaw
-    ? palette[color as PaletteColor].main
-    : theme.colors[tcKey].main;
+  const tcKey = color === "primary" || color === "dark" ? color : "primary";
+  const main = isRaw ? palette[color as PaletteColor].main : theme.colors[tcKey].main;
 
   const selectedSize = useMemo(() => {
     const sizes = {
@@ -61,9 +59,10 @@ export default function Button({
     return sizes[size] ?? sizes.sm;
   }, [size, theme]);
 
-  const fgColor = hasBackground
-    ? (color === "dark" ? theme.colors.dark.text : colors.white)
-    : main;
+  let fgColor: string;
+  if (!hasBackground) fgColor = main;
+  else if (color === "dark") fgColor = theme.colors.dark.text;
+  else fgColor = colors.white;
   const bgColor = hasBackground ? main : "transparent";
 
   const containerStyle = useMemo(

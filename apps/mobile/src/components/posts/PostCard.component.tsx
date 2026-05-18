@@ -1,15 +1,15 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
 import { Card } from "@/components/core/Card.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
-import { tagColor } from "@/lib/tagColor";
 import { AvatarPlaceholder } from "@/lib/images";
+import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
+import MaskedView from "@react-native-masked-view/masked-view";
 import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -67,19 +67,10 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
           style={[styles.avatar, { backgroundColor: avatarBg }]}
           contentFit="cover"
         />
-        <TextCore
-          variant="label"
-          color={authorColor}
-          numberOfLines={1}
-          style={styles.authorName}
-        >
+        <TextCore variant="label" color={authorColor} numberOfLines={1} style={styles.authorName}>
           {author?.username || "Autor"}
         </TextCore>
-        <TextCore
-          variant="label"
-          color={colors.core.main}
-          style={styles.date}
-        >
+        <TextCore variant="label" color={colors.core.main} style={styles.date}>
           {dateLabel}
         </TextCore>
       </View>
@@ -135,12 +126,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
       {/* ── Description ── */}
       {description.length > 0 && (
-        <TextCore
-          variant="body"
-          color={subtextColor}
-          numberOfLines={3}
-          style={styles.description}
-        >
+        <TextCore variant="body" color={subtextColor} numberOfLines={3} style={styles.description}>
           {description}
         </TextCore>
       )}

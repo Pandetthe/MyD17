@@ -28,16 +28,19 @@ const stylesheet = StyleSheet.create((theme) => ({
   container: (color: ColorPalette, selected: boolean) => {
     const isDark = theme.mode === "dark";
     const isRaw = color != null && color !== "primary" && color !== "dark" && color in palette;
-    const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+    const tcKey = color === "primary" || color === "dark" ? color : "primary";
     const c = isRaw ? palette[color as PaletteColor] : null;
     const tc = !isRaw ? (theme.colors[tcKey] ?? theme.colors.primary) : null;
     const main = c ? c.main : tc!.main;
 
     let bg: string;
     if (selected) {
-      bg = isDark ? main : (c ? c.light : tc!.bgAccent);
+      if (isDark) bg = main;
+      else bg = c ? c.light : tc!.bgAccent;
+    } else if (c) {
+      bg = isDark ? c.extraDark : c.extraLight;
     } else {
-      bg = c ? (isDark ? c.extraDark : c.extraLight) : theme.colors.surface;
+      bg = theme.colors.surface;
     }
 
     return {
@@ -59,13 +62,19 @@ const stylesheet = StyleSheet.create((theme) => ({
   text: (color: ColorPalette, selected: boolean) => {
     const isDark = theme.mode === "dark";
     const isRaw = color != null && color !== "primary" && color !== "dark" && color in palette;
-    const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+    const tcKey = color === "primary" || color === "dark" ? color : "primary";
     const c = isRaw ? palette[color as PaletteColor] : null;
     const tc = !isRaw ? (theme.colors[tcKey] ?? theme.colors.primary) : null;
 
-    const textColor = selected
-      ? c ? (isDark ? c.extraLight : c.extraDark) : tc!.text
-      : c ? (isDark ? c.light : c.dark) : tc!.subtext;
+    let textColor: string;
+    if (selected) {
+      if (c) textColor = isDark ? c.extraLight : c.extraDark;
+      else textColor = tc!.text;
+    } else if (c) {
+      textColor = isDark ? c.light : c.dark;
+    } else {
+      textColor = tc!.subtext;
+    }
 
     return {
       color: textColor,

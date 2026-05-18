@@ -17,15 +17,16 @@ export function InfoRow({ icon, label, value, dark = false }: Props) {
   const isDark = theme.mode === "dark";
 
   const labelColor = dark ? colors.core.light : colors.core.main;
-  const valueColor = dark ? colors.white : (isDark ? colors.core.extraLight : colors.core.dark);
-  const iconBg = (dark || isDark) ? colors.core.main : colors.core.disabled;
-  const iconFg = (dark || isDark) ? colors.core.dark : colors.core.main;
+  let valueColor: string;
+  if (dark) valueColor = colors.white;
+  else if (isDark) valueColor = colors.core.extraLight;
+  else valueColor = colors.core.dark;
+  const iconBg = dark || isDark ? colors.core.main : colors.core.disabled;
+  const iconFg = dark || isDark ? colors.core.dark : colors.core.main;
 
   return (
     <View style={styles.row}>
-      <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
-        {icon(iconFg)}
-      </View>
+      <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>{icon(iconFg)}</View>
       <View style={styles.textColumn}>
         <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}

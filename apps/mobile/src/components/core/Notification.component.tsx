@@ -17,17 +17,12 @@ export default function Notification({ text, onPress, value, color }: SettingPro
 
   const resolvedColor = color ?? "primary";
   const isRaw = resolvedColor !== "primary" && resolvedColor !== "dark" && resolvedColor in palette;
-  const tcKey = (resolvedColor === "primary" || resolvedColor === "dark") ? resolvedColor : "primary";
-  const main = isRaw
-    ? palette[resolvedColor as PaletteColor].main
-    : theme.colors[tcKey].main;
+  const tcKey = resolvedColor === "primary" || resolvedColor === "dark" ? resolvedColor : "primary";
+  const main = isRaw ? palette[resolvedColor as PaletteColor].main : theme.colors[tcKey].main;
 
   return (
     <View style={[styles.container]}>
-      <Pressable
-        onPress={onPress}
-        style={[styles.tagWrapper, value && { borderColor: main }]}
-      >
+      <Pressable onPress={onPress} style={[styles.tagWrapper, value && { borderColor: main }]}>
         <Tag text={formatText(text)} color={color} onPress={onPress} />
       </Pressable>
     </View>
