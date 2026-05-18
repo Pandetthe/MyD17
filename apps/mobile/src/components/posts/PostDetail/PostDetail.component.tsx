@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
@@ -13,6 +13,7 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -54,70 +55,72 @@ export function PostDetail({ post }: Props) {
     });
 
   return (
-    <GestureDetector gesture={swipeBack}>
-      <View style={styles.screen}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={[
-            styles.content,
-            !hasHero && {
-              paddingTop: insets.top + theme.size.xl + theme.spacing.xl + theme.spacing.lg,
-            },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          {hasHero && <HeroImage imageUrl={heroUrl} tags={tags} />}
+    <View style={styles.screen}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[
+          styles.content,
+          !hasHero && {
+            paddingTop: insets.top + theme.size.xl + theme.spacing.xl + theme.spacing.lg,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {hasHero && <HeroImage imageUrl={heroUrl} tags={tags} />}
 
-          <View style={styles.contentArea}>
-            {!hasHero && tags.length > 0 && (
-              <View style={styles.tagsRow}>
-                {tags.map((tag) => (
-                  <TagComponent
-                    key={tag.id}
-                    text={`#${tag.title ?? ""}`}
-                    color={tagColor(tag.color)}
-                  />
-                ))}
-              </View>
+        <View style={styles.contentArea}>
+          {!hasHero && tags.length > 0 && (
+            <View style={styles.tagsRow}>
+              {tags.map((tag) => (
+                <TagComponent
+                  key={tag.id}
+                  text={`#${tag.title ?? ""}`}
+                  color={tagColor(tag.color)}
+                />
+              ))}
+            </View>
+          )}
+
+          <TextCore variant="h1" style={styles.title}>
+            {post.title}
+          </TextCore>
+
+          <View style={styles.body}>
+            {description.length > 0 && (
+              <TextCore variant="body" color={subtextColor} style={styles.justify}>
+                {description}
+              </TextCore>
             )}
 
-            <TextCore variant="h1" style={styles.title}>
-              {post.title}
-            </TextCore>
-
-            <View style={styles.body}>
-              {description.length > 0 && (
-                <TextCore variant="body" color={subtextColor} style={styles.justify}>
-                  {description}
-                </TextCore>
-              )}
-
-              <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
-                <Pressable style={styles.iconButton} hitSlop={8}>
-                  <Share2 size={theme.size.md} color={colors.core.main} />
-                </Pressable>
-                <Pressable style={styles.iconButton} hitSlop={8}>
-                  <Heart size={theme.size.md} color={colors.core.main} />
-                </Pressable>
-                <TextCore variant="h3" color={colors.core.main} weight="semiBold">
-                  {post.likesCount}
-                </TextCore>
-              </View>
-
-              <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
+            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
+              <Pressable style={styles.iconButton} hitSlop={8}>
+                <Share2 size={theme.size.md} color={colors.core.main} />
+              </Pressable>
+              <Pressable style={styles.iconButton} hitSlop={8}>
+                <Heart size={theme.size.md} color={colors.core.main} />
+              </Pressable>
+              <TextCore variant="h3" color={colors.core.main} weight="semiBold">
+                {post.likesCount}
+              </TextCore>
             </View>
-          </View>
-        </ScrollView>
 
-        <Button
-          icon={ArrowLeft}
-          color="dark"
-          size="lg"
-          style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
-          onPress={goBack}
-        />
-      </View>
-    </GestureDetector>
+            <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
+          </View>
+        </View>
+      </ScrollView>
+
+      <GestureDetector gesture={swipeBack}>
+        <View style={styles.edgeTrigger} />
+      </GestureDetector>
+
+      <Button
+        icon={ArrowLeft}
+        color="dark"
+        size="lg"
+        style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
+        onPress={goBack}
+      />
+    </View>
   );
 }
 
@@ -174,5 +177,12 @@ const styles = StyleSheet.create((theme: Theme) => ({
   backButton: {
     position: "absolute",
     left: theme.spacing.md,
+  },
+  edgeTrigger: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 24,
   },
 }));
