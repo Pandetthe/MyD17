@@ -4,12 +4,13 @@ import Setting from "@/components/Setting";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { Theme } from "@/styles/themes/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Bell, BellRingIcon, MoonIcon } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { BellRingIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(UnistylesRuntime.themeName === "dark");
-  const [notifications, setNotifications] = useState(false);
 
   const darkModeClick = () => {
     const next = darkMode ? "light" : "dark";
@@ -19,18 +20,13 @@ export default function Settings() {
     setDarkMode(!darkMode);
   };
 
-  const openNotifications = () => {
-    setNotifications(!notifications);
-  };
-
   return (
     <View style={styles.container}>
       <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
       <Setting
-        icon={notifications ? BellRingIcon : Bell}
-        text="Włącz powiadomienia"
-        onPress={openNotifications}
-        value={notifications}
+        icon={BellRingIcon}
+        text="Zarządzaj powiadomieniami"
+        onPress={() => router.push("/settings/notifications")}
       />
     </View>
   );

@@ -1,6 +1,7 @@
 import { Text, Pressable } from "react-native";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
-import { ColorPalette } from "@/styles/themes/theme";
+import { palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor } from "@/styles/themes/theme";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -24,29 +25,53 @@ export default function Tag({ text, color = "primary", selected = false, onPress
 }
 
 const stylesheet = StyleSheet.create((theme) => ({
-  container: (color: ColorPalette, selected: boolean) => ({
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: selected
-      ? theme.mode === "dark"
-        ? theme.colors[color].main
-        : theme.colors[color].background.accent
-      : theme.colors[color].background.main,
-    borderColor: theme.colors[color].main,
-    borderWidth: 1,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xxs,
-    shadowColor: theme.colors[color].main,
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 4,
-  }),
-  text: (color: ColorPalette, selected: boolean) => ({
-    color: selected ? theme.colors[color].text.primary : theme.colors[color].text.secondary,
-    fontSize: 14,
-    lineHeight: 18,
-    fontFamily: theme.fonts.medium,
-  }),
+  container: (color: ColorPalette, selected: boolean) => {
+    const isDark = theme.mode === "dark";
+    const isRaw = color != null && color !== "primary" && color !== "dark" && color in palette;
+    const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+    const c = isRaw ? palette[color as PaletteColor] : null;
+    const tc = !isRaw ? (theme.colors[tcKey] ?? theme.colors.primary) : null;
+    const main = c ? c.main : tc!.main;
+
+    let bg: string;
+    if (selected) {
+      bg = isDark ? main : (c ? c.light : tc!.bgAccent);
+    } else {
+      bg = c ? (isDark ? main + "1A" : c.extraLight) : theme.colors.surface;
+    }
+
+    return {
+      borderRadius: theme.borderRadius.full,
+      backgroundColor: bg,
+      borderColor: main,
+      borderWidth: 1,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xxs,
+      shadowColor: main,
+      shadowOffset: { width: 5, height: 5 },
+      shadowOpacity: 0.2,
+      shadowRadius: 20,
+      elevation: 4,
+    };
+  },
+  text: (color: ColorPalette, selected: boolean) => {
+    const isDark = theme.mode === "dark";
+    const isRaw = color != null && color !== "primary" && color !== "dark" && color in palette;
+    const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+    const c = isRaw ? palette[color as PaletteColor] : null;
+    const tc = !isRaw ? (theme.colors[tcKey] ?? theme.colors.primary) : null;
+
+    const textColor = selected
+      ? c ? (isDark ? c.extraLight : c.extraDark) : tc!.text
+      : c ? (isDark ? c.light : c.dark) : tc!.subtext;
+
+    return {
+      color: textColor,
+      fontSize: 14,
+      lineHeight: 18,
+      fontFamily: theme.fonts.medium,
+    };
+  },
 }));

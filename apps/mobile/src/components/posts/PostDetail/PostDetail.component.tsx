@@ -7,8 +7,9 @@ import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
+import { tagColor } from "@/lib/tagColor";
 import { AvatarPlaceholder } from "@/lib/images";
-import { strapiColorToPalette } from "@/lib/strapiColors";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
@@ -31,7 +32,9 @@ type Props = {
 export function PostDetail({ post }: Props) {
   const router = useRouter();
   const { theme } = useUnistyles();
+  const isDark = theme.mode === "dark";
   const insets = useSafeAreaInsets();
+
   const heroUrl = getPostHeroImage(post);
   const description = getPostDescription(post);
   const content = post.content ?? [];
@@ -41,8 +44,11 @@ export function PostDetail({ post }: Props) {
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
   const hasHero = !!heroUrl;
 
-  // Only show description if no rich content blocks (avoid duplication)
   const hasContentBlocks = content.length > 0;
+
+  const authorColor = isDark ? colors.white : colors.core.dark;
+  const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
+  const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   return (
     <View style={styles.screen}>
@@ -63,12 +69,12 @@ export function PostDetail({ post }: Props) {
           <View style={styles.authorRow}>
             <Image
               source={avatarUrl ? { uri: avatarUrl } : AvatarPlaceholder}
-              style={hasHero ? styles.avatarSmall : styles.avatarLarge}
+              style={[hasHero ? styles.avatarSmall : styles.avatarLarge, { backgroundColor: avatarBg }]}
               contentFit="cover"
             />
             <TextCore
               variant="label"
-              color={theme.colors.dark.main}
+              color={authorColor}
               weight="bold"
               style={styles.authorName}
               numberOfLines={1}
@@ -77,7 +83,7 @@ export function PostDetail({ post }: Props) {
             </TextCore>
             <TextCore
               variant="label"
-              color={theme.colors.primary.main}
+              color={colors.core.main}
               weight="bold"
               style={styles.date}
             >
@@ -92,7 +98,7 @@ export function PostDetail({ post }: Props) {
                 <TagComponent
                   key={tag.id}
                   text={`#${tag.title ?? ""}`}
-                  color={strapiColorToPalette(tag.color?.color)}
+                  color={tagColor(tag.color)}
                 />
               ))}
             </View>
@@ -105,7 +111,7 @@ export function PostDetail({ post }: Props) {
           {!hasContentBlocks && description.length > 0 && (
             <TextCore
               variant="body"
-              color={theme.colors.primary.text.secondary}
+              color={subtextColor}
               style={styles.justify}
             >
               {description}
@@ -115,12 +121,12 @@ export function PostDetail({ post }: Props) {
           <View style={styles.actionRow}>
             <View style={styles.socials}>
               <Pressable hitSlop={8}>
-                <Share2 size={theme.size.md} color={theme.colors.primary.main} />
+                <Share2 size={theme.size.md} color={colors.core.main} />
               </Pressable>
               <Pressable hitSlop={8}>
-                <Heart size={theme.size.md} color={theme.colors.primary.main} />
+                <Heart size={theme.size.md} color={colors.core.main} />
               </Pressable>
-              <TextCore variant="h3" color={theme.colors.primary.main} weight="bold">
+              <TextCore variant="h3" color={colors.core.main} weight="bold">
                 {post.likesCount}
               </TextCore>
             </View>
@@ -170,14 +176,12 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 24,
     height: 24,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.primary.background.accent,
     flexShrink: 0,
   },
   avatarLarge: {
     width: 40,
     height: 40,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.primary.background.accent,
     flexShrink: 0,
   },
   authorName: {

@@ -3,9 +3,9 @@ import { View } from "react-native";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
-import { strapiColorToPalette } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
+import { tagColor } from "@/lib/tagColor";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -46,7 +46,7 @@ export function HeroImage({ imageUrl, onBack, tags = [] }: Props) {
             <TagComponent
               key={tag.id}
               text={`#${tag.title}`}
-              color={strapiColorToPalette(tag.color)}
+              color={tagColor(tag.color)}
             />
           ))}
         </View>

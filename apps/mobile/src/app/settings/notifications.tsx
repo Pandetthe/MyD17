@@ -4,7 +4,7 @@ import Notification from "@/components/core/Notification.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
 import { apiClient } from "@/lib/apiClient";
-import { strapiColorToPalette } from "@/lib/strapiColors";
+import { tagColor } from "@/lib/tagColor";
 import type { Theme } from "@/styles/themes/theme";
 import type { StrapiListResponse, Tag } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
@@ -82,7 +82,7 @@ export default function Notifications() {
         <Notification
           key={tag.id}
           text={tag.title}
-          color={strapiColorToPalette(tag.color)}
+          color={tagColor(tag.color)}
           value={tag.id !== undefined ? notifications[tag.id] : false}
           onPress={() => tag.id !== undefined && toggle(tag.id)}
         />

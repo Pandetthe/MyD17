@@ -3,11 +3,12 @@ import { Pressable, ScrollView, View } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 import Button from "@/components/core/Button.component";
 import { apiClient } from "@/lib/apiClient";
+import { tagColor } from "@/lib/tagColor";
 import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
-import { ColorPalette, Theme } from "@/styles/themes/theme";
+import { Theme } from "@/styles/themes/theme";
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ArrowLeft, SaveIcon } from "lucide-react-native";
@@ -17,10 +18,7 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 interface TagData {
   id: number;
   title: string;
-  color: {
-    id: number;
-    color: ColorPalette;
-  };
+  color: string;
 }
 
 export default function Notifications() {
@@ -55,7 +53,7 @@ export default function Notifications() {
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await apiClient.get<{ data: TagData[] }>("/api/tags?populate=color");
+      const res = await apiClient.get<{ data: TagData[] }>("/api/tags");
       const data = res.data.data;
       setTags(data);
       const initial = data.reduce(
@@ -126,7 +124,7 @@ export default function Notifications() {
             <Tag
               key={tag.id}
               text={tag.title}
-              color={tag.color.color}
+              color={tagColor(tag.color)}
               selected={selected[tag.id] ?? false}
               onPress={() => toggle(tag.id)}
             />
@@ -180,7 +178,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.primary.text.secondary,
+    borderBottomColor: theme.colors.primary.subtext,
     marginBottom: theme.spacing.md,
   },
   tagsGrid: {

@@ -3,7 +3,8 @@ import { View } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
-import type { ColorPalette, Theme } from "@/styles/themes/theme";
+import { palette } from "@/styles/colors";
+import type { ColorPalette, PaletteColor, Theme } from "@/styles/themes/theme";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -17,7 +18,9 @@ type Props = {
 
 export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Props) {
   const { theme } = useUnistyles();
-  const c = theme.colors[color];
+  const isDark = theme.mode === "dark";
+  const c = palette[color as PaletteColor] ?? palette.teal;
+  const textColor = isDark ? c.extraLight : c.extraDark;
 
   return (
     <Card
@@ -38,7 +41,7 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
       <TextCore
         variant="h3"
         weight="bold"
-        color={c.text.primary}
+        color={textColor}
         numberOfLines={2}
         style={styles.title}
       >

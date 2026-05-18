@@ -4,44 +4,13 @@ import { Box, Field, Flex } from "@strapi/design-system";
 import styled from "styled-components";
 
 const COLORS: { name: string; hex: string; label: string }[] = [
-  { name: "red", hex: "#ef4444", label: "Red" },
-  { name: "rose", hex: "#f43f5e", label: "Rose" },
-  { name: "orange", hex: "#f97316", label: "Orange" },
-  { name: "amber", hex: "#f59e0b", label: "Amber" },
-  { name: "yellow", hex: "#eab308", label: "Yellow" },
-  { name: "lime", hex: "#84cc16", label: "Lime" },
-  { name: "green", hex: "#22c55e", label: "Green" },
-  { name: "emerald", hex: "#10b981", label: "Emerald" },
-  { name: "teal", hex: "#14b8a6", label: "Teal" },
-  { name: "cyan", hex: "#06b6d4", label: "Cyan" },
-  { name: "sky", hex: "#0ea5e9", label: "Sky" },
-  { name: "blue", hex: "#3b82f6", label: "Blue" },
-  { name: "indigo", hex: "#6366f1", label: "Indigo" },
-  { name: "violet", hex: "#8b5cf6", label: "Violet" },
-  { name: "purple", hex: "#a855f7", label: "Purple" },
-  { name: "fuchsia", hex: "#d946ef", label: "Fuchsia" },
-  { name: "pink", hex: "#ec4899", label: "Pink" },
+  { name: "red",    hex: "#EF4444", label: "Red" },
+  { name: "amber",  hex: "#F59E0B", label: "Amber" },
+  { name: "green",  hex: "#22C55E", label: "Green" },
+  { name: "teal",   hex: "#06B6D4", label: "Teal" },
+  { name: "purple", hex: "#8B5CF6", label: "Purple" },
+  { name: "pink",   hex: "#EC4899", label: "Pink" },
 ];
-
-const APP_RESULT: Record<string, string> = {
-  red: "red",
-  rose: "red",
-  orange: "amber",
-  amber: "amber",
-  yellow: "amber",
-  lime: "green",
-  green: "green",
-  emerald: "green",
-  teal: "teal",
-  cyan: "teal",
-  sky: "blue (primary)",
-  blue: "blue (primary)",
-  indigo: "purple",
-  violet: "purple",
-  purple: "purple",
-  fuchsia: "pink",
-  pink: "pink",
-};
 
 const ColorSwatch = styled.button<{
   $hex: string;
@@ -129,7 +98,7 @@ const ColorPickerInput = ({
                 $active={value === color.name}
                 $pressed={pressed === color.name}
                 disabled={disabled}
-                title={`${color.label} → app: ${APP_RESULT[color.name]}`}
+                title={color.label}
                 aria-label={color.label}
                 aria-pressed={value === color.name}
                 onPointerDown={() => !disabled && setPressed(color.name)}

@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Pressable, StyleProp, View, ViewStyle } from "react-native";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
-import type { ColorPalette, Theme } from "@/styles/themes/theme";
+import { palette } from "@/styles/colors";
+import type { ColorPalette, PaletteColor, Theme } from "@/styles/themes/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -33,34 +34,36 @@ function djb2(s: string): number {
 
 const HASH_CIRCLE_SIZE = 300;
 
-// Center the circle exactly at a corner so only a quarter-circle is visible.
-// offset = -(size/2) ± small variation keeps arcs off the opposite edges entirely.
 function hashToPos(key: string): AbsPos {
   const h = djb2(key);
   const corner = h % 4;
   const offset = -(HASH_CIRCLE_SIZE / 6 + (h % 20));
   switch (corner) {
-    case 0:
-      return { top: offset, left: offset };
-    case 1:
-      return { top: offset, right: offset };
-    case 2:
-      return { bottom: offset, left: offset };
-    default:
-      return { bottom: offset, right: offset };
+    case 0: return { top: offset, left: offset };
+    case 1: return { top: offset, right: offset };
+    case 2: return { bottom: offset, left: offset };
+    default: return { bottom: offset, right: offset };
   }
-}
-
-/** Returns a valid RN color string for the card bg, skipping CSS gradient strings. */
-function resolveCardBg(main: string, surface: string): string {
-  return main.startsWith("linear-gradient") ? surface : main;
 }
 
 export function Card(props: CardProps) {
   const { color = "primary", gradient, onPress, style, contentStyle, children } = props;
   const { theme } = useUnistyles();
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
-  const c = theme.colors[color];
+
+  const isDark = theme.mode === "dark";
+  const isRaw = color !== "primary" && color !== "dark" && color in palette;
+  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+  const rawC = isRaw ? palette[color as PaletteColor] : null;
+  const tc = !isRaw ? theme.colors[tcKey] : null;
+
+  const main = rawC ? rawC.main : tc!.main;
+  const circleColor = rawC ? rawC.light : tc!.bgAccent;
+  const bg = gradient
+    ? undefined
+    : rawC
+      ? (isDark ? rawC.main + "1A" : rawC.extraLight)
+      : theme.colors.surface;
 
   const circleMode = (props as any).circle ?? "none";
   const hashKey: string | undefined = circleMode === "hash" ? (props as any).hashKey : undefined;
@@ -71,21 +74,16 @@ export function Card(props: CardProps) {
     return null;
   }, [circleMode, hashKey]);
 
-  const bg = gradient ? undefined : resolveCardBg(c.background.main, theme.colors.surface);
-
   const circleSizeStyle: ViewStyle =
     circleMode === "fixed"
       ? { width: 110, height: 110 }
       : { width: HASH_CIRCLE_SIZE, height: HASH_CIRCLE_SIZE };
 
-  // shadowColor on the outer shell causes it to render as an inset glow when
-  // overflow:hidden is also present. Split into two views: outer carries the
-  // shadow/elevation (no clip), inner carries overflow:hidden (no shadow).
   const shell = (
     <View
       style={[
         styles.shadowShell,
-        { borderColor: c.main, shadowColor: c.main, backgroundColor: bg ?? gradient?.[0] },
+        { borderColor: main, shadowColor: main, backgroundColor: bg ?? gradient?.[0] },
       ]}
     >
       <View style={[styles.contentShell, { backgroundColor: bg ?? gradient?.[0] }, contentStyle]}>
@@ -104,7 +102,7 @@ export function Card(props: CardProps) {
               styles.circle,
               circleSizeStyle,
               circlePos,
-              { backgroundColor: c.background.accent },
+              { backgroundColor: circleColor },
             ]}
           />
         )}

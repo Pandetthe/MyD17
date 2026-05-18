@@ -83,8 +83,8 @@ const variantMap: Record<
 
 const styles = StyleSheet.create((theme) => {
   const textColors: Record<TextColorRole, string> = {
-    primary: theme.colors.primary.text.primary,
-    secondary: theme.colors.primary.text.secondary,
+    primary: theme.colors.primary.text,
+    secondary: theme.colors.primary.subtext,
   };
 
   return {

@@ -1,3 +1,4 @@
+import "@/styles/unistyles";
 import { useWindowDimensions } from "react-native";
 import DrawerContent from "@/components/core/DrawerContent.component";
 import Header from "@/components/core/Header.component";

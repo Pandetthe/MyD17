@@ -1,15 +1,3 @@
-export type ColorGroup = {
-  main: string;
-  text: {
-    primary: string;
-    secondary: string;
-  };
-  background: {
-    main: string;
-    accent: string;
-  };
-};
-
 export type SwitchColors = {
   on: string;
   off: string;
@@ -22,15 +10,20 @@ export type GradientGroup = {
 
 export type ThemeColors = {
   surface: string;
-  primary: ColorGroup;
-  dark: ColorGroup;
+  primary: {
+    main: string;
+    text: string;
+    subtext: string;
+    bgAccent: string;
+  };
+  dark: {
+    main: string;
+    text: string;
+    subtext: string;
+    bg: string;
+    bgAccent: string;
+  };
   gradients: GradientGroup;
-  red: ColorGroup;
-  amber: ColorGroup;
-  green: ColorGroup;
-  teal: ColorGroup;
-  purple: ColorGroup;
-  pink: ColorGroup;
   switch: SwitchColors;
 };
 
@@ -48,4 +41,5 @@ export type Theme = {
   };
 };
 
-export type ColorPalette = Exclude<keyof ThemeColors, "surface" | "switch" | "gradients">;
+export type PaletteColor = "red" | "amber" | "green" | "teal" | "purple" | "pink";
+export type ColorPalette = PaletteColor | "primary" | "dark";

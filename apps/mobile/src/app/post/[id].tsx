@@ -25,7 +25,7 @@ export default function PostDetailScreen() {
   if (isError || !data || !data.data) {
     return (
       <View style={styles.centered}>
-        <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+        <TextCore variant="body" color={theme.colors.primary.subtext}>
           Nie udało się załadować posta.
         </TextCore>
         <Button text="Wróć" color="primary" onPress={() => router.back()} />

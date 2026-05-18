@@ -73,7 +73,7 @@ export default function PostsScreen() {
       <View style={styles.safe}>
         <StatusBar style="dark" />
         <View style={styles.centered}>
-          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+          <TextCore variant="body" color={theme.colors.primary.subtext}>
             Nie udało się załadować postów.
           </TextCore>
           <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
@@ -121,7 +121,7 @@ export default function PostsScreen() {
         ListEmptyComponent={
           <TextCore
             variant="body"
-            color={theme.colors.primary.text.secondary}
+            color={theme.colors.primary.subtext}
             style={styles.emptyText}
           >
             Brak postów pasujących do wybranych filtrów.

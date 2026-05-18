@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
-import { AppColor } from "@/styles/colors";
-import { ColorPalette, Theme } from "@/styles/themes/theme";
+import { AppColor, colors, palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor, Theme } from "@/styles/themes/theme";
 import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -29,10 +29,21 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
 }));
 
-function resolveColors(colorProps: ThemeIconProps | RawIconProps, theme: Theme) {
+function resolveColors(colorProps: ThemeIconProps | RawIconProps, isDark: boolean) {
   if (colorProps.bg) return { bg: colorProps.bg, fg: colorProps.fg };
-  const palette = theme.colors[colorProps.color ?? "primary"];
-  return { bg: palette.background.accent, fg: palette.icon };
+  const color = colorProps.color ?? "primary";
+  const isRaw = color !== "primary" && color !== "dark" && color in palette;
+  if (isRaw) {
+    const c = palette[color as PaletteColor];
+    return {
+      bg: isDark ? c.main + "1A" : c.light,
+      fg: isDark ? c.extraLight : c.main,
+    };
+  }
+  return {
+    bg: isDark ? colors.core.dark : colors.core.disabled,
+    fg: colors.core.main,
+  };
 }
 
 export default function Icon({
@@ -41,7 +52,8 @@ export default function Icon({
   ...colorProps
 }: IconProps) {
   const { theme } = useUnistyles();
-  const { bg, fg } = resolveColors(colorProps, theme);
+  const isDark = theme.mode === "dark";
+  const { bg, fg } = resolveColors(colorProps, isDark);
 
   if (!hasBackground) {
     return <IconComponent color={fg} size={theme.size.lg} />;

@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-05-17T15:41:26.240Z"
+    "x-generation-date": "2026-05-18T19:54:59.839Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -4389,34 +4389,6 @@
           },
           "meta": {
             "type": "object"
-          }
-        }
-      },
-      "ColorPickerColorPickerComponent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "number"
-              }
-            ]
-          },
-          "color": {
-            "type": "string",
-            "enum": [
-              "primary",
-              "dark",
-              "red",
-              "amber",
-              "green",
-              "teal",
-              "purple",
-              "pink"
-            ]
           }
         }
       },

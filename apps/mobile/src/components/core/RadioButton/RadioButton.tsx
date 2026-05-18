@@ -2,7 +2,8 @@ import { StyleProp, TextStyle } from "react-native";
 import { Pressable } from "react-native";
 import { useRadioButtonContext } from "@/components/core/RadioButton/RadioButton.context";
 import TextCore from "@/components/core/Text.component";
-import { ColorPalette } from "@/styles/themes/theme";
+import { palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor } from "@/styles/themes/theme";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -41,8 +42,13 @@ export default function RadioButton({
     context?.onValueChange(value);
   };
 
-  const accent = theme.colors[color].main;
-  const borderColor = isChecked ? accent : theme.colors[color].background.accent;
+  const isRaw = color !== "primary" && color !== "dark" && color in palette;
+  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+  const rawC = isRaw ? palette[color as PaletteColor] : null;
+  const tc = !isRaw ? theme.colors[tcKey] : null;
+
+  const accent = rawC ? rawC.main : tc!.main;
+  const borderColor = isChecked ? accent : (rawC ? rawC.light : tc!.bgAccent);
 
   const radioCircle = (
     <Animated.View

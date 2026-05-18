@@ -6,8 +6,9 @@ import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
+import { tagColor } from "@/lib/tagColor";
 import { AvatarPlaceholder } from "@/lib/images";
-import { strapiColorToPalette } from "@/lib/strapiColors";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
@@ -34,6 +35,8 @@ function formatDate(dateStr: string): string {
 
 export function PostCard({ post, onPress, onTagPress }: Props) {
   const { theme } = useUnistyles();
+  const isDark = theme.mode === "dark";
+
   const imageUrl = getPostFirstImage(post);
   const description = getPostDescription(post);
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
@@ -42,6 +45,10 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const tags = (post.tags ?? []) as Tag[];
 
   const hasImage = !!imageUrl;
+
+  const authorColor = isDark ? colors.white : colors.core.dark;
+  const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
+  const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   return (
     <Card
@@ -57,12 +64,12 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       <View style={styles.authorRow}>
         <Image
           source={avatarUrl ? { uri: avatarUrl } : AvatarPlaceholder}
-          style={styles.avatar}
+          style={[styles.avatar, { backgroundColor: avatarBg }]}
           contentFit="cover"
         />
         <TextCore
           variant="label"
-          color={theme.colors.dark.main}
+          color={authorColor}
           numberOfLines={1}
           style={styles.authorName}
         >
@@ -70,7 +77,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
         </TextCore>
         <TextCore
           variant="label"
-          color={hasImage ? theme.colors.primary.main : theme.colors.primary.main}
+          color={colors.core.main}
           style={styles.date}
         >
           {dateLabel}
@@ -98,7 +105,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
                 <TagComponent
                   key={tag.id}
                   text={`#${tag.title ?? ""}`}
-                  color={strapiColorToPalette(tag.color?.color)}
+                  color={tagColor(tag.color)}
                   onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
                 />
               ))}
@@ -114,7 +121,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
             <TagComponent
               key={tag.id}
               text={`#${tag.title ?? ""}`}
-              color={strapiColorToPalette(tag.color?.color)}
+              color={tagColor(tag.color)}
               onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
             />
           ))}
@@ -130,7 +137,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       {description.length > 0 && (
         <TextCore
           variant="body"
-          color={theme.colors.primary.text.secondary}
+          color={subtextColor}
           numberOfLines={3}
           style={styles.description}
         >
@@ -141,12 +148,12 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       {/* ── Footer ── */}
       <View style={styles.footer}>
         <Pressable style={styles.iconButton} hitSlop={8}>
-          <Share2 size={theme.size.md} color={theme.colors.primary.main} />
+          <Share2 size={theme.size.md} color={colors.core.main} />
         </Pressable>
         <Pressable style={styles.iconButton} hitSlop={8}>
-          <Heart size={theme.size.md} color={theme.colors.primary.main} />
+          <Heart size={theme.size.md} color={colors.core.main} />
         </Pressable>
-        <TextCore variant="h3" color={theme.colors.primary.main} weight="semiBold">
+        <TextCore variant="h3" color={colors.core.main} weight="semiBold">
           {post.likesCount}
         </TextCore>
       </View>
@@ -171,7 +178,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 24,
     height: 24,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.primary.background.accent,
     flexShrink: 0,
   },
   authorName: {

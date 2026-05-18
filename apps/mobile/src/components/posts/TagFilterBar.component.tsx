@@ -4,9 +4,9 @@ import Tag from "@/components/core/Tag.component";
 import { colors } from "@/styles/colors";
 import TextCore from "@/components/core/Text.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
-import { strapiColorToPalette } from "@/lib/strapiColors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
+import { tagColor } from "@/lib/tagColor";
 import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -51,7 +51,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
           <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
             <Tag
               text={`#${tag.title}`}
-              color={strapiColorToPalette(tag.color)}
+              color={tagColor(tag.color)}
               onPress={tag.id != null ? () => onSelect(tagId) : undefined}
             />
           </View>

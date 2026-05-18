@@ -14,17 +14,15 @@ type Props = {
 
 export function InfoRow({ icon, label, value, dark = false }: Props) {
   const { theme } = useUnistyles();
-  const labelColor = dark ? colors.amber.main : theme.colors.primary.main;
-  const valueColor = dark ? colors.white : theme.colors.dark.text.primary;
+  const isDark = theme.mode === "dark";
+
+  const labelColor = dark ? colors.amber.main : colors.core.main;
+  const valueColor = dark ? colors.white : (isDark ? colors.core.extraLight : colors.core.dark);
+  const iconBg = dark ? colors.core.extraDark : "transparent";
 
   return (
     <View style={styles.row}>
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: dark ? colors.core.extraDark : theme.colors.primary.background.main },
-        ]}
-      >
+      <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
         {icon}
       </View>
       <View style={styles.textColumn}>

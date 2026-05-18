@@ -41,7 +41,7 @@ type Props = {
 export function InfoCard({ blocks, dark = false }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
-  const iconColor = dark ? colors.white : theme.colors.primary.main;
+  const iconColor = dark ? colors.white : colors.core.main;
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -112,13 +112,13 @@ const styles = StyleSheet.create((theme: Theme) => ({
     elevation: 4,
   },
   cardLight: {
-    backgroundColor: theme.colors.primary.background.accent,
-    borderColor: theme.colors.primary.main,
-    shadowColor: theme.colors.primary.main,
+    backgroundColor: theme.mode === "dark" ? colors.core.dark : colors.core.disabled,
+    borderColor: colors.core.main,
+    shadowColor: colors.core.main,
   },
   cardDark: {
     backgroundColor: colors.core.dark,
-    borderColor: theme.colors.primary.main,
+    borderColor: colors.core.main,
     shadowColor: colors.core.extraDark,
   },
   calendarButton: {

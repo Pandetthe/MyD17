@@ -41,7 +41,6 @@ export interface ColorPickerColorPicker extends Struct.ComponentSchema {
   };
 }
 
-
 export interface ContentCalendar extends Struct.ComponentSchema {
   collectionName: 'components_content_calendars';
   info: {
@@ -139,6 +138,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'calendar-entry.calendar-entry': CalendarEntryCalendarEntry;
+      'color-picker.color-picker': ColorPickerColorPicker;
       'content.calendar': ContentCalendar;
       'content.chip': ContentChip;
       'content.event-date-time': ContentEventDateTime;

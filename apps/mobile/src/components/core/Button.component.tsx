@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Pressable, Text, StyleProp, ViewStyle } from "react-native";
-import { colors } from "@/styles/colors";
-import { ColorPalette } from "@/styles/themes/theme";
+import { colors, palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor } from "@/styles/themes/theme";
 import { LucideIcon } from "lucide-react-native";
 import Animated, {
   useSharedValue,
@@ -37,6 +37,12 @@ export default function Button({
   const { theme } = useUnistyles();
   const pressProgress = useSharedValue(0);
 
+  const isRaw = color !== "primary" && color !== "dark" && color in palette;
+  const tcKey = (color === "primary" || color === "dark") ? color : "primary";
+  const main = isRaw
+    ? palette[color as PaletteColor].main
+    : theme.colors[tcKey].main;
+
   const selectedSize = useMemo(() => {
     const sizes = {
       sm: {
@@ -55,9 +61,8 @@ export default function Button({
     return sizes[size] ?? sizes.sm;
   }, [size, theme]);
 
-  const fgColor = hasBackground ? colors.white : theme.colors[color].main;
-
-  const bgColor = hasBackground ? theme.colors[color].main : "transparent";
+  const fgColor = hasBackground ? colors.white : main;
+  const bgColor = hasBackground ? main : "transparent";
 
   const containerStyle = useMemo(
     () => ({
@@ -87,11 +92,7 @@ export default function Button({
   const animatedStyle = useAnimatedStyle(() => {
     const scale = 1 - pressProgress.value * 0.05;
     const opacity = 1 - pressProgress.value * 0.4;
-
-    return {
-      transform: [{ scale }],
-      opacity,
-    };
+    return { transform: [{ scale }], opacity };
   });
 
   const resolvedA11yLabel = accessibilityLabel ?? (text ? text : "Button");
@@ -100,16 +101,10 @@ export default function Button({
     <Pressable
       onPress={onPress}
       onPressIn={() => {
-        pressProgress.value = withTiming(1, {
-          duration: 30,
-          easing: Easing.out(Easing.quad),
-        });
+        pressProgress.value = withTiming(1, { duration: 30, easing: Easing.out(Easing.quad) });
       }}
       onPressOut={() => {
-        pressProgress.value = withTiming(0, {
-          duration: 30,
-          easing: Easing.out(Easing.quad),
-        });
+        pressProgress.value = withTiming(0, { duration: 30, easing: Easing.out(Easing.quad) });
       }}
       accessibilityRole="button"
       accessibilityLabel={resolvedA11yLabel}
