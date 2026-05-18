@@ -27,13 +27,16 @@ export default {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const buffer = Buffer.from(await response.arrayBuffer());
-        const contentType = response.headers.get("content-type") || "image/jpeg";
+        const contentType =
+          response.headers.get("content-type") || "image/jpeg";
         const ext = contentType.split("/")[1] ?? "jpg";
         const filename = `seed-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const tmpPath = path.join(tmpdir(), filename);
 
         await fs.writeFile(tmpPath, buffer);
-        const [uploaded] = await strapi.plugins["upload"].services.upload.upload({
+        const [uploaded] = await strapi.plugins[
+          "upload"
+        ].services.upload.upload({
           data: {},
           files: {
             name: filename,
