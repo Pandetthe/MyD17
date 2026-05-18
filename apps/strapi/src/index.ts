@@ -44,25 +44,23 @@ type ActionObject = {
 };
 
 function buildContentPermissions(
-  strapi: { service: (name: string) => Record<string, (...args: unknown[]) => unknown> },
+  strapi: Core.Strapi,
   contentTypes: string[],
   actionIds: string[],
 ): AdminPermission[] {
-  const actionProvider = (
-    strapi.service("admin::permission") as unknown as { actionProvider: { values: () => ActionObject[] } }
-  ).actionProvider;
+  const { actionProvider } = strapi.service("admin::permission");
 
-  const matchingActions = actionProvider
-    .values()
+  const matchingActions = (actionProvider.values() as ActionObject[])
     .filter((a) => actionIds.includes(a.actionId))
-    .map((a) => ({ ...a, subjects: a.subjects.filter((s) => contentTypes.includes(s)) }))
+    .map((a) => ({
+      ...a,
+      subjects: a.subjects.filter((s) => contentTypes.includes(s)),
+    }))
     .filter((a) => a.subjects.length > 0);
 
-  return (
-    strapi.service("admin::content-type") as {
-      getPermissionsWithNestedFields: (actions: ActionObject[]) => AdminPermission[];
-    }
-  ).getPermissionsWithNestedFields(matchingActions);
+  return strapi
+    .service("admin::content-type")
+    .getPermissionsWithNestedFields(matchingActions) as AdminPermission[];
 }
 
 function buildUploadPermissions(actions: string[]): AdminPermission[] {
@@ -168,18 +166,24 @@ export default {
             }
           }
 
-          const created = await strapi.entityService.create(uid as UID.ContentType, {
-            data: {
-              ...itemData,
-              ...(imageIds.length > 0 ? { images: imageIds } : {}),
-              publishedAt: new Date(),
+          const created = await strapi.entityService.create(
+            uid as UID.ContentType,
+            {
+              data: {
+                ...itemData,
+                ...(imageIds.length > 0 ? { images: imageIds } : {}),
+                publishedAt: new Date(),
+              },
             },
-          });
+          );
           createdIds[uid].push((created as { id: number }).id);
         }
         strapi.log.info(`Seeded ${items.length} records for ${uid}`);
       } catch (err) {
-        const apiErr = err as { details?: { errors?: unknown }; message?: string };
+        const apiErr = err as {
+          details?: { errors?: unknown };
+          message?: string;
+        };
         const details = apiErr.details?.errors
           ? JSON.stringify(apiErr.details.errors, null, 2)
           : apiErr.message;
@@ -255,29 +259,39 @@ async function upsertRole(
 }
 
 async function setupAdminRoles(strapi: Core.Strapi) {
-  await upsertRole(strapi, "Admin", "Pełny CRUD na wszystkich kolekcjach, mediach i użytkownikach", [
-    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
-    ...buildUploadPermissions([
-      "plugin::upload.read",
-      "plugin::upload.configure-view",
-      "plugin::upload.assets.create",
-      "plugin::upload.assets.update",
-      "plugin::upload.assets.download",
-      "plugin::upload.assets.copy-link",
-    ]),
-    ...buildPluginPermissions(USERS_PERMISSIONS_ADMIN_ACTIONS),
-  ]);
+  await upsertRole(
+    strapi,
+    "Admin",
+    "Pełny CRUD na wszystkich kolekcjach, mediach i użytkownikach",
+    [
+      ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
+      ...buildUploadPermissions([
+        "plugin::upload.read",
+        "plugin::upload.configure-view",
+        "plugin::upload.assets.create",
+        "plugin::upload.assets.update",
+        "plugin::upload.assets.download",
+        "plugin::upload.assets.copy-link",
+      ]),
+      ...buildPluginPermissions(USERS_PERMISSIONS_ADMIN_ACTIONS),
+    ],
+  );
 
-  await upsertRole(strapi, "Editor", "Pełny CRUD na wszystkich kolekcjach i mediach", [
-    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
-    ...buildUploadPermissions([
-      "plugin::upload.read",
-      "plugin::upload.assets.create",
-      "plugin::upload.assets.update",
-      "plugin::upload.assets.download",
-      "plugin::upload.assets.copy-link",
-    ]),
-  ]);
+  await upsertRole(
+    strapi,
+    "Editor",
+    "Pełny CRUD na wszystkich kolekcjach i mediach",
+    [
+      ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
+      ...buildUploadPermissions([
+        "plugin::upload.read",
+        "plugin::upload.assets.create",
+        "plugin::upload.assets.update",
+        "plugin::upload.assets.download",
+        "plugin::upload.assets.copy-link",
+      ]),
+    ],
+  );
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
