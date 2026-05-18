@@ -33,7 +33,6 @@ export function PostDetail({ post }: Props) {
   const content = post.content ?? [];
   const tags = (post.tags ?? []) as Tag[];
   const hasHero = !!heroUrl;
-  const hasContentBlocks = content.length > 0;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   const handleAddToCalendar = useCallback(
