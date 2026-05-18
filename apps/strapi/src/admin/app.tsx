@@ -1,3 +1,37 @@
+import type { StrapiApp } from "@strapi/admin/strapi-admin";
+
+declare global {
+  interface Window {
+    strapi: {
+      isEE: boolean;
+      features: { isEnabled: (feature: string) => boolean };
+      flags?: { promoteEE?: boolean };
+    };
+  }
+}
+
+const HIDDEN_SETTING_IDS = new Set([
+  "content-releases",
+  "review-workflows",
+  "sso-purchase-page",
+  "content-history-purchase-page",
+]);
+
+const register = (app: StrapiApp) => {
+  if (window.strapi.isEE) return;
+
+  const menu = app.router.menu;
+  const cloudIdx = menu.findIndex((item) => item.to === "plugins/cloud");
+  if (cloudIdx !== -1) menu.splice(cloudIdx, 1);
+
+  const global = app.router.settings["global"];
+  if (global) {
+    global.links = global.links.filter(
+      (link) => !HIDDEN_SETTING_IDS.has(link.id),
+    );
+  }
+};
+
 const bootstrap = () => {
   const preconnect1 = document.createElement("link");
   preconnect1.rel = "preconnect";
@@ -135,5 +169,6 @@ export default {
       },
     },
   },
+  register,
   bootstrap,
 };
