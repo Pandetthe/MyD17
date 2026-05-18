@@ -158,6 +158,12 @@ export default {
           "All the users who have access to the MyD17 admin panel",
         "tours.overview.subtitle":
           "Follow the guided tour to get the most out of MyD17.",
+        "global.plugins.color-picker": "Color Picker",
+        "global.plugins.color-picker.description":
+          "Pick a color from a defined set.",
+        "global.plugins.strapi-lucide-icons": "Icon Picker",
+        "global.plugins.strapi-lucide-icons.description":
+          "Pick an icon from a defined set.",
       },
       pl: {
         "app.components.LeftMenu.navbrand.title": "MyD17 Dashboard",
@@ -170,6 +176,19 @@ export default {
           "Wszyscy użytkownicy mający dostęp do panelu admina MyD17.",
         "tours.overview.subtitle":
           "Skorzystaj z przewodnika, aby jak najlepiej wykorzystać MyD17.",
+        "i18n.plugin.name": "Internacjonalizacja",
+        "global.plugins.color-picker": "Próbnik kolorów",
+        "global.plugins.color-picker.description":
+          "Wybierz kolor z predefiniowanego zestawu.",
+        "global.plugins.strapi-lucide-icons": "Icon Picker",
+        "global.plugins.strapi-lucide-icons.description":
+          "Wybierz ikonę z predefiniowanego zestawu.",
+        "global.localeToggle.label": "Język interfejsu",
+        "components.InputSelect.option.placeholder": "— brak wyboru —",
+        "global.select": "Wybierz ",
+        "app.components.Select.placeholder": "Wybierz ",
+        "Settings.profile.form.section.experience.interfaceLanguageHelp":
+          "Zmiany preferencji będą miały zastosowanie tylko do tego profilu. Więcej informacji dostępnych jest {here}.",
       },
     },
   },

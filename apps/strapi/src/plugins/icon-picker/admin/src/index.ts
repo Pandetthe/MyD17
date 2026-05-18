@@ -70,7 +70,7 @@ export default {
       id: PLUGIN_ID,
       initializer: Initializer,
       isReady: false,
-      name: "Lucide Icons",
+      name: "Icon Picker",
     });
   },
 

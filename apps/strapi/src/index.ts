@@ -262,7 +262,7 @@ async function setupAdminRoles(strapi: Core.Strapi) {
   await upsertRole(
     strapi,
     "Admin",
-    "Pełny CRUD na wszystkich kolekcjach, mediach i użytkownikach",
+    "Full CRUD on all collections, media and users",
     [
       ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
       ...buildUploadPermissions([
@@ -280,7 +280,7 @@ async function setupAdminRoles(strapi: Core.Strapi) {
   await upsertRole(
     strapi,
     "Editor",
-    "Pełny CRUD na wszystkich kolekcjach i mediach",
+    "Full CRUD on all collections and media",
     [
       ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
       ...buildUploadPermissions([
