@@ -14,8 +14,9 @@ function isMobileUA(ua: string): boolean {
 function mobileRedirectHtml(documentId: string, title: string): string {
   const deepLink = `myd17://post/${documentId}`;
   const androidIntent = `intent://post/${documentId}#Intent;scheme=myd17;package=io.github.stawex.myd17;end`;
-  const escapedTitle = title.replace(/[<>"&]/g, (c) =>
-    ({ "<": "&lt;", ">": "&gt;", '"': "&quot;", "&": "&amp;" })[c]!
+  const escapedTitle = title.replace(
+    /[<>"&]/g,
+    (c) => ({ "<": "&lt;", ">": "&gt;", '"': "&quot;", "&": "&amp;" })[c]!,
   );
   return `<!DOCTYPE html>
 <html lang="pl">
@@ -64,8 +65,9 @@ function mobileRedirectHtml(documentId: string, title: string): string {
 }
 
 function desktopDownloadHtml(title: string): string {
-  const escapedTitle = title.replace(/[<>"&]/g, (c) =>
-    ({ "<": "&lt;", ">": "&gt;", '"': "&quot;", "&": "&amp;" })[c]!
+  const escapedTitle = title.replace(
+    /[<>"&]/g,
+    (c) => ({ "<": "&lt;", ">": "&gt;", '"': "&quot;", "&": "&amp;" })[c]!,
   );
   return `<!DOCTYPE html>
 <html lang="pl">
@@ -131,5 +133,5 @@ export default factories.createCoreController(
 
       ctx.body = mobileRedirectHtml(documentId, title);
     },
-  })
+  }),
 );
