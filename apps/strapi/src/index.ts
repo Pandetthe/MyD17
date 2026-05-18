@@ -91,10 +91,12 @@ export default {
           const { _imageUrls, ...itemData } = item;
           let imageIds: number[] = [];
           if (Array.isArray(_imageUrls) && _imageUrls.length > 0) {
-            const results = await Promise.all(
-              _imageUrls.map(uploadImageFromUrl),
-            );
-            imageIds = results.filter((id): id is number => id !== null);
+            for (const url of _imageUrls) {
+              const id = await uploadImageFromUrl(url);
+              if (id !== null) {
+                imageIds.push(id);
+              }
+            }
           }
 
           const created = await strapi.entityService.create(uid, {
