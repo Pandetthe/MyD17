@@ -96,12 +96,13 @@ function startAnim(toX, toZ, toTheta, toPhi) {
 (function loop(now) {
   requestAnimationFrame(loop);
   if (anim) {
-    const t = Math.min((now - anim.t0) / ANIM_MS, 1);
+    const t = Math.min((now - anim.t0) / (anim.ms ?? ANIM_MS), 1);
     const e = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
     tgt.x   = anim.fromX     + (anim.toX     - anim.fromX)     * e;
     tgt.z   = anim.fromZ     + (anim.toZ     - anim.fromZ)     * e;
     sph.theta = anim.fromTheta + (anim.toTheta - anim.fromTheta) * e;
     sph.phi   = anim.fromPhi   + (anim.toPhi   - anim.fromPhi)   * e;
+    if (anim.fromRadius != null) sph.radius = anim.fromRadius + (anim.toRadius - anim.fromRadius) * e;
     sph.makeSafe();
     if (t >= 1) anim = null;
     dirty = true;
@@ -192,6 +193,12 @@ let activeGesture = null;
 
 let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
 let isTap = false;
+const DOUBLE_TAP_MS = 200, DOUBLE_TAP_PX = 50;
+const ZOOM_DRAG_SENS = 0.005;
+let lastTapEndTime = 0, lastTapEndX = 0, lastTapEndY = 0;
+let doubleTapStartY = 0, doubleTapStartRadius = 0;
+let doubletapActive = false;
+let pendingTapTimer = null;
 
 function initTouches(touches) {
   numT = touches.length;
@@ -215,10 +222,21 @@ cv.addEventListener('touchstart', e => {
   initTouches(e.touches);
   
   if (e.touches.length === 1) {
-    activeGesture = 'rotate';
+    const now = performance.now();
+    const tdx = e.touches[0].clientX - lastTapEndX;
+    const tdy = e.touches[0].clientY - lastTapEndY;
+    if (now - lastTapEndTime < DOUBLE_TAP_MS && tdx*tdx + tdy*tdy < DOUBLE_TAP_PX*DOUBLE_TAP_PX) {
+      clearTimeout(pendingTapTimer); pendingTapTimer = null;
+      activeGesture = 'doubletap_zoom';
+      doubleTapStartY = e.touches[0].clientY;
+      doubleTapStartRadius = sph.radius;
+      doubletapActive = true;
+    } else {
+      activeGesture = 'rotate';
+    }
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
-    touchStartTime = performance.now();
+    touchStartTime = now;
     isTap = true;
   } else if (e.touches.length >= 2) {
     activeGesture = 'detect_2_finger';
@@ -239,12 +257,18 @@ cv.addEventListener('touchmove', e => {
   if (t.length !== numT) { initTouches(t); return; }
 
   if (t.length === 1) {
-    if (activeGesture !== 'rotate') return;
-    const dx = t[0].clientX - lastX, dy = t[0].clientY - lastY;
-    sph.theta -= dx * ROT_SENS;
-    sph.phi = Math.max(0.1, Math.min(Math.PI / 2.05, sph.phi - dy * ROT_SENS));
-    sph.makeSafe();
-    lastX = t[0].clientX; lastY = t[0].clientY;
+    if (activeGesture === 'rotate') {
+      const rawDx = t[0].clientX - lastX, rawDy = t[0].clientY - lastY;
+      lastX = t[0].clientX; lastY = t[0].clientY;
+      const dx = Math.max(-40, Math.min(40, rawDx));
+      const dy = Math.max(-40, Math.min(40, rawDy));
+      sph.theta -= dx * ROT_SENS;
+      sph.phi = Math.max(0.1, Math.min(Math.PI / 2.05, sph.phi - dy * ROT_SENS));
+      sph.makeSafe();
+    } else if (activeGesture === 'doubletap_zoom') {
+      const dy = t[0].clientY - doubleTapStartY;
+      sph.radius = Math.max(ZOOM_MIN, Math.min(zoomMax, doubleTapStartRadius * (1 - dy * ZOOM_DRAG_SENS)));
+    }
   } else if (t.length >= 2) {
     const dx = t[0].clientX - t[1].clientX, dy = t[0].clientY - t[1].clientY;
     const dist = Math.sqrt(dx*dx + dy*dy);
@@ -255,7 +279,7 @@ cv.addEventListener('touchmove', e => {
       const deltaDist = Math.abs(dist - initialDist);
       const deltaPan = Math.sqrt(Math.pow(midX - initialMidX, 2) + Math.pow(midY - initialMidY, 2));
 
-      if (deltaDist > 10 || deltaPan > 10) {
+      if (deltaDist > 20 || deltaPan > 20) {
         if (deltaDist > deltaPan) {
           activeGesture = 'zoom';
         } else {
@@ -293,14 +317,35 @@ cv.addEventListener('touchmove', e => {
   markDirty();
 }, {passive:false});
 
-cv.addEventListener('touchend', e => { 
-  if (isTap && e.changedTouches.length === 1 && (performance.now() - touchStartTime) < 500) {
-    handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+cv.addEventListener('touchend', e => {
+  const wasTap = isTap && e.changedTouches.length === 1 && (performance.now() - touchStartTime) < 500;
+  if (wasTap) {
+    if (activeGesture === 'doubletap_zoom') {
+      const snapTarget = Math.max(ZOOM_MIN, Math.min(zoomMax, sph.radius > zoomMax * 0.5 ? zoomMax * 0.35 : zoomMax));
+      anim = {
+        fromX: tgt.x, fromZ: tgt.z, toX: tgt.x, toZ: tgt.z,
+        fromTheta: sph.theta, toTheta: sph.theta,
+        fromPhi: sph.phi, toPhi: sph.phi,
+        fromRadius: sph.radius, toRadius: snapTarget,
+        ms: 180, t0: performance.now(),
+      };
+      markDirty();
+    } else {
+      const tapX = e.changedTouches[0].clientX, tapY = e.changedTouches[0].clientY;
+      clearTimeout(pendingTapTimer);
+      pendingTapTimer = setTimeout(() => { pendingTapTimer = null; handleTap(tapX, tapY); }, DOUBLE_TAP_MS);
+    }
   }
+  if (activeGesture === 'rotate' && wasTap) {
+    lastTapEndTime = performance.now();
+    lastTapEndX = e.changedTouches[0].clientX;
+    lastTapEndY = e.changedTouches[0].clientY;
+  }
+  if (e.touches.length === 0) doubletapActive = false;
   isTap = false;
 
   if (e.touches.length === 0) activeGesture = null;
-  numT = e.touches.length; 
+  numT = e.touches.length;
   initTouches(e.touches);
 }, {passive:false});
 
@@ -403,6 +448,13 @@ function updateLabelVisibility() {
   }
 }
 
+function shortestTheta(target) {
+  const TAU = 2 * Math.PI;
+  let delta = ((target - sph.theta) % TAU + TAU) % TAU;
+  if (delta > Math.PI) delta -= TAU;
+  return sph.theta + delta;
+}
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -444,8 +496,8 @@ function handleTap(clientX, clientY) {
       const c = ROOM_COORDS[hitLabel.key];
       const tx = 0.86 * c.x + 0.25, tz = 0.88 * c.y - 0.45;
       const dx = tx - tgt.x, dz = tz - tgt.z;
-      const toTheta = Math.atan2(dx, dz) + Math.PI;
-      
+      const toTheta = shortestTheta(Math.atan2(dx, dz) + Math.PI);
+
       startAnim(tx, tz, toTheta, INIT_PHI);
       selectedKey = hitLabel.key;
       markDirty();
@@ -464,7 +516,7 @@ window.addEventListener('message', e => {
   } else if (msg.type === 'search') {
     const tx = 0.86 * msg.x + 0.25, tz = 0.88 * msg.z - 0.45;
     const dx = tx - tgt.x, dz = tz - tgt.z;
-    const toTheta = Math.atan2(dx, dz) + Math.PI;
+    const toTheta = shortestTheta(Math.atan2(dx, dz) + Math.PI);
     startAnim(tx, tz, toTheta, INIT_PHI);
     selectedKey = msg.key ?? null;
   } else if (msg.type === 'selectMarker') {
