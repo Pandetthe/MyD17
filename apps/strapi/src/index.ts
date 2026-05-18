@@ -10,16 +10,14 @@ type AdminPermission = {
   conditions?: string[];
 };
 
-const ALL_CONTENT_TYPES = [
+const CONTENT_TYPES = [
   "api::post.post",
   "api::tag.tag",
   "api::static-information.static-information",
   "api::information-page.information-page",
 ];
 
-const CREATOR_CONTENT_TYPES = ["api::post.post", "api::tag.tag"];
-
-const CONTENT_ACTIONS = [
+const CONTENT_ACTION_IDS = [
   "plugin::content-manager.explorer.create",
   "plugin::content-manager.explorer.read",
   "plugin::content-manager.explorer.update",
@@ -27,30 +25,44 @@ const CONTENT_ACTIONS = [
   "plugin::content-manager.explorer.publish",
 ];
 
-const ALL_UPLOAD_ACTIONS = [
-  "plugin::upload.read",
-  "plugin::upload.configure-view",
-  "plugin::upload.assets.create",
-  "plugin::upload.assets.update",
-  "plugin::upload.assets.download",
-  "plugin::upload.assets.copy-link",
+const USERS_PERMISSIONS_ADMIN_ACTIONS = [
+  "plugin::users-permissions.roles.create",
+  "plugin::users-permissions.roles.read",
+  "plugin::users-permissions.roles.update",
+  "plugin::users-permissions.roles.delete",
+  "plugin::users-permissions.providers.read",
+  "plugin::users-permissions.providers.update",
+  "plugin::users-permissions.email-templates.read",
+  "plugin::users-permissions.email-templates.update",
+  "plugin::users-permissions.advanced-settings.read",
+  "plugin::users-permissions.advanced-settings.update",
 ];
 
-const BASIC_UPLOAD_ACTIONS = [
-  "plugin::upload.read",
-  "plugin::upload.assets.create",
-  "plugin::upload.assets.update",
-  "plugin::upload.assets.download",
-  "plugin::upload.assets.copy-link",
-];
+type ActionObject = {
+  actionId: string;
+  subjects: string[];
+};
 
 function buildContentPermissions(
+  strapi: { service: (name: string) => Record<string, (...args: unknown[]) => unknown> },
   contentTypes: string[],
-  actions: string[],
+  actionIds: string[],
 ): AdminPermission[] {
-  return contentTypes.flatMap((subject) =>
-    actions.map((action) => ({ action, subject, properties: {}, conditions: [] })),
-  );
+  const actionProvider = (
+    strapi.service("admin::permission") as unknown as { actionProvider: { values: () => ActionObject[] } }
+  ).actionProvider;
+
+  const matchingActions = actionProvider
+    .values()
+    .filter((a) => actionIds.includes(a.actionId))
+    .map((a) => ({ ...a, subjects: a.subjects.filter((s) => contentTypes.includes(s)) }))
+    .filter((a) => a.subjects.length > 0);
+
+  return (
+    strapi.service("admin::content-type") as {
+      getPermissionsWithNestedFields: (actions: ActionObject[]) => AdminPermission[];
+    }
+  ).getPermissionsWithNestedFields(matchingActions);
 }
 
 function buildUploadPermissions(actions: string[]): AdminPermission[] {
@@ -62,10 +74,19 @@ function buildUploadPermissions(actions: string[]): AdminPermission[] {
   }));
 }
 
+function buildPluginPermissions(actionIds: string[]): AdminPermission[] {
+  return actionIds.map((action) => ({
+    action,
+    subject: null,
+    properties: {},
+    conditions: [],
+  }));
+}
+
 type SeedItem = Record<string, unknown>;
 
 export default {
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register() {},
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     const createdIds: Record<string, number[]> = {};
@@ -206,56 +227,71 @@ export default {
   },
 };
 
-async function setupAdminRoles(strapi: Core.Strapi) {
-  const roles: { name: string; description: string; permissions: AdminPermission[] }[] = [
-    {
-      name: "Admin",
-      description: "Pełny CRUD na wszystkich kolekcjach i mediach",
-      permissions: [
-        ...buildContentPermissions(ALL_CONTENT_TYPES, CONTENT_ACTIONS),
-        ...buildUploadPermissions(ALL_UPLOAD_ACTIONS),
-      ],
-    },
-    {
-      name: "Creator",
-      description: "Pełny CRUD na postach, tagach i mediach",
-      permissions: [
-        ...buildContentPermissions(CREATOR_CONTENT_TYPES, CONTENT_ACTIONS),
-        ...buildUploadPermissions(BASIC_UPLOAD_ACTIONS),
-      ],
-    },
-  ];
+type RoleRecord = { id: number; name: string };
 
-  for (const { name, description, permissions } of roles) {
-    const existing = await strapi.db
-      .query("admin::role")
-      .findOne({ where: { name } });
+async function upsertRole(
+  strapi: Core.Strapi,
+  name: string,
+  description: string,
+  permissions: AdminPermission[],
+): Promise<RoleRecord> {
+  let role = (await strapi.db
+    .query("admin::role")
+    .findOne({ where: { name } })) as RoleRecord | null;
 
-    if (existing) {
-      strapi.log.info(`Skipping role "${name}": already exists`);
-      continue;
-    }
-
-    const role = (await strapi.service("admin::role").create({ name, description })) as {
-      id: number;
-    };
-    await strapi.service("admin::role").addPermissions(role.id, permissions);
+  if (role) {
+    strapi.log.info(`Role "${name}" already exists — updating permissions`);
+    await strapi.service("admin::permission").deleteByRolesIds([role.id]);
+  } else {
+    role = (await strapi.service("admin::role").create({
+      name,
+      description,
+    })) as RoleRecord;
     strapi.log.info(`Created admin role: ${name}`);
   }
+
+  await strapi.service("admin::role").addPermissions(role.id, permissions);
+  return role;
+}
+
+async function setupAdminRoles(strapi: Core.Strapi) {
+  await upsertRole(strapi, "Admin", "Pełny CRUD na wszystkich kolekcjach, mediach i użytkownikach", [
+    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
+    ...buildUploadPermissions([
+      "plugin::upload.read",
+      "plugin::upload.configure-view",
+      "plugin::upload.assets.create",
+      "plugin::upload.assets.update",
+      "plugin::upload.assets.download",
+      "plugin::upload.assets.copy-link",
+    ]),
+    ...buildPluginPermissions(USERS_PERMISSIONS_ADMIN_ACTIONS),
+  ]);
+
+  await upsertRole(strapi, "Editor", "Pełny CRUD na wszystkich kolekcjach i mediach", [
+    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
+    ...buildUploadPermissions([
+      "plugin::upload.read",
+      "plugin::upload.assets.create",
+      "plugin::upload.assets.update",
+      "plugin::upload.assets.download",
+      "plugin::upload.assets.copy-link",
+    ]),
+  ]);
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
   const superAdminRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { code: "strapi-super-admin" } })) as { id: number } | null;
+    .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
 
   const adminRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { name: "Admin" } })) as { id: number } | null;
+    .findOne({ where: { name: "Admin" } })) as RoleRecord | null;
 
-  const creatorRole = (await strapi.db
+  const editorRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { name: "Creator" } })) as { id: number } | null;
+    .findOne({ where: { name: "Editor" } })) as RoleRecord | null;
 
   const DEFAULT_USERS = [
     {
@@ -273,11 +309,11 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       role: adminRole,
     },
     {
-      firstname: "Creator",
+      firstname: "Editor",
       lastname: "MYD17",
-      email: "creator@myd17.pl",
-      password: "Creator123!",
-      role: creatorRole,
+      email: "editor@myd17.pl",
+      password: "Editor123!",
+      role: editorRole,
     },
   ];
 
@@ -331,8 +367,6 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     "api::information-page.information-page.findOne",
     "api::static-information.static-information.find",
     "api::static-information.static-information.findOne",
-    // required for populate[author] to work in public post queries;
-    // sensitive user fields (email, password, tokens, confirmed, blocked) are marked private in the schema
     "plugin::users-permissions.user.find",
   ];
 
