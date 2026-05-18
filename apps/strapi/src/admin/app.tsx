@@ -1,4 +1,4 @@
-import type { StrapiApp } from "@strapi/admin/strapi-admin";
+import type { StrapiApp, WidgetArgs } from "@strapi/admin/strapi-admin";
 
 declare global {
   interface Window {
@@ -30,6 +30,10 @@ const register = (app: StrapiApp) => {
       (link) => !HIDDEN_SETTING_IDS.has(link.id),
     );
   }
+
+  app.widgets.register((widgets: WidgetArgs[]) =>
+    widgets.filter((w) => w.id !== "deploy-now"),
+  );
 };
 
 const bootstrap = () => {
