@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
+import { CalendarBottomSheet } from "@/components/posts/PostDetail/CalendarBottomSheet.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
+import {
+  addEventToCalendar,
+  extractCalendarEvents,
+  type CalendarEvent,
+} from "@/features/posts/hooks/useAddToCalendar";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
@@ -22,6 +28,26 @@ export function PostDetail({ post }: Props) {
   const description = getPostDescription(post);
   const content = post.content ?? [];
   const tags = post.tags ?? [];
+  const calendarEvents = extractCalendarEvents(post);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleAddToCalendar = () => {
+    if (calendarEvents.length === 0) return;
+    if (calendarEvents.length === 1) {
+      void addEventToCalendar(post, calendarEvents[0]!);
+    } else {
+      setModalVisible(true);
+    }
+  };
+
+  const handleSelectDate = useCallback(
+    (event: CalendarEvent) => {
+      setModalVisible(false);
+      void addEventToCalendar(post, event);
+    },
+    [post],
+  );
 
   return (
     <ScrollView
@@ -47,7 +73,15 @@ export function PostDetail({ post }: Props) {
         )}
 
         <View style={styles.actionRow}>
-          <Button icon={CalendarPlus} text="Add to Calendar" color="dark" size="md" />
+          {calendarEvents.length > 0 && (
+            <Button
+              icon={CalendarPlus}
+              text="Dodaj do kalendarza"
+              color="dark"
+              size="md"
+              onPress={handleAddToCalendar}
+            />
+          )}
           <View style={styles.socials}>
             <Pressable hitSlop={8}>
               <Share2 size={theme.size.md} color={theme.colors.primary.main} />
@@ -63,6 +97,13 @@ export function PostDetail({ post }: Props) {
 
         <ContentRenderer blocks={content} />
       </View>
+
+      <CalendarBottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        calendarEvents={calendarEvents}
+        onSelectDate={handleSelectDate}
+      />
     </ScrollView>
   );
 }
@@ -70,7 +111,7 @@ export function PostDetail({ post }: Props) {
 const styles = StyleSheet.create((theme: Theme) => ({
   scroll: {
     flex: 1,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
   },
   content: {
     paddingBottom: theme.spacing.xl + theme.spacing.md,
@@ -95,5 +136,6 @@ const styles = StyleSheet.create((theme: Theme) => ({
     flexDirection: "row",
     alignItems: "center",
     gap: theme.spacing.xs,
+    marginLeft: "auto",
   },
 }));

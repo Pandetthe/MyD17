@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* global jest, require */
+/* global jest, require, afterEach, setImmediate */
 import "@testing-library/jest-native/extend-expect";
 
 jest.mock("react-native-reanimated", () => require("react-native-reanimated/mock"));
@@ -99,3 +99,11 @@ jest.mock("lucide-react-native", () => ({
   Users: mockIcon,
   Wifi: mockIcon,
 }));
+
+const { act } = require("@testing-library/react-native");
+
+afterEach(async () => {
+  await act(async () => {
+    await new Promise((resolve) => setImmediate(resolve));
+  });
+});

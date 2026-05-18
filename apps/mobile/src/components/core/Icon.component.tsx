@@ -32,7 +32,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
 function resolveColors(colorProps: ThemeIconProps | RawIconProps, theme: Theme) {
   if (colorProps.bg) return { bg: colorProps.bg, fg: colorProps.fg };
   const palette = theme.colors[colorProps.color ?? "primary"];
-  return { bg: palette.background.accent, fg: palette.main };
+  return { bg: palette.background.accent, fg: palette.icon };
 }
 
 export default function Icon({

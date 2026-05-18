@@ -144,7 +144,7 @@ export default function PostsScreen() {
 const styles = StyleSheet.create((theme: Theme) => ({
   safe: {
     flex: 1,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
   },
   feed: {
     gap: theme.spacing.lg,

@@ -123,7 +123,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     left: 0,
     right: 0,
     maxHeight: "80%",
-    backgroundColor: theme.colors.dark.text.secondary,
+    backgroundColor: theme.colors.dark.background.accent,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: theme.spacing.md,

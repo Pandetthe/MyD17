@@ -3,7 +3,7 @@ import type { Schema, Struct } from '@strapi/strapi';
 export interface CalendarEntryCalendarEntry extends Struct.ComponentSchema {
   collectionName: 'components_calendar_entry_calendar_entries';
   info: {
-    displayName: 'CalendarEntry';
+    displayName: 'Calendar Entry';
     icon: 'clock';
   };
   attributes: {
@@ -25,37 +25,6 @@ export interface CalendarEntryCalendarEntry extends Struct.ComponentSchema {
     withDate: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
-  };
-}
-
-export interface ColorPickerColorPicker extends Struct.ComponentSchema {
-  collectionName: 'components_color_picker_color_pickers';
-  info: {
-    displayName: 'ColorPicker';
-    icon: 'brush';
-  };
-  attributes: {
-    color: Schema.Attribute.Enumeration<
-      [
-        'red',
-        'orange',
-        'amber',
-        'yellow',
-        'lime',
-        'green',
-        'emerald',
-        'teal',
-        'cyan',
-        'sky',
-        'blue',
-        'indigo',
-        'violet',
-        'purple',
-        'fuchsia',
-        'pink',
-        'rose',
-      ]
-    >;
   };
 }
 
@@ -88,8 +57,9 @@ export interface ContentChip extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
-    icon: Schema.Attribute.Component<'icon-picker.icon', false> &
-      Schema.Attribute.Required;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<'plugin::strapi-lucide-icons.icon'>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -101,7 +71,7 @@ export interface ContentChip extends Struct.ComponentSchema {
 export interface ContentEventDateTime extends Struct.ComponentSchema {
   collectionName: 'components_content_event_date_times';
   info: {
-    displayName: 'EventDateTime';
+    displayName: 'Event Date & Time';
     icon: 'clock';
   };
   attributes: {
@@ -124,7 +94,7 @@ export interface ContentLocation extends Struct.ComponentSchema {
 export interface ContentSectionTitle extends Struct.ComponentSchema {
   collectionName: 'components_content_section_titles';
   info: {
-    displayName: 'SectionTitle';
+    displayName: 'Section Title';
     icon: 'information';
   };
   attributes: {
@@ -148,42 +118,6 @@ export interface ContentText extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
-    isHeader: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
-  };
-}
-
-export interface IconPickerIcon extends Struct.ComponentSchema {
-  collectionName: 'components_icon_picker_icons';
-  info: {
-    displayName: 'Icon';
-  };
-  attributes: {
-    icon: Schema.Attribute.Enumeration<
-      [
-        'graduation-cap',
-        'book-open',
-        'scroll-text',
-        'info',
-        'music',
-        'calendar',
-        'map-pin',
-        'clock',
-        'users',
-        'trophy',
-        'bell',
-        'file-text',
-        'building',
-        'mic',
-        'library',
-        'coffee',
-        'wifi',
-        'parking',
-        'phone',
-        'mail',
-      ]
-    >;
   };
 }
 
@@ -191,14 +125,12 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'calendar-entry.calendar-entry': CalendarEntryCalendarEntry;
-      'color-picker.color-picker': ColorPickerColorPicker;
       'content.calendar': ContentCalendar;
       'content.chip': ContentChip;
       'content.event-date-time': ContentEventDateTime;
       'content.location': ContentLocation;
       'content.section-title': ContentSectionTitle;
       'content.text': ContentText;
-      'icon-picker.icon': IconPickerIcon;
     }
   }
 }

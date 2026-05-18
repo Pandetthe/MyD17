@@ -3,70 +3,25 @@ import { Pressable, View } from "react-native";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
-import type { CardColor } from "@/lib/strapiColors";
 import { colors } from "@/styles/colors";
-import type { AppColor } from "@/styles/colors";
-import type { Theme } from "@/styles/themes/theme";
+import type { Theme, ColorPalette } from "@/styles/themes/theme";
 import { ArrowRight, LucideIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   title: string;
   icon: LucideIcon;
-  color: CardColor;
+  color: ColorPalette;
   wide?: boolean;
   onPress: () => void;
 };
 
-const PALETTE: Record<
-  CardColor,
-  {
-    bg: string;
-    border: string;
-    iconBg: AppColor;
-    iconFg: AppColor;
-    text: string;
-    shadow: string;
-    ellipseBg: string;
-    arrowBg: string;
-  }
-> = {
-  red: {
-    bg: colors.red.extraLight,
-    border: colors.red.main,
-    iconBg: colors.red.light,
-    iconFg: colors.red.main,
-    text: colors.red.extraDark,
-    shadow: "rgba(251,44,54,0.2)",
-    ellipseBg: colors.red.light,
-    arrowBg: colors.red.main,
-  },
-  green: {
-    bg: colors.white,
-    border: colors.green.main,
-    iconBg: colors.green.light,
-    iconFg: colors.green.main,
-    text: colors.green.extraDark,
-    shadow: "rgba(94,165,0,0.2)",
-    ellipseBg: colors.green.light,
-    arrowBg: colors.green.main,
-  },
-  teal: {
-    bg: colors.teal.extraLight,
-    border: colors.teal.main,
-    iconBg: colors.teal.light,
-    iconFg: colors.teal.main,
-    text: colors.teal.extraDark,
-    shadow: "rgba(0,146,184,0.2)",
-    ellipseBg: colors.teal.light,
-    arrowBg: colors.teal.main,
-  },
-};
-
 export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Props) {
-  const p = PALETTE[color];
+  const { theme } = useUnistyles();
+  const palette = theme.colors[color] as Theme["colors"]["red"]; // Use any color palette as they share the same structure
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
+  const isDark = theme.colors.surface === colors.core.extraDark;
 
   return (
     <Pressable
@@ -79,7 +34,11 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
         style={[
           styles.card,
           wide && styles.cardWide,
-          { backgroundColor: p.bg, borderColor: p.border, shadowColor: p.shadow },
+          {
+            backgroundColor: palette.background.main,
+            borderColor: palette.main,
+            shadowColor: palette.main,
+          },
           animStyle,
         ]}
       >
@@ -87,25 +46,31 @@ export function StaticInfoCard({ title, icon, color, wide = false, onPress }: Pr
           style={[
             styles.ellipseLarge,
             wide && styles.ellipseLargeWide,
-            { backgroundColor: p.ellipseBg },
+            { backgroundColor: palette.background.accent, opacity: isDark ? 0.5 : 1 },
           ]}
         />
 
         <View style={styles.iconWrapper}>
-          <IconPrimitive icon={icon} bg={p.iconBg} fg={p.iconFg} />
+          <IconPrimitive icon={icon} color={color} />
         </View>
 
         <View
           style={[
             styles.arrowButton,
             wide && styles.arrowButtonWide,
-            { backgroundColor: p.arrowBg },
+            { backgroundColor: palette.main },
           ]}
         >
           <ArrowRight size={13} color={colors.white} strokeWidth={2.5} />
         </View>
 
-        <TextCore variant="h3" weight="bold" color={p.text} numberOfLines={2} style={styles.title}>
+        <TextCore
+          variant="h3"
+          weight="bold"
+          color={palette.text.primary}
+          numberOfLines={2}
+          style={styles.title}
+        >
           {title}
         </TextCore>
       </Animated.View>

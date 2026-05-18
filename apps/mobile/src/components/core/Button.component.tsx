@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Pressable, Text, StyleProp, ViewStyle } from "react-native";
+import { colors } from "@/styles/colors";
 import { ColorPalette } from "@/styles/themes/theme";
 import { LucideIcon } from "lucide-react-native";
 import Animated, {
@@ -61,7 +62,7 @@ export default function Button({
     [size, theme],
   );
 
-  const fgColor = hasBackground ? theme.colors[color].background.accent : theme.colors[color].main;
+  const fgColor = hasBackground ? colors.white : theme.colors[color].main;
 
   const bgColor = hasBackground ? theme.colors[color].main : "transparent";
 

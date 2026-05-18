@@ -6,7 +6,9 @@
     "./*": "./src/*.tsx"
   },
   "scripts": {
-    "lint": "eslint src --max-warnings 0",
+    "lint": "pnpm lint:fix && pnpm lint:check",
+    "lint:check": "eslint src --max-warnings=0 --no-warn-ignored",
+    "lint:fix": "eslint src --fix",
     "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
   },
@@ -20,7 +22,7 @@
     "typescript": "6.0.2"
   },
   "dependencies": {
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   }
 }

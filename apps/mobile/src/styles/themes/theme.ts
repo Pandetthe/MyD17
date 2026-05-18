@@ -1,5 +1,6 @@
 export type ColorGroup = {
   main: string;
+  icon: string;
   text: {
     primary: string;
     secondary: string;
@@ -25,10 +26,21 @@ export type ThemeColors = {
   dark: ColorGroup;
   gradients: GradientGroup;
   red: ColorGroup;
+  rose: ColorGroup;
+  orange: ColorGroup;
   amber: ColorGroup;
+  yellow: ColorGroup;
+  lime: ColorGroup;
   green: ColorGroup;
+  emerald: ColorGroup;
   teal: ColorGroup;
+  cyan: ColorGroup;
+  sky: ColorGroup;
+  blue: ColorGroup;
+  indigo: ColorGroup;
+  violet: ColorGroup;
   purple: ColorGroup;
+  fuchsia: ColorGroup;
   pink: ColorGroup;
   switch: SwitchColors;
 };

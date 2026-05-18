@@ -7,6 +7,10 @@ module.exports = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@/assets/(.*)$": "<rootDir>/assets/$1",
+    "^react$": "<rootDir>/node_modules/react",
+    "^react/(.*)$": "<rootDir>/node_modules/react/$1",
+    "^react-dom$": "<rootDir>/node_modules/react-dom",
+    "^react-dom/(.*)$": "<rootDir>/node_modules/react-dom/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],

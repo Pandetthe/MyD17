@@ -93,7 +93,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
                   <TagComponent
                     key={tag.id}
                     text={`#${tag.title ?? ""}`}
-                    color={strapiColorToPalette(tag.color?.color)}
+                    color={strapiColorToPalette(tag.color)}
                     onPress={tag.id != null ? () => onTagPress?.(tag.id!) : undefined}
                   />
                 ))}

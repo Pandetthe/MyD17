@@ -1,0 +1,8 @@
+{
+  "color-picker.label": "Color",
+  "color-picker.description": "Pick a color from defined set",
+  "color-picker.form.attribute.item.requiredField": "Required field",
+  "color-picker.form.attribute.item.requiredField.description": "You won't be able to create an entry if this field is empty",
+  "color-picker.form.attribute.item.privateField": "Private field",
+  "color-picker.form.attribute.item.privateField.description": "This field will not show up in the API response"
+}

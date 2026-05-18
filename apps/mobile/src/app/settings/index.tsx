@@ -4,10 +4,12 @@ import Setting from "@/components/Setting";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { Theme } from "@/styles/themes/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { BellRingIcon, InfoIcon, LanguagesIcon, MoonIcon, Bell } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(UnistylesRuntime.themeName === "dark");
   const [notifications, setNotifications] = useState(false);
 
@@ -25,7 +27,7 @@ export default function Settings() {
     alert("Languages"); // Placeholder
   };
   const openSubscriptions = () => {
-    alert("Subscriptions"); // Placeholder
+    router.push("/settings/notifications");
   };
 
   return (

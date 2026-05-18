@@ -7,9 +7,12 @@ const getBaseUrl = () => {
     return process.env.EXPO_PUBLIC_STRAPI_URL;
   }
   if (Platform.OS === "android" && !Device.isDevice) {
-    return "http://10.0.2.2:1337"; // Android Emulator loopback
+    return "http://10.0.2.2:1337";
   }
-  return "http://192.168.0.79:1337"; // Current PC LAN IP based on terminal context, otherwise fall back to your needs
+  if (__DEV__) {
+    console.warn("EXPO_PUBLIC_STRAPI_URL is not set. Create apps/mobile/.env.local and set it.");
+  }
+  return "http://localhost:1337";
 };
 
 const BASE_URL = getBaseUrl();

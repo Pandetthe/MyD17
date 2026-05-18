@@ -6,6 +6,7 @@ import { Theme } from "./theme";
 export function darkColorSet(color: Color) {
   return {
     main: color.main,
+    icon: colors.white,
     text: {
       primary: color.extraLight,
       secondary: color.light,
@@ -22,6 +23,7 @@ export const darkTheme: Theme = {
     surface: colors.core.extraDark,
     primary: {
       main: colors.core.main,
+      icon: colors.white,
       text: {
         primary: colors.white,
         secondary: colors.core.light,
@@ -33,6 +35,7 @@ export const darkTheme: Theme = {
     },
     dark: {
       main: colors.core.light,
+      icon: colors.white,
       text: {
         primary: colors.white,
         secondary: colors.core.light,
@@ -46,10 +49,21 @@ export const darkTheme: Theme = {
       settings: [colors.core.extraDark, colors.core.dark],
     },
     red: darkColorSet(colors.red),
+    rose: darkColorSet(colors.rose),
+    orange: darkColorSet(colors.orange),
     amber: darkColorSet(colors.amber),
+    yellow: darkColorSet(colors.yellow),
+    lime: darkColorSet(colors.lime),
     green: darkColorSet(colors.green),
+    emerald: darkColorSet(colors.emerald),
     teal: darkColorSet(colors.teal),
+    cyan: darkColorSet(colors.cyan),
+    sky: darkColorSet(colors.sky),
+    blue: darkColorSet(colors.blue),
+    indigo: darkColorSet(colors.indigo),
+    violet: darkColorSet(colors.violet),
     purple: darkColorSet(colors.purple),
+    fuchsia: darkColorSet(colors.fuchsia),
     pink: darkColorSet(colors.pink),
     switch: {
       on: colors.core.main,
