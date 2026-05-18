@@ -91,7 +91,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   container: {
     flexDirection: "row",
-    alignItems: "top",
+    alignItems: "flex-start",
     justifyContent: "flex-start",
     gap: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,

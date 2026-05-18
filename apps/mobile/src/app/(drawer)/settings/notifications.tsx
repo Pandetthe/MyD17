@@ -98,7 +98,7 @@ export default function Notifications() {
 
   const handleDiscard = () => {
     setShowModal(false);
-    navigation.dispatch(pendingAction.current);
+    if (pendingAction.current) navigation.dispatch(pendingAction.current);
   };
 
   const allSelected = tags.length > 0 && Object.values(selected).every(Boolean);
@@ -128,7 +128,7 @@ export default function Notifications() {
         <ScrollView contentContainerStyle={styles.content}>
           <Pressable style={styles.selectAllRow} onPress={toggleAll}>
             <TextCore variant="h2">Wszystkie</TextCore>
-            <SwitchCore onPress={toggleAll} value={allSelected ? 1 : 0} />
+            <SwitchCore onPress={toggleAll} value={allSelected} />
           </Pressable>
 
           <View style={styles.divider} />
