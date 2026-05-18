@@ -1,3 +1,41 @@
+import type { StrapiApp, WidgetArgs } from "@strapi/admin/strapi-admin";
+
+declare global {
+  interface Window {
+    strapi: {
+      isEE: boolean;
+      features: { isEnabled: (feature: string) => boolean };
+      flags?: { promoteEE?: boolean };
+    };
+  }
+}
+
+const HIDDEN_SETTING_IDS = new Set([
+  "content-releases",
+  "review-workflows",
+  "sso-purchase-page",
+  "content-history-purchase-page",
+]);
+
+const register = (app: StrapiApp) => {
+  if (window.strapi.isEE) return;
+
+  const menu = app.router.menu;
+  const cloudIdx = menu.findIndex((item) => item.to === "plugins/cloud");
+  if (cloudIdx !== -1) menu.splice(cloudIdx, 1);
+
+  const global = app.router.settings["global"];
+  if (global) {
+    global.links = global.links.filter(
+      (link) => !HIDDEN_SETTING_IDS.has(link.id),
+    );
+  }
+
+  app.widgets.register((widgets: WidgetArgs[]) =>
+    widgets.filter((w) => w.id !== "deploy-now"),
+  );
+};
+
 const bootstrap = () => {
   const preconnect1 = document.createElement("link");
   preconnect1.rel = "preconnect";
@@ -120,6 +158,12 @@ export default {
           "All the users who have access to the MyD17 admin panel",
         "tours.overview.subtitle":
           "Follow the guided tour to get the most out of MyD17.",
+        "global.plugins.color-picker": "Color Picker",
+        "global.plugins.color-picker.description":
+          "Pick a color from a defined set.",
+        "global.plugins.strapi-lucide-icons": "Icon Picker",
+        "global.plugins.strapi-lucide-icons.description":
+          "Pick an icon from a defined set.",
       },
       pl: {
         "app.components.LeftMenu.navbrand.title": "MyD17 Dashboard",
@@ -132,8 +176,22 @@ export default {
           "Wszyscy użytkownicy mający dostęp do panelu admina MyD17.",
         "tours.overview.subtitle":
           "Skorzystaj z przewodnika, aby jak najlepiej wykorzystać MyD17.",
+        "i18n.plugin.name": "Internacjonalizacja",
+        "global.plugins.color-picker": "Próbnik kolorów",
+        "global.plugins.color-picker.description":
+          "Wybierz kolor z predefiniowanego zestawu.",
+        "global.plugins.strapi-lucide-icons": "Icon Picker",
+        "global.plugins.strapi-lucide-icons.description":
+          "Wybierz ikonę z predefiniowanego zestawu.",
+        "global.localeToggle.label": "Język interfejsu",
+        "components.InputSelect.option.placeholder": "— brak wyboru —",
+        "global.select": "Wybierz ",
+        "app.components.Select.placeholder": "Wybierz ",
+        "Settings.profile.form.section.experience.interfaceLanguageHelp":
+          "Zmiany preferencji będą miały zastosowanie tylko do tego profilu. Więcej informacji dostępnych jest {here}.",
       },
     },
   },
+  register,
   bootstrap,
 };

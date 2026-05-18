@@ -28,7 +28,7 @@ export default function Notification({ text, onPress, value, color }: SettingPro
         onPress={onPress}
         style={[styles.tagWrapper, value && { borderColor: main }]}
       >
-        <Tag text={formatText(text)} color={color} />
+        <Tag text={formatText(text)} color={color} onPress={onPress} />
       </Pressable>
     </View>
   );

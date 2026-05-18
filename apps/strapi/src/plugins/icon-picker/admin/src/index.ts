@@ -1,10 +1,11 @@
+import type { StrapiApp } from "@strapi/admin/strapi-admin";
 import { Initializer } from "./components/Initializer";
 import { PluginIcon } from "./components/PluginIcon";
 import { PLUGIN_ID } from "./pluginId";
 import { getTranslation } from "./utils/getTranslation";
 
 export default {
-  register(app: any) {
+  register(app: StrapiApp) {
     app.customFields.register({
       name: "icon",
       pluginId: PLUGIN_ID,
@@ -19,7 +20,7 @@ export default {
         defaultMessage: "Pick an icon from defined set",
       },
       components: {
-        Input: async () => import("./components/LucideIconInput"),
+        Input: async () => import("./components/LucideIconInput") as never,
       },
       options: {
         advanced: [
@@ -69,7 +70,7 @@ export default {
       id: PLUGIN_ID,
       initializer: Initializer,
       isReady: false,
-      name: "Lucide Icons",
+      name: "Icon Picker",
     });
   },
 

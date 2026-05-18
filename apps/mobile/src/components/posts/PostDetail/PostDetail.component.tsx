@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { CalendarBottomSheet } from "@/components/posts/PostDetail/CalendarBottomSheet.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
+import {
+  addEventToCalendar,
+  extractCalendarEvents,
+  type CalendarEvent,
+} from "@/features/posts/hooks/useAddToCalendar";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
 import { tagColor } from "@/lib/tagColor";
@@ -14,7 +20,7 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
+import { ArrowLeft, CalendarPlus, Heart, Share2 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -43,12 +49,31 @@ export function PostDetail({ post }: Props) {
   const avatarUrl = author?.avatar?.url ? strapiUrl(author.avatar.url) : null;
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
   const hasHero = !!heroUrl;
-
   const hasContentBlocks = content.length > 0;
+  const calendarEvents = extractCalendarEvents(post);
 
   const authorColor = isDark ? colors.white : colors.core.dark;
   const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleAddToCalendar = () => {
+    if (calendarEvents.length === 0) return;
+    if (calendarEvents.length === 1) {
+      void addEventToCalendar(post, calendarEvents[0]!);
+    } else {
+      setModalVisible(true);
+    }
+  };
+
+  const handleSelectDate = useCallback(
+    (event: CalendarEvent) => {
+      setModalVisible(false);
+      void addEventToCalendar(post, event);
+    },
+    [post],
+  );
 
   return (
     <View style={styles.screen}>
@@ -119,6 +144,15 @@ export function PostDetail({ post }: Props) {
           )}
 
           <View style={styles.actionRow}>
+            {calendarEvents.length > 0 && (
+              <Button
+                icon={CalendarPlus}
+                text="Dodaj do kalendarza"
+                color="dark"
+                size="md"
+                onPress={handleAddToCalendar}
+              />
+            )}
             <View style={styles.socials}>
               <Pressable hitSlop={8}>
                 <Share2 size={theme.size.md} color={colors.core.main} />
@@ -145,6 +179,13 @@ export function PostDetail({ post }: Props) {
           onPress={() => router.back()}
         />
       )}
+
+      <CalendarBottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        calendarEvents={calendarEvents}
+        onSelectDate={handleSelectDate}
+      />
     </View>
   );
 }
@@ -216,6 +257,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     flexDirection: "row",
     alignItems: "center",
     gap: theme.spacing.xs,
+    marginLeft: "auto",
   },
   backButton: {
     position: "absolute",

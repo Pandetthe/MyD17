@@ -28,6 +28,12 @@
     "plugins": [
       "expo-router",
       [
+        "expo-calendar",
+        {
+          "calendarPermission": "Aplikacja potrzebuje dostępu do kalendarza, aby dodawać wydarzenia."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
@@ -36,7 +42,8 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
