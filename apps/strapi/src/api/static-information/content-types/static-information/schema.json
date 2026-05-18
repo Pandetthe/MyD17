@@ -4,7 +4,7 @@
   "info": {
     "singularName": "static-information",
     "pluralName": "static-informations",
-    "displayName": "StaticInformation"
+    "displayName": "Info Card"
   },
   "options": {
     "draftAndPublish": true
@@ -21,9 +21,13 @@
       "default": false
     },
     "color": {
-      "type": "component",
-      "component": "color-picker.color-picker",
-      "repeatable": false,
+      "type": "customField",
+      "customField": "plugin::color-picker.color",
+      "required": true
+    },
+    "icon": {
+      "type": "customField",
+      "customField": "plugin::strapi-lucide-icons.icon",
       "required": true
     },
     "content": {
@@ -33,14 +37,9 @@
         "content.location",
         "content.event-date-time",
         "content.chip",
-        "content.calendar"
+        "content.calendar",
+        "content.section-title"
       ]
-    },
-    "Icon": {
-      "type": "component",
-      "component": "icon-picker.icon",
-      "repeatable": false,
-      "required": true
     }
   }
 }

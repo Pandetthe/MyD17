@@ -13,7 +13,7 @@ const buildPostsUrl = (page: number) =>
   `pagination[pageSize]=${PAGE_SIZE}&` +
   "populate[images]=true&" +
   "populate[author][populate][avatar]=true&" +
-  "populate[tags][populate][color]=true&" +
+  "populate[tags]=true&" +
   "sort=publishedAt:desc";
 
 export function usePosts() {

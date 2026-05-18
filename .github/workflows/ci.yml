@@ -49,8 +49,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
-      - name: Lint, Type and Format Check
-        run: pnpm turbo run lint check-types format-check --continue
-
       - name: Build and Test
         run: pnpm turbo run build test

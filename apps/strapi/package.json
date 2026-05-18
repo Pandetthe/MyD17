@@ -1,6 +1,6 @@
 {
   "name": "strapi",
-  "version": "0.1.0",
+  "version": "1.0.7",
   "private": true,
   "description": "A Strapi application",
   "scripts": {
@@ -13,26 +13,32 @@
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles",
+    "check-types": "tsc --noEmit && tsc --noEmit -p src/admin/tsconfig.json",
+    "lint": "pnpm lint:fix && pnpm lint:check",
+    "lint:check": "prettier --check \"src/plugins/**/*.{ts,tsx,js}\"",
+    "lint:fix": "prettier --write \"src/plugins/**/*.{ts,tsx,js}\"",
+    "format": "prettier --write \"src/plugins/**/*.{ts,tsx,js}\""
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.43.0",
-    "@strapi/plugin-documentation": "5.43.0",
-    "@strapi/plugin-users-permissions": "5.43.0",
-    "@strapi/strapi": "5.43.0",
+    "@strapi/plugin-cloud": "5.46.0",
+    "@strapi/plugin-documentation": "5.46.0",
+    "@strapi/plugin-users-permissions": "5.45.0",
+    "@strapi/strapi": "5.46.0",
+    "lucide-react": "^1.0.0",
     "pg": "8.20.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "styled-components": "^6.4.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.3",
+    "styled-components": "^6.4.1"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/node": "^25.8.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^18.3.7",
     "jest": "^29.7.0",
     "supertest": "^7.2.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=20.0.0 <=24.x.x",

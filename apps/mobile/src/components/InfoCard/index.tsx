@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import Button from "@/components/core/Button.component";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
-import { ICON_MAP } from "@/lib/iconMap";
+import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type {
@@ -14,7 +14,7 @@ import type {
 } from "@repo/types";
 import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 const LOCATION_LABELS: Record<LocationValue, string> = {
   "s1.38": "Budynek D-17, Sala 1.38",
@@ -39,8 +39,9 @@ type Props = {
 };
 
 export function InfoCard({ blocks, dark = false }: Props) {
+  const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
-  const iconColor = colors.core.dark;
+  const iconColor = dark ? colors.white : theme.colors.primary.main;
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -84,8 +85,7 @@ export function InfoCard({ blocks, dark = false }: Props) {
         </>
       )}
       {chipBlocks.map((chip) => {
-        const ChipIcon: LucideIcon =
-          chip.icon?.icon && ICON_MAP[chip.icon.icon] ? ICON_MAP[chip.icon.icon] : Info;
+        const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
         return (
           <InfoRow
             key={chip.id}
@@ -112,14 +112,14 @@ const styles = StyleSheet.create((theme: Theme) => ({
     elevation: 4,
   },
   cardLight: {
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.primary.background.accent,
     borderColor: theme.colors.primary.main,
-    shadowColor: theme.colors.dark.main,
+    shadowColor: theme.colors.primary.main,
   },
   cardDark: {
-    backgroundColor: theme.colors.dark.main,
-    borderColor: colors.core.light,
-    shadowColor: theme.colors.dark.main,
+    backgroundColor: colors.core.dark,
+    borderColor: theme.colors.primary.main,
+    shadowColor: colors.core.extraDark,
   },
   calendarButton: {
     alignSelf: "flex-start",

@@ -70,11 +70,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
     gap: theme.spacing.sm,
   },
   cardLight: {
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: theme.colors.surface,
     borderColor: theme.colors.primary.main,
   },
   cardDark: {
-    backgroundColor: theme.colors.dark.main,
+    backgroundColor: colors.core.dark,
     borderColor: colors.core.light,
   },
   row: {

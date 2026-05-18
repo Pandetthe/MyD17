@@ -1,14 +1,10 @@
 [
   {
     "title": "Koncert",
-    "color": {
-      "color": "red"
-    }
+    "color": "red"
   },
   {
     "title": "Wydarzenie",
-    "color": {
-      "color": "amber"
-    }
+    "color": "blue"
   }
 ]

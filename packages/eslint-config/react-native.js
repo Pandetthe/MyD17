@@ -30,6 +30,9 @@ export const reactNativeConfig = [
       "**/ios/**",
       "**/coverage/**",
       "**/scripts/**",
+      "**/.expo/**",
+      "**/types/generated/**",
+      "**/src/generated.ts",
     ],
   },
   {

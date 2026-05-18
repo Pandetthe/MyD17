@@ -10,6 +10,14 @@ const config = ({
       info: { version: "1.0.0", title: "MyD17 API" },
     },
   },
+  "strapi-lucide-icons": {
+    enabled: true,
+    resolve: "./src/plugins/icon-picker",
+  },
+  "color-picker": {
+    enabled: true,
+    resolve: "./src/plugins/color-picker",
+  },
 });
 
 export default config;

@@ -5,7 +5,6 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
@@ -13,7 +12,7 @@ import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
 type SwitchProps = {
   onPress: () => void;
-  value: number;
+  value: boolean;
   duration?: number;
 };
 
@@ -21,10 +20,10 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
   const theme = useAnimatedTheme();
   const height = useSharedValue(0);
   const width = useSharedValue(0);
-  const sharedValue = useSharedValue(value);
+  const sharedValue = useSharedValue(value ? 1 : 0);
 
   useEffect(() => {
-    sharedValue.value = value;
+    sharedValue.value = value ? 1 : 0;
   }, [value]);
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
@@ -40,11 +39,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
   });
 
   const thumbAnimatedStyle = useAnimatedStyle(() => {
-    const moveValue = interpolate(
-      Number(sharedValue.value),
-      [0, 1],
-      [0, width.value - height.value],
-    );
+    const moveValue = interpolate(sharedValue.value, [0, 1], [0, width.value - height.value]);
 
     return {
       transform: [{ translateX: withTiming(moveValue, { duration }) }],
@@ -70,7 +65,7 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
 
 export default SwitchCore;
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create(() => ({
   track: {
     alignItems: "flex-start",
     width: 48,
@@ -80,11 +75,5 @@ const styles = StyleSheet.create((theme) => ({
   thumb: {
     height: "100%",
     aspectRatio: 1,
-    backgroundColor: theme.colors.surface,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.22,
-    shadowRadius: 3,
-    elevation: 4,
   },
 }));

@@ -6,11 +6,17 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "format-check": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "lint:check": "turbo run lint:check",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx}'",
+    "format:check": "prettier --check './**/*.{js,jsx,ts,tsx}'",
+    "types:check": "turbo run types:check",
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "release:validate": "node scripts/validate-release.mjs",
+    "android:configure-signing": "node scripts/configure-android-signing.mjs",
+    "mobile:setup": "node scripts/setup-mobile-env.mjs"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "prettier": "^3.8.3",
     "turbo": "^2.9.6",
     "typescript": "6.0.2"
@@ -22,7 +28,11 @@
   "pnpm": {
     "overrides": {
       "esbuild": "0.25.12",
-      "@types/react": "^19"
+      "@types/react": "^19",
+      "react": "19.2.0",
+      "react-dom": "19.2.0",
+      "strapi>react": "18.3.1",
+      "strapi>react-dom": "18.3.1"
     },
     "ignoredBuiltDependencies": [
       "@swc/core",
