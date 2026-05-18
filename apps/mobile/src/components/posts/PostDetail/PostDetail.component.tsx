@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, ScrollView, Pressable, Modal, TouchableOpacity, useWindowDimensions } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Modal,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
@@ -35,7 +42,6 @@ type Props = {
 const CLOSE_THRESHOLD = 100;
 const SPRING = { stiffness: 1000, damping: 500, mass: 3, overshootClamping: true } as const;
 const CLOSE_TIMING = { duration: 300, easing: Easing.in(Easing.ease) } as const;
-
 
 export function PostDetail({ post }: Props) {
   const router = useRouter();
@@ -101,7 +107,6 @@ export function PostDetail({ post }: Props) {
     handleClose();
     void addEventToCalendar(post, event);
   };
-
 
   return (
     <ScrollView
@@ -219,6 +224,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     flexDirection: "row",
     alignItems: "center",
     gap: theme.spacing.xs,
+    marginLeft: "auto",
   },
   root: {
     flex: 1,

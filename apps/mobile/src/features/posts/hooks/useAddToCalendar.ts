@@ -1,6 +1,6 @@
-import * as Calendar from "expo-calendar";
 import { Alert, Linking, Platform } from "react-native";
 import type { ContentEventDateTime, Post } from "@repo/types";
+import * as Calendar from "expo-calendar";
 
 export type CalendarEvent = {
   label: string;
@@ -18,7 +18,9 @@ export function extractCalendarEvents(post: Post): CalendarEvent[] {
     if (!dt.startDateTime) continue;
 
     const start = new Date(dt.startDateTime);
-    const end = dt.endDateTime ? new Date(dt.endDateTime) : new Date(start.getTime() + 60 * 60 * 1000);
+    const end = dt.endDateTime
+      ? new Date(dt.endDateTime)
+      : new Date(start.getTime() + 60 * 60 * 1000);
 
     const label = formatEventLabel(start, end);
     events.push({ label, startDate: start, endDate: end });
@@ -54,14 +56,10 @@ async function getDefaultCalendarId(): Promise<string | null> {
 export async function addEventToCalendar(post: Post, event: CalendarEvent): Promise<void> {
   const { status } = await Calendar.requestCalendarPermissionsAsync();
   if (status !== Calendar.PermissionStatus.GRANTED) {
-    Alert.alert(
-      "Brak uprawnień",
-      "Przyznaj dostęp do kalendarza w ustawieniach telefonu.",
-      [
-        { text: "Anuluj", style: "cancel" },
-        { text: "Otwórz ustawienia", onPress: () => void Linking.openSettings() },
-      ],
-    );
+    Alert.alert("Brak uprawnień", "Przyznaj dostęp do kalendarza w ustawieniach telefonu.", [
+      { text: "Anuluj", style: "cancel" },
+      { text: "Otwórz ustawienia", onPress: () => void Linking.openSettings() },
+    ]);
     return;
   }
 
