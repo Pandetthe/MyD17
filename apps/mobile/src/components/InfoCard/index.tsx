@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import Button from "@/components/core/Button.component";
+import { Card } from "@/components/core/Card.component";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
 import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
@@ -12,6 +13,7 @@ import type {
   LocationValue,
   PostContentBlock,
 } from "@repo/types";
+import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -33,12 +35,27 @@ function formatDateTime(dateStr: string): string {
   });
 }
 
+function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
+  if (!dt.startDateTime) return null;
+  const startDate = new Date(dt.startDateTime);
+  const endDate = dt.endDateTime
+    ? new Date(dt.endDateTime)
+    : new Date(startDate.getTime() + 60 * 60 * 1000);
+  const label = startDate.toLocaleDateString("pl-PL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return { label, startDate, endDate };
+}
+
 type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
+  onAddToCalendar?: (event: CalendarEvent) => void;
 };
 
-export function InfoCard({ blocks, dark = false }: Props) {
+export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
   const iconColor = dark ? colors.white : colors.core.main;
@@ -46,44 +63,58 @@ export function InfoCard({ blocks, dark = false }: Props) {
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
   );
-  const dateTimeBlock = safeBlocks.find(
+  const dateTimeBlocks = safeBlocks.filter(
     (b): b is ContentEventDateTime => b.__component === "content.event-date-time",
   );
   const chipBlocks = safeBlocks.filter((b): b is ContentChip => b.__component === "content.chip");
 
-  if (!locationBlock && !dateTimeBlock && chipBlocks.length === 0) return null;
+  if (!locationBlock && dateTimeBlocks.length === 0 && chipBlocks.length === 0) return null;
 
   return (
-    <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
+    <Card
+      circle="none"
+      color="primary"
+      gradient={theme.colors.gradients.posts}
+      style={styles.outer}
+      contentStyle={styles.inner}
+    >
       {locationBlock && locationBlock.content && (
         <InfoRow
           icon={<MapPin size={18} color={iconColor} />}
-          label="LOKALIZACJA"
+          label="Lokalizacja"
           value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
           dark={dark}
         />
       )}
-      {dateTimeBlock && dateTimeBlock.startDateTime && (
-        <>
-          <InfoRow
-            icon={<Clock size={18} color={iconColor} />}
-            label="KIEDY"
-            value={
-              dateTimeBlock.endDateTime
-                ? `${formatDateTime(dateTimeBlock.startDateTime)} – ${formatDateTime(dateTimeBlock.endDateTime)}`
-                : formatDateTime(dateTimeBlock.startDateTime)
-            }
-            dark={dark}
-          />
-          <Button
-            icon={CalendarPlus}
-            text="Dodaj do kalendarza"
-            color="primary"
-            size="sm"
-            style={styles.calendarButton}
-          />
-        </>
-      )}
+
+      {dateTimeBlocks.map((dtBlock, idx) => {
+        const calEvent = blockToCalendarEvent(dtBlock);
+        return (
+          <View key={dtBlock.id ?? `dt-${idx}`} style={styles.dateGroup}>
+            <InfoRow
+              icon={<Clock size={18} color={iconColor} />}
+              label="Kiedy"
+              value={
+                dtBlock.endDateTime
+                  ? `${formatDateTime(dtBlock.startDateTime!)} – ${formatDateTime(dtBlock.endDateTime)}`
+                  : formatDateTime(dtBlock.startDateTime!)
+              }
+              dark={dark}
+            />
+            {onAddToCalendar && calEvent && (
+              <Button
+                icon={CalendarPlus}
+                text="Dodaj do kalendarza"
+                color="primary"
+                size="sm"
+                style={styles.calendarButton}
+                onPress={() => onAddToCalendar(calEvent)}
+              />
+            )}
+          </View>
+        );
+      })}
+
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
         return (
@@ -96,30 +127,20 @@ export function InfoCard({ blocks, dark = false }: Props) {
           />
         );
       })}
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  card: {
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.md,
-    padding: 21,
+  outer: {
+    width: "100%",
+  },
+  inner: {
+    padding: theme.spacing.lg,
     gap: theme.spacing.md,
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
   },
-  cardLight: {
-    backgroundColor: theme.mode === "dark" ? colors.core.dark : colors.core.disabled,
-    borderColor: colors.core.main,
-    shadowColor: colors.core.main,
-  },
-  cardDark: {
-    backgroundColor: colors.core.dark,
-    borderColor: colors.core.main,
-    shadowColor: colors.core.extraDark,
+  dateGroup: {
+    gap: theme.spacing.sm,
   },
   calendarButton: {
     alignSelf: "flex-start",

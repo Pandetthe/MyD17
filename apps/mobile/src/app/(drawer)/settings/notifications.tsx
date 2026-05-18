@@ -99,7 +99,7 @@ export default function Notifications() {
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
         <Button
           icon={ArrowLeft}
           color="dark"
@@ -120,15 +120,19 @@ export default function Notifications() {
         <View style={styles.divider} />
 
         <View style={styles.tagsGrid}>
-          {tags.map((tag) => (
-            <Tag
-              key={tag.id}
-              text={tag.title}
-              color={tagColor(tag.color)}
-              selected={selected[tag.id] ?? false}
-              onPress={() => toggle(tag.id)}
-            />
-          ))}
+          {tags.map((tag) => {
+            const isSelected = selected[tag.id] ?? false;
+            const dimmed = !isSelected;
+            return (
+              <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
+                <Tag
+                  text={`#${tag.title}`}
+                  color={tagColor(tag.color)}
+                  onPress={() => toggle(tag.id)}
+                />
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
 
@@ -186,8 +190,13 @@ const styles = StyleSheet.create((theme: Theme) => ({
     flexWrap: "wrap",
     gap: theme.spacing.sm,
   },
+  dimmed: {
+    opacity: 0.4,
+  },
   saveWrapper: {
     position: "absolute",
-    right: theme.spacing.md,
+    left: 0,
+    right: 0,
+    alignItems: "center",
   },
 }));

@@ -1,10 +1,11 @@
 import React from "react";
 import { View } from "react-native";
+import { Card } from "@/components/core/Card.component";
 import TextCore from "@/components/core/Text.component";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { CalendarEntry, ContentCalendar, DayOfWeek } from "@repo/types";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 const DAY_LABELS: Record<DayOfWeek, string> = {
   monday: "Poniedziałek",
@@ -51,31 +52,31 @@ function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean
 }
 
 export function CalendarBlock({ block, dark = false }: { block: ContentCalendar; dark?: boolean }) {
+  const { theme } = useUnistyles();
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
   return (
-    <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
+    <Card
+      circle="none"
+      color="primary"
+      gradient={theme.colors.gradients.posts}
+      style={styles.outer}
+      contentStyle={styles.inner}
+    >
       {entries.map((entry) => (
         <CalendarEntryRow key={entry.id} entry={entry} dark={dark} />
       ))}
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  card: {
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.md,
-    padding: 20,
+  outer: {
+    width: "100%",
+  },
+  inner: {
+    padding: theme.spacing.lg,
     gap: theme.spacing.sm,
-  },
-  cardLight: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.primary.main,
-  },
-  cardDark: {
-    backgroundColor: colors.core.dark,
-    borderColor: colors.core.light,
   },
   row: {
     flexDirection: "row",

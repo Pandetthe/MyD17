@@ -37,7 +37,7 @@ const stylesheet = StyleSheet.create((theme) => ({
     if (selected) {
       bg = isDark ? main : (c ? c.light : tc!.bgAccent);
     } else {
-      bg = c ? (isDark ? main + "1A" : c.extraLight) : theme.colors.surface;
+      bg = c ? (isDark ? c.extraDark : c.extraLight) : theme.colors.surface;
     }
 
     return {

@@ -23,7 +23,7 @@ export default function Setting({ text, icon: IconComponent, onPress, value }: S
     <Card
       circle="none"
       color="primary"
-      gradient={theme.colors.gradients.settings}
+      gradient={theme.colors.gradients.posts}
       onPress={onPress}
       style={styles.outer}
       contentStyle={styles.shell}

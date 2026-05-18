@@ -22,7 +22,7 @@ export default function Header() {
   const bell = usePressAnimation(0.93);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + theme.spacing.sm }]}>
+    <View style={[styles.container, { paddingTop: insets.top + theme.spacing.lg }]}>
       <Pressable
         onPress={() => navigation.openDrawer()}
         onPressIn={menu.onPressIn}

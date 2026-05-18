@@ -32,17 +32,16 @@ function djb2(s: string): number {
   return h;
 }
 
-const HASH_CIRCLE_SIZE = 300;
-
-function hashToPos(key: string): AbsPos {
+function hashToPos(key: string): AbsPos & { size: number } {
   const h = djb2(key);
   const corner = h % 4;
-  const offset = -(HASH_CIRCLE_SIZE / 6 + (h % 20));
+  const size   = 280 + ((h >> 4) % 180);         // 280–459
+  const offset = -(size / 6 + ((h >> 12) % 20)); // proportional peek, small variation
   switch (corner) {
-    case 0: return { top: offset, left: offset };
-    case 1: return { top: offset, right: offset };
-    case 2: return { bottom: offset, left: offset };
-    default: return { bottom: offset, right: offset };
+    case 0: return { top: offset,    left:  offset, size };
+    case 1: return { top: offset,    right: offset, size };
+    case 2: return { bottom: offset, left:  offset, size };
+    default: return { bottom: offset, right: offset, size };
   }
 }
 
@@ -68,16 +67,15 @@ export function Card(props: CardProps) {
   const circleMode = (props as any).circle ?? "none";
   const hashKey: string | undefined = circleMode === "hash" ? (props as any).hashKey : undefined;
 
-  const circlePos = useMemo((): AbsPos | null => {
+  const circlePos = useMemo((): (AbsPos & { size?: number }) | null => {
     if (circleMode === "fixed") return { bottom: -25, right: -26 };
     if (circleMode === "hash" && hashKey) return hashToPos(hashKey);
     return null;
   }, [circleMode, hashKey]);
 
-  const circleSizeStyle: ViewStyle =
-    circleMode === "fixed"
-      ? { width: 110, height: 110 }
-      : { width: HASH_CIRCLE_SIZE, height: HASH_CIRCLE_SIZE };
+  const circleSizeStyle: ViewStyle = circleMode === "fixed"
+    ? { width: 110, height: 110 }
+    : { width: circlePos?.size ?? 300, height: circlePos?.size ?? 300 };
 
   const shell = (
     <View
@@ -102,7 +100,11 @@ export function Card(props: CardProps) {
               styles.circle,
               circleSizeStyle,
               circlePos,
-              { backgroundColor: circleColor },
+              {
+                backgroundColor: circleColor,
+                borderColor: circleColor,
+                shadowColor: circleColor,
+              },
             ]}
           />
         )}
@@ -146,7 +148,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
   circle: {
     position: "absolute",
     borderRadius: 9999,
-    opacity: 0.6,
-    overflow: "hidden",
+    opacity: 0.55,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 24,
+    elevation: 10,
   },
 }));

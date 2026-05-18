@@ -1,14 +1,12 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
-import { CalendarBottomSheet } from "@/components/posts/PostDetail/CalendarBottomSheet.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import {
   addEventToCalendar,
-  extractCalendarEvents,
   type CalendarEvent,
 } from "@/features/posts/hooks/useAddToCalendar";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
@@ -20,7 +18,7 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostAuthor, Tag } from "@repo/types";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { ArrowLeft, CalendarPlus, Heart, Share2 } from "lucide-react-native";
+import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -50,26 +48,12 @@ export function PostDetail({ post }: Props) {
   const dateLabel = post.createdAt ? formatDate(post.createdAt) : "";
   const hasHero = !!heroUrl;
   const hasContentBlocks = content.length > 0;
-  const calendarEvents = extractCalendarEvents(post);
-
   const authorColor = isDark ? colors.white : colors.core.dark;
   const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleAddToCalendar = () => {
-    if (calendarEvents.length === 0) return;
-    if (calendarEvents.length === 1) {
-      void addEventToCalendar(post, calendarEvents[0]!);
-    } else {
-      setModalVisible(true);
-    }
-  };
-
-  const handleSelectDate = useCallback(
+  const handleAddToCalendar = useCallback(
     (event: CalendarEvent) => {
-      setModalVisible(false);
       void addEventToCalendar(post, event);
     },
     [post],
@@ -144,15 +128,6 @@ export function PostDetail({ post }: Props) {
           )}
 
           <View style={styles.actionRow}>
-            {calendarEvents.length > 0 && (
-              <Button
-                icon={CalendarPlus}
-                text="Dodaj do kalendarza"
-                color="dark"
-                size="md"
-                onPress={handleAddToCalendar}
-              />
-            )}
             <View style={styles.socials}>
               <Pressable hitSlop={8}>
                 <Share2 size={theme.size.md} color={colors.core.main} />
@@ -166,7 +141,7 @@ export function PostDetail({ post }: Props) {
             </View>
           </View>
 
-          <ContentRenderer blocks={content} />
+          <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
         </View>
       </ScrollView>
 
@@ -180,12 +155,6 @@ export function PostDetail({ post }: Props) {
         />
       )}
 
-      <CalendarBottomSheet
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        calendarEvents={calendarEvents}
-        onSelectDate={handleSelectDate}
-      />
     </View>
   );
 }

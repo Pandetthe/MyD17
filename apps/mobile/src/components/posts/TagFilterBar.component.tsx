@@ -7,6 +7,7 @@ import { usePressAnimation } from "@/hooks/usePressAnimation";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
 import { tagColor } from "@/lib/tagColor";
+import { LinearGradient } from "expo-linear-gradient";
 import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -32,43 +33,66 @@ type Props = {
 };
 
 export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props) {
+  const { theme } = useUnistyles();
   const hasSelection = selectedTagIds.length > 0;
+  const surface = theme.colors.surface;
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scrollView}
-      contentContainerStyle={styles.container}
-    >
-      {hasSelection && <ClearPill onPress={onClear} />}
+    <View style={styles.wrapper}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollView}
+        contentContainerStyle={styles.container}
+      >
+        {hasSelection && <ClearPill onPress={onClear} />}
 
-      {tags.map((tag) => {
-        const tagId = tag.id as number;
-        const selected = selectedTagIds.includes(tagId);
-        const dimmed = hasSelection && !selected;
-        return (
-          <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
-            <Tag
-              text={`#${tag.title}`}
-              color={tagColor(tag.color)}
-              onPress={tag.id != null ? () => onSelect(tagId) : undefined}
-            />
-          </View>
-        );
-      })}
-    </ScrollView>
+        {tags.map((tag) => {
+          const tagId = tag.id as number;
+          const selected = selectedTagIds.includes(tagId);
+          const dimmed = hasSelection && !selected;
+          return (
+            <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
+              <Tag
+                text={`#${tag.title}`}
+                color={tagColor(tag.color)}
+                onPress={tag.id != null ? () => onSelect(tagId) : undefined}
+              />
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      <LinearGradient
+        colors={[surface + "00", surface]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.fadeRight}
+        pointerEvents="none"
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
+  wrapper: {
+    width: "100%",
+    height: theme.spacing.xl * 2,
+  },
   scrollView: {
     width: "100%",
     backgroundColor: "transparent",
   },
+  fadeRight: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    height: "100%",
+  },
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "top",
     justifyContent: "flex-start",
     gap: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,

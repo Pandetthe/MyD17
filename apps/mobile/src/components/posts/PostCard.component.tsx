@@ -55,7 +55,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       color="primary"
       gradient={theme.colors.gradients.posts}
       circle="hash"
-      hashKey={post.title ?? ""}
+      hashKey={post.documentId ?? post.title ?? ""}
       onPress={onPress}
       style={styles.wrapper}
       contentStyle={styles.cardShell}

@@ -21,8 +21,8 @@ export const darkTheme: Theme = {
       bgAccent: colors.core.extraDark,
     },
     gradients: {
-      settings: [colors.core.extraDark, colors.core.extraDark],
-      posts:    [colors.core.extraDark, colors.core.extraDark],
+      settings: [colors.core.dark, colors.core.extraDark],
+      posts:    [colors.core.dark, colors.core.extraDark],
     },
     switch: { on: colors.core.main, off: colors.core.muted },
   },

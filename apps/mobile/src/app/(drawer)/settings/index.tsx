@@ -38,7 +38,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     justifyContent: "flex-start",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: theme.spacing.sm,
+    padding: theme.spacing.sm,
     gap: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
   },

@@ -16,9 +16,9 @@ export function InfoRow({ icon, label, value, dark = false }: Props) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
 
-  const labelColor = dark ? colors.amber.main : colors.core.main;
+  const labelColor = dark ? colors.core.light : colors.core.main;
   const valueColor = dark ? colors.white : (isDark ? colors.core.extraLight : colors.core.dark);
-  const iconBg = dark ? colors.core.extraDark : "transparent";
+  const iconBg = dark ? colors.core.extraDark : (isDark ? colors.core.dark : colors.core.disabled);
 
   return (
     <View style={styles.row}>

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, FlatList, ActivityIndicator, RefreshControl } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
 import { PostCard } from "@/components/posts/PostCard.component";
@@ -85,12 +86,6 @@ export default function PostsScreen() {
   return (
     <View style={styles.safe}>
       <StatusBar style="dark" />
-      <TagFilterBar
-        tags={allTags}
-        selectedTagIds={selectedTagIds}
-        onSelect={handleTagToggle}
-        onClear={() => setSelectedTagIds([])}
-      />
       <FlatList
         data={filteredPosts}
         keyExtractor={(item) => item.documentId as string}
@@ -107,6 +102,7 @@ export default function PostsScreen() {
           />
         )}
         contentContainerStyle={styles.feed}
+        ListHeaderComponent={<View style={styles.barSpacer} />}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.4}
@@ -137,6 +133,21 @@ export default function PostsScreen() {
           ) : null
         }
       />
+
+      <LinearGradient
+        colors={[theme.colors.surface, theme.colors.surface + "00"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.barGradient}
+        pointerEvents="box-none"
+      >
+        <TagFilterBar
+          tags={allTags}
+          selectedTagIds={selectedTagIds}
+          onSelect={handleTagToggle}
+          onClear={() => setSelectedTagIds([])}
+        />
+      </LinearGradient>
     </View>
   );
 }
@@ -149,8 +160,17 @@ const styles = StyleSheet.create((theme: Theme) => ({
   feed: {
     gap: theme.spacing.lg,
     paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xs,
     paddingBottom: theme.spacing.xl * 3,
+  },
+  barSpacer: {
+    height: theme.spacing.xl,
+  },
+  barGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: theme.spacing.lg,
   },
   centered: {
     flex: 1,

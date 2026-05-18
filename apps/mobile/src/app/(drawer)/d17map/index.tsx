@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 import roomData from "@/assets/map/floor1/roomCoordinates.json";
+import D17MapView from "@/components/D17MapView";
 import { colors } from "@/styles/colors";
-import D17MapView from "../../components/D17MapView";
 import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
 import { SearchIcon } from "lucide-react-native";
@@ -182,7 +182,6 @@ const SPRING = { stiffness: 1000, damping: 500, mass: 3, overshootClamping: true
 const CLOSE_TIMING = { duration: 300, easing: Easing.in(Easing.ease) } as const;
 const CLOSE_THRESHOLD = 100;
 const CLOSE_VELOCITY = 0.5;
-
 const FAB_SIZE = 52;
 
 export default function D17MapScreen() {
@@ -206,7 +205,6 @@ export default function D17MapScreen() {
   const pendingFloorRef = useRef(0);
 
   const loading = !glbBase64 || !textureBase64;
-
   const translateY = useSharedValue(800);
 
   const finishClose = useCallback(() => {
@@ -350,13 +348,7 @@ export default function D17MapScreen() {
 
       {!drawerVisible && (
         <TouchableOpacity
-          style={[
-            styles.fab,
-            {
-              backgroundColor: theme.colors.primary.main,
-              bottom: 28 + insets.bottom,
-            },
-          ]}
+          style={[styles.fab, { backgroundColor: theme.colors.primary.main, bottom: 28 + insets.bottom }]}
           onPress={openDrawer}
           activeOpacity={0.85}
         >
@@ -384,7 +376,7 @@ export default function D17MapScreen() {
               </View>
             </GestureDetector>
 
-            <View style={styles.header}>
+            <View style={styles.sheetHeader}>
               <Text style={styles.headerTitle}>Wybierz salę</Text>
               {appliedFloor !== null && appliedRoom !== null && (
                 <TouchableOpacity onPress={handleReset} hitSlop={8}>
@@ -421,12 +413,7 @@ export default function D17MapScreen() {
               <TouchableOpacity style={styles.btnDiscard} onPress={closeDrawer} activeOpacity={0.7}>
                 <Text style={styles.btnDiscardText}>Odrzuć</Text>
               </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.btnSelect}
-                onPress={handleConfirm}
-                activeOpacity={0.85}
-              >
+              <TouchableOpacity style={styles.btnSelect} onPress={handleConfirm} activeOpacity={0.85}>
                 <Text style={styles.btnSelectText}>Wybierz</Text>
               </TouchableOpacity>
             </View>
@@ -481,11 +468,11 @@ const styles = StyleSheet.create((theme) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: theme.colors.dark.text.secondary,
+    backgroundColor: colors.core.dark,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: theme.spacing.md,
-    shadowColor: theme.colors.dark.main,
+    shadowColor: colors.core.extraDark,
     shadowOffset: { width: 0, height: -10 },
     shadowOpacity: 1,
     shadowRadius: 80,
@@ -503,7 +490,7 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: colors.white,
     opacity: 0.5,
   },
-  header: {
+  sheetHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
