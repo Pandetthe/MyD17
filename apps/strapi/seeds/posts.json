@@ -98,5 +98,48 @@
         "content": "W nawiązaniu do zakończonej rekrutacji do programu Erasmus+ informujemy, że wyniki kwalifikacji dla studentów Wydziału Informatyki AGH będą dostępne od 11 maja 2026 r. w Dziekanacie Wydziału Informatyki AGH.\n\nUprzejmie prosimy osoby biorące udział w rekrutacji o zgłoszenie się do Dziekanatu w celu zapoznania się z wynikami oraz dalszymi informacjami dotyczącymi procesu kwalifikacji."
       }
     ]
+  },
+  {
+    "title": "Korowód Juwenaliowy",
+    "description": "W samo południe na Rynku Głównym oficjalnie rozpoczęły się jubileuszowe, 70. Juwenalia Krakowskie. Kulminacyjnym momentem wydarzenia było tradycyjne przekazanie studentom klucza do bram miasta przez prezydenta Krakowa Aleksandra Miszalskiego. Wcześniej ulicami miasta przeszedł barwny korowód studencki, który wyruszył z Miasteczka Studenckiego AGH.",
+    "likeCount": 356,
+    "tags": [1, 14],
+    "author": 1,
+    "_imageUrls": ["https://cowkrakowie.pl/wp-content/uploads/2026/05/juwenalia-Krakowskie-1209x827.jpg"],
+    "content": [
+      {
+        "__component": "content.event-date-time",
+        "startDateTime": "2026-05-15T10:00:00+02:00",
+        "endDateTime": "2026-05-15T12:00:00+02:00"
+      },
+      {
+        "__component": "content.text",
+        "content": "Przed korowodem zapraszamy również na śniadanie do Klubu Studio!"
+      },
+      {
+        "__component": "content.event-date-time",
+        "startDateTime": "2026-05-15T08:00:00+02:00",
+        "endDateTime": "2026-05-15T09:30:00+02:00"
+      },
+      {
+        "__component": "content.text",
+        "content": "Oficjalna ceremonia rozpoczęła się po hejnale z Wieży Mariackiej. Na balkonie Sukiennic, od strony pomnika Adama Mickiewicza, obok prezydenta Krakowa pojawili się również wojewoda małopolski Krzysztof Klęczar oraz marszałek województwa małopolskiego Łukasz Smółka. Uczestników wydarzenia powitał Maciej Michałek, dyrektor Juwenaliów."
+      }
+    ]
+  },
+  {
+    "title": "Inauguracja roku akademickiego 2025/2026",
+    "description": "Uroczysta inauguracja roku akademickiego 2025/2026 z udziałem władz uczelni oraz zaproszonych gości odbędzie się w sobotę, 4 października 2025 r., o godz. 11.00 w auli AGH.",
+    "likeCount": 132,
+    "tags": [3, 4],
+    "author": 1,
+    "_imageUrls": ["https://www.agh.edu.pl/home/__processed__/5/2/csm_inauguracja_2024_efc0901044.webp"],
+    "content": [
+      {
+        "__component": "content.event-date-time",
+        "startDateTime": "2025-10-04T11:00:00+02:00",
+        "endDateTime": "2025-10-04T13:00:00+02:00"
+      }
+    ]
   }
 ]
