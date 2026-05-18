@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Pressable, Share } from "react-native";
+import { View, Pressable } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
 import { AvatarPlaceholder } from "@/lib/images";
@@ -33,8 +34,6 @@ function formatDate(dateStr: string): string {
   });
 }
 
-const STRAPI_BASE_URL = process.env.EXPO_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
-
 export function PostCard({ post, onPress, onTagPress }: Props) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
@@ -52,10 +51,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
-  const handleShare = async () => {
-    const url = `${STRAPI_BASE_URL}/api/share/post/${post.documentId}`;
-    await Share.share({ message: url, title: post.title });
-  };
+  const handleShare = useSharePost(post);
 
   return (
     <Card

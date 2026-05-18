@@ -1,11 +1,12 @@
 import React, { useCallback } from "react";
-import { View, Pressable, StatusBar, Share } from "react-native";
+import { View, Pressable, StatusBar } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
+import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
@@ -22,8 +23,6 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 type Props = {
   post: Post;
 };
-
-const STRAPI_BASE_URL = process.env.EXPO_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 
 export function PostDetail({ post }: Props) {
   const router = useRouter();
@@ -58,10 +57,7 @@ export function PostDetail({ post }: Props) {
       }
     });
 
-  const handleShare = async () => {
-    const url = `${STRAPI_BASE_URL}/api/share/post/${post.documentId}`;
-    await Share.share({ message: url, title: post.title });
-  };
+  const handleShare = useSharePost(post);
 
   return (
     <View style={styles.screen}>
