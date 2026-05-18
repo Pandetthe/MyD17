@@ -1,24 +1,14 @@
 import { promises as fs } from "fs";
 import { tmpdir } from "os";
 import path from "path";
+import type { Core, UID } from "@strapi/strapi";
+
+type SeedItem = Record<string, unknown>;
 
 export default {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  async bootstrap({ strapi }: { strapi: any }) {
+  async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     const createdIds: Record<string, number[]> = {};
 
     const uploadImageFromUrl = async (url: string): Promise<number | null> => {
@@ -43,22 +33,23 @@ export default {
             originalFilename: filename,
             path: tmpPath,
             filepath: tmpPath,
-            type: contentType,
-            size: buffer.length,
+            mimetype: contentType,
+            size: buffer.length / 1000,
           },
         });
         await fs.unlink(tmpPath).catch(() => {});
 
-        return uploaded?.id ?? null;
+        return (uploaded as { id: number } | undefined)?.id ?? null;
       } catch (err) {
-        strapi.log.warn(`Image upload failed for ${url}: ${err.message}`);
+        const message = err instanceof Error ? err.message : String(err);
+        strapi.log.warn(`Image upload failed for ${url}: ${message}`);
         return null;
       }
     };
 
     const seedIfNeeded = async (
       uid: string,
-      items: any[],
+      items: SeedItem[],
       relations?: Record<string, string>,
     ) => {
       try {
@@ -70,15 +61,14 @@ export default {
           return;
         }
 
-        // replace relation indices with actual IDs
         let processedItems = items;
         if (relations) {
-          processedItems = JSON.parse(JSON.stringify(items));
+          processedItems = JSON.parse(JSON.stringify(items)) as SeedItem[];
           for (const item of processedItems) {
             for (const [fieldName, relationUid] of Object.entries(relations)) {
               if (Array.isArray(item[fieldName]) && createdIds[relationUid]) {
-                item[fieldName] = item[fieldName].map(
-                  (index: number) => createdIds[relationUid][index - 1],
+                item[fieldName] = (item[fieldName] as number[]).map(
+                  (index) => createdIds[relationUid][index - 1],
                 );
               }
             }
@@ -87,33 +77,32 @@ export default {
 
         createdIds[uid] = [];
         for (const item of processedItems) {
-          // handle _imageUrls: upload each URL and collect file IDs
           const { _imageUrls, ...itemData } = item;
-          let imageIds: number[] = [];
+          const imageIds: number[] = [];
           if (Array.isArray(_imageUrls) && _imageUrls.length > 0) {
             for (const url of _imageUrls) {
-              const id = await uploadImageFromUrl(url);
+              const id = await uploadImageFromUrl(url as string);
               if (id !== null) {
                 imageIds.push(id);
               }
             }
           }
 
-          const created = await strapi.entityService.create(uid, {
+          const created = await strapi.entityService.create(uid as UID.ContentType, {
             data: {
               ...itemData,
               ...(imageIds.length > 0 ? { images: imageIds } : {}),
               publishedAt: new Date(),
             },
           });
-          createdIds[uid].push(created.id);
+          createdIds[uid].push((created as { id: number }).id);
         }
         strapi.log.info(`Seeded ${items.length} records for ${uid}`);
       } catch (err) {
-        const details = err.details?.errors
-          ? JSON.stringify(err.details.errors, null, 2)
-          : err.message;
-
+        const apiErr = err as { details?: { errors?: unknown }; message?: string };
+        const details = apiErr.details?.errors
+          ? JSON.stringify(apiErr.details.errors, null, 2)
+          : apiErr.message;
         strapi.log.error(`Seeding failed for ${uid}: \n${details}`);
       }
     };
@@ -128,14 +117,13 @@ export default {
       const filePath = path.join(seedsDir, filename);
       try {
         const raw = await fs.readFile(filePath, "utf-8");
-        const items = JSON.parse(raw);
+        const items = JSON.parse(raw) as SeedItem[];
         await seedIfNeeded(uid, items, relations);
       } catch (err) {
         strapi.log.error(`Seeding failed for ${uid}: ${err}`);
       }
     };
 
-    // order matters if there are relations between content types
     await seedFromFile("plugin::users-permissions.user", "users.json");
     await seedFromFile("api::tag.tag", "tags.json");
     await seedFromFile("api::post.post", "posts.json", {
@@ -153,13 +141,11 @@ export default {
       },
     );
 
-    strapi.db.createdIds = createdIds;
-
     await setupPublicPermissions(strapi);
   },
 };
 
-async function setupPublicPermissions(strapi: any) {
+async function setupPublicPermissions(strapi: Core.Strapi) {
   const publicRole = await strapi.db
     .query("plugin::users-permissions.role")
     .findOne({ where: { type: "public" } });
