@@ -51,6 +51,7 @@
     "likesCount": 132,
     "tags": [1, 2, 13],
     "author": 2,
+    "_imageUrls": ["https://www.informatyka.agh.edu.pl/media/uploads/kolaz_crimi.png"],
     "content": [
       {
         "__component": "content.text",
@@ -76,6 +77,7 @@
     "likesCount": 93,
     "tags": [3, 7, 13],
     "author": 1,
+    "_imageUrls": ["https://www.informatyka.agh.edu.pl/media/uploads/dsc05534_1.jpg"],
     "content": [
       {
         "__component": "content.text",
