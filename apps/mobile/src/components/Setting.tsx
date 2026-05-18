@@ -17,7 +17,8 @@ type SettingProps = {
 export default function Setting({ text, icon: IconComponent, onPress, value }: SettingProps) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
-  const iconBg = isDark ? colors.core.dark : colors.core.disabled;
+  const iconBg = isDark ? colors.core.main : colors.core.disabled;
+  const iconFg = isDark ? colors.core.dark : colors.core.main;
 
   return (
     <Card
@@ -31,7 +32,7 @@ export default function Setting({ text, icon: IconComponent, onPress, value }: S
       <View style={styles.row}>
         <View style={styles.iconOuter}>
           <View style={[styles.iconInner, { backgroundColor: iconBg }]}>
-            <IconComponent size={theme.size.md} color={colors.core.main} />
+            <IconComponent size={theme.size.md} color={iconFg} />
           </View>
         </View>
         <TextCore variant="h3" weight="semiBold" style={styles.label} numberOfLines={1}>

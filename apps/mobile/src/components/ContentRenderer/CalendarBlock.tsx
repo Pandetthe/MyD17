@@ -31,12 +31,13 @@ function getDayLabel(entry: CalendarEntry): string {
 }
 
 function CalendarEntryRow({ entry, dark }: { entry: CalendarEntry; dark: boolean }) {
+  const { theme } = useUnistyles();
   const dayLabel = getDayLabel(entry);
   const fmt = (t?: string | null) => t?.slice(0, 5);
   const timeRange = [fmt(entry.startTime), fmt(entry.endTime)].filter(Boolean).join(" – ");
   const isClosed = timeRange.length === 0;
 
-  const textColor = dark ? colors.core.extraLight : colors.core.dark;
+  const textColor = (dark || theme.mode === "dark") ? colors.core.extraLight : colors.core.dark;
   const closedColor = colors.core.main;
 
   return (
@@ -55,11 +56,15 @@ export function CalendarBlock({ block, dark = false }: { block: ContentCalendar;
   const { theme } = useUnistyles();
   const entries = block.entries ?? [];
   if (entries.length === 0) return null;
+  const gradient = dark
+    ? ([colors.core.extraDark, colors.core.dark] as const)
+    : theme.colors.gradients.posts;
+
   return (
     <Card
       circle="none"
       color="primary"
-      gradient={theme.colors.gradients.posts}
+      gradient={gradient}
       style={styles.outer}
       contentStyle={styles.inner}
     >

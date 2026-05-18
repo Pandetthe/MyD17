@@ -61,7 +61,9 @@ export default function Button({
     return sizes[size] ?? sizes.sm;
   }, [size, theme]);
 
-  const fgColor = hasBackground ? colors.white : main;
+  const fgColor = hasBackground
+    ? (color === "dark" ? theme.colors.dark.text : colors.white)
+    : main;
   const bgColor = hasBackground ? main : "transparent";
 
   const containerStyle = useMemo(

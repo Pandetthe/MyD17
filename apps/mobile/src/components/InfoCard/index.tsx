@@ -25,14 +25,21 @@ const LOCATION_LABELS: Record<LocationValue, string> = {
   "s4.21": "Budynek D-17, Sala 4.21",
 };
 
-function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString("pl-PL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function formatDate(d: Date): string {
+  return d.toLocaleDateString("pl-PL", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatTime(d: Date): string {
+  return d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+}
+
+function formatDateTimeRange(startStr: string, endStr?: string | null): string {
+  const start = new Date(startStr);
+  if (!endStr) return `${formatDate(start)}, ${formatTime(start)}`;
+  const end = new Date(endStr);
+  const sameDay = start.toDateString() === end.toDateString();
+  if (sameDay) return `${formatDate(start)}, ${formatTime(start)} – ${formatTime(end)}`;
+  return `${formatDate(start)}, ${formatTime(start)} – ${formatDate(end)}, ${formatTime(end)}`;
 }
 
 function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
@@ -58,7 +65,6 @@ type Props = {
 export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
-  const iconColor = dark ? colors.white : colors.core.main;
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -70,17 +76,21 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
 
   if (!locationBlock && dateTimeBlocks.length === 0 && chipBlocks.length === 0) return null;
 
+  const gradient = dark
+    ? ([colors.core.extraDark, colors.core.dark] as const)
+    : theme.colors.gradients.posts;
+
   return (
     <Card
       circle="none"
       color="primary"
-      gradient={theme.colors.gradients.posts}
+      gradient={gradient}
       style={styles.outer}
       contentStyle={styles.inner}
     >
       {locationBlock && locationBlock.content && (
         <InfoRow
-          icon={<MapPin size={18} color={iconColor} />}
+          icon={(c) => <MapPin size={18} color={c} />}
           label="Lokalizacja"
           value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
           dark={dark}
@@ -91,26 +101,25 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
         const calEvent = blockToCalendarEvent(dtBlock);
         return (
           <View key={dtBlock.id ?? `dt-${idx}`} style={styles.dateGroup}>
-            <InfoRow
-              icon={<Clock size={18} color={iconColor} />}
-              label="Kiedy"
-              value={
-                dtBlock.endDateTime
-                  ? `${formatDateTime(dtBlock.startDateTime!)} – ${formatDateTime(dtBlock.endDateTime)}`
-                  : formatDateTime(dtBlock.startDateTime!)
-              }
-              dark={dark}
-            />
-            {onAddToCalendar && calEvent && (
-              <Button
-                icon={CalendarPlus}
-                text="Dodaj do kalendarza"
-                color="primary"
-                size="sm"
-                style={styles.calendarButton}
-                onPress={() => onAddToCalendar(calEvent)}
-              />
-            )}
+            <View style={styles.dateRow}>
+              <View style={styles.dateInfo}>
+                <InfoRow
+                  icon={(c) => <Clock size={18} color={c} />}
+                  label="Kiedy"
+                  value={formatDateTimeRange(dtBlock.startDateTime!, dtBlock.endDateTime)}
+                  dark={dark}
+                />
+              </View>
+              {onAddToCalendar && calEvent && (
+                <Button
+                  icon={CalendarPlus}
+                  color="dark"
+                  size="lg"
+                  style={styles.calendarButton}
+                  onPress={() => onAddToCalendar(calEvent)}
+                />
+              )}
+            </View>
           </View>
         );
       })}
@@ -120,7 +129,7 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
         return (
           <InfoRow
             key={chip.id}
-            icon={<ChipIcon size={18} color={iconColor} />}
+            icon={(c) => <ChipIcon size={18} color={c} />}
             label={chip.title ?? ""}
             value={chip.content ?? ""}
             dark={dark}
@@ -139,10 +148,17 @@ const styles = StyleSheet.create((theme: Theme) => ({
     padding: theme.spacing.lg,
     gap: theme.spacing.md,
   },
-  dateGroup: {
+  dateGroup: {},
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: theme.spacing.sm,
   },
+  dateInfo: {
+    flex: 1,
+  },
   calendarButton: {
-    alignSelf: "flex-start",
+    flexShrink: 0,
+    marginTop: 2,
   },
 }));

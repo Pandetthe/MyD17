@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 import Button from "@/components/core/Button.component";
 import { apiClient } from "@/lib/apiClient";
 import { tagColor } from "@/lib/tagColor";
@@ -97,7 +98,19 @@ export default function Notifications() {
 
   const allSelected = tags.length > 0 && Object.values(selected).every(Boolean);
 
+  const goBack = useCallback(() => router.back(), [router]);
+
+  const swipeBack = Gesture.Pan()
+    .activeOffsetX([30, 9999])
+    .failOffsetY([-15, 15])
+    .onEnd((e) => {
+      if (e.translationX > 80 || e.velocityX > 800) {
+        runOnJS(goBack)();
+      }
+    });
+
   return (
+    <GestureDetector gesture={swipeBack}>
     <View style={styles.wrapper}>
       <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
         <Button
@@ -149,6 +162,7 @@ export default function Notifications() {
         onDiscard={handleDiscard}
       />
     </View>
+    </GestureDetector>
   );
 }
 

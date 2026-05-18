@@ -14,8 +14,8 @@ export const darkTheme: Theme = {
       bgAccent: colors.core.dark,
     },
     dark: {
-      main:     colors.core.light,
-      text:     colors.white,
+      main:     colors.core.extraLight,
+      text:     colors.core.dark,
       subtext:  colors.core.extraLight,
       bg:       colors.core.dark,
       bgAccent: colors.core.extraDark,

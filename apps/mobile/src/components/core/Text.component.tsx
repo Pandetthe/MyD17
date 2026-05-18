@@ -72,8 +72,8 @@ const variantMap: Record<
     colorRole: "primary",
   },
   body: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 15,
+    lineHeight: 22,
     defaultWeight: "regular",
     colorRole: "primary",
   },

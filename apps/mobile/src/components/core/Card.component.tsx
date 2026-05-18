@@ -57,11 +57,11 @@ export function Card(props: CardProps) {
   const tc = !isRaw ? theme.colors[tcKey] : null;
 
   const main = rawC ? rawC.main : tc!.main;
-  const circleColor = rawC ? rawC.light : tc!.bgAccent;
+  const circleColor = rawC ? (isDark ? rawC.dark : rawC.light) : tc!.bgAccent;
   const bg = gradient
     ? undefined
     : rawC
-      ? (isDark ? rawC.main + "1A" : rawC.extraLight)
+      ? (isDark ? rawC.extraDark : rawC.extraLight)
       : theme.colors.surface;
 
   const circleMode = (props as any).circle ?? "none";

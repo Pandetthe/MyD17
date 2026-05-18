@@ -6,7 +6,7 @@ import type { Theme } from "@/styles/themes/theme";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
-  icon: React.ReactNode;
+  icon: (color: string) => React.ReactNode;
   label: string;
   value: string;
   dark?: boolean;
@@ -18,12 +18,13 @@ export function InfoRow({ icon, label, value, dark = false }: Props) {
 
   const labelColor = dark ? colors.core.light : colors.core.main;
   const valueColor = dark ? colors.white : (isDark ? colors.core.extraLight : colors.core.dark);
-  const iconBg = dark ? colors.core.extraDark : (isDark ? colors.core.dark : colors.core.disabled);
+  const iconBg = (dark || isDark) ? colors.core.main : colors.core.disabled;
+  const iconFg = (dark || isDark) ? colors.core.dark : colors.core.main;
 
   return (
     <View style={styles.row}>
       <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
-        {icon}
+        {icon(iconFg)}
       </View>
       <View style={styles.textColumn}>
         <TextCore variant="label" color={labelColor} style={styles.label}>
