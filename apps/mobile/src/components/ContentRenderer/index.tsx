@@ -16,12 +16,41 @@ type Props = {
 
 const INFO_COMPONENTS = new Set(["content.chip", "content.location", "content.event-date-time"]);
 
+type RenderedBlock =
+  | { type: "info"; blocks: PostContentBlock[]; key: string }
+  | { type: "single"; block: PostContentBlock };
+
+function groupBlocks(blocks: PostContentBlock[]): RenderedBlock[] {
+  const result: RenderedBlock[] = [];
+  let i = 0;
+  while (i < blocks.length) {
+    const block = blocks[i];
+    if (INFO_COMPONENTS.has(block.__component ?? "")) {
+      const group: PostContentBlock[] = [];
+      const key = `info-card-${block.id ?? i}`;
+      while (i < blocks.length && INFO_COMPONENTS.has(blocks[i].__component ?? "")) {
+        group.push(blocks[i]);
+        i++;
+      }
+      result.push({ type: "info", blocks: group, key });
+    } else {
+      result.push({ type: "single", block });
+      i++;
+    }
+  }
+  return result;
+}
+
 export function ContentRenderer({ blocks, textColor, dark }: Props) {
-  let infoCardRendered = false;
+  const grouped = groupBlocks(blocks);
 
   return (
     <View style={styles.container}>
-      {blocks.map((block) => {
+      {grouped.map((item) => {
+        if (item.type === "info") {
+          return <InfoCard key={item.key} blocks={item.blocks} dark={dark} />;
+        }
+        const block = item.block;
         switch (block.__component) {
           case "content.text":
             return (
@@ -39,19 +68,6 @@ export function ContentRenderer({ blocks, textColor, dark }: Props) {
             return (
               <CalendarBlock key={`${block.__component}-${block.id}`} block={block} dark={dark} />
             );
-          case "content.chip":
-          case "content.location":
-          case "content.event-date-time": {
-            if (infoCardRendered) return null;
-            infoCardRendered = true;
-            return (
-              <InfoCard
-                key="info-card"
-                blocks={blocks.filter((b) => INFO_COMPONENTS.has(b.__component ?? ""))}
-                dark={dark}
-              />
-            );
-          }
           default:
             return null;
         }
