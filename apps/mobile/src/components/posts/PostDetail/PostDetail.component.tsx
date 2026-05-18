@@ -54,6 +54,7 @@ export function PostDetail({ post }: Props) {
       style={styles.scroll}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
+      alwaysBounceVertical={false}
     >
       <HeroImage imageUrl={heroUrl} onBack={() => router.back()} tags={tags as Tag[]} />
 
