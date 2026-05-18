@@ -277,21 +277,16 @@ async function setupAdminRoles(strapi: Core.Strapi) {
     ],
   );
 
-  await upsertRole(
-    strapi,
-    "Editor",
-    "Full CRUD on all collections and media",
-    [
-      ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
-      ...buildUploadPermissions([
-        "plugin::upload.read",
-        "plugin::upload.assets.create",
-        "plugin::upload.assets.update",
-        "plugin::upload.assets.download",
-        "plugin::upload.assets.copy-link",
-      ]),
-    ],
-  );
+  await upsertRole(strapi, "Editor", "Full CRUD on all collections and media", [
+    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
+    ...buildUploadPermissions([
+      "plugin::upload.read",
+      "plugin::upload.assets.create",
+      "plugin::upload.assets.update",
+      "plugin::upload.assets.download",
+      "plugin::upload.assets.copy-link",
+    ]),
+  ]);
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
