@@ -1,68 +1,13 @@
 [
   {
-    "title": "Godziny otwarcia",
-    "isWide": true,
-    "color": "blue",
-    "icon": "clock",
-    "content": [
-      {
-        "__component": "content.text",
-        "content": "Nasza filharmonia otwarta jest godzinach:"
-      },
-      {
-        "__component": "content.calendar",
-        "entries": [
-          {
-            "withDate": false,
-            "day": "monday",
-            "startTime": "08:00:00.000",
-            "endTime": "16:00:00.000"
-          },
-          {
-            "withDate": false,
-            "day": "tuesday",
-            "startTime": "08:00:00.000",
-            "endTime": "16:00:00.000"
-          },
-          {
-            "withDate": false,
-            "day": "wednesday",
-            "startTime": "10:00:00.000",
-            "endTime": "18:00:00.000"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Informacje dla pierwszaków",
-    "isWide": false,
-    "color": "red",
-    "icon": "graduation-cap",
-    "content": [
-      {
-        "__component": "content.chip",
-        "title": "Wyrobienie legitymacji",
-        "content": "Aby wyrobić legitymację należy zgłosić się do dziekanatu.",
-        "icon": "building"
-      },
-      {
-        "__component": "content.chip",
-        "title": "Podbicie legitymacji",
-        "content": "W celu podbicia legitymacji należy udać się do łącznika A0-A1.",
-        "icon": "building"
-      }
-    ]
-  },
-  {
     "title": "Dziekanat",
-    "isWide": true,
-    "color": "yellow",
+    "isWide": false,
+    "color": "blue",
     "icon": "building",
     "content": [
       {
-        "__component": "content.text",
-        "content": "Dziekanat czynny jest w godzinach:"
+        "__component": "content.section-title",
+        "content": "Godziny dziekanatu"
       },
       {
         "__component": "content.calendar",
@@ -72,6 +17,10 @@
             "day": "monday",
             "startTime": "09:00:00.000",
             "endTime": "12:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "tuesday"
           },
           {
             "withDate": false,
@@ -84,12 +33,24 @@
             "day": "thursday",
             "startTime": "09:00:00.000",
             "endTime": "12:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "friday"
+          },
+          {
+            "withDate": false,
+            "day": "saturday"
+          },
+          {
+            "withDate": false,
+            "day": "sunday"
           }
         ]
       },
       {
-        "__component": "content.text",
-        "content": "Informacje kontaktowe:"
+        "__component": "content.section-title",
+        "content": "Informacje kontaktowe"
       },
       {
         "__component": "content.chip",
@@ -98,7 +59,7 @@
         "icon": "mail"
       },
       {
-        "__component": "content.text",
+        "__component": "content.section-title",
         "content": "inż. Jolanta Konieczna"
       },
       {
@@ -114,7 +75,7 @@
         "icon": "mail"
       }
     ]
-  },
+  },  
   {
     "title": "Dyżury prodziekana",
     "isWide": false,
@@ -128,6 +89,10 @@
       {
         "__component": "content.calendar",
         "entries": [
+          {
+            "withDate": false,
+            "day": "monday"
+          },
           {
             "withDate": false,
             "day": "tuesday",
@@ -145,8 +110,40 @@
             "day": "thursday",
             "startTime": "09:00:00.000",
             "endTime": "10:00:00.000"
+          },
+          {
+            "withDate": false,
+            "day": "friday"
+          },
+          {
+            "withDate": false,
+            "day": "saturday"
+          },
+          {
+            "withDate": false,
+            "day": "sunday"
           }
         ]
+      }
+    ]
+  },
+  {
+    "title": "Informacje dla pierwszaków",
+    "isWide": true,
+    "color": "red",
+    "icon": "graduation-cap",
+    "content": [
+      {
+        "__component": "content.chip",
+        "title": "Wyrobienie legitymacji",
+        "content": "Aby wyrobić legitymację należy zgłosić się do dziekanatu.",
+        "icon": "building"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Podbicie legitymacji",
+        "content": "W celu podbicia legitymacji należy udać się do łącznika A0-A1.",
+        "icon": "building"
       }
     ]
   }
