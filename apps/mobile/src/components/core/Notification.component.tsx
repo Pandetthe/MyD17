@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 import Tag from "@/components/core/Tag.component";
-import { ColorPalette } from "@/styles/themes/theme";
+import { palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor } from "@/styles/themes/theme";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type SettingProps = {
@@ -12,14 +13,16 @@ type SettingProps = {
 
 export default function Notification({ text, onPress, value, color }: SettingProps) {
   const { theme } = useUnistyles();
-  const formatText = (text: string) => (text.length > 26 ? text.slice(0, 23) + "..." : text);
+  const formatText = (t: string) => (t.length > 26 ? t.slice(0, 23) + "..." : t);
+
+  const resolvedColor = color ?? "primary";
+  const isRaw = resolvedColor !== "primary" && resolvedColor !== "dark" && resolvedColor in palette;
+  const tcKey = resolvedColor === "primary" || resolvedColor === "dark" ? resolvedColor : "primary";
+  const main = isRaw ? palette[resolvedColor as PaletteColor].main : theme.colors[tcKey].main;
 
   return (
     <View style={[styles.container]}>
-      <Pressable
-        onPress={onPress}
-        style={[styles.tagWrapper, value && { borderColor: theme.colors[color ?? "primary"].main }]}
-      >
+      <Pressable onPress={onPress} style={[styles.tagWrapper, value && { borderColor: main }]}>
         <Tag text={formatText(text)} color={color} onPress={onPress} />
       </Pressable>
     </View>

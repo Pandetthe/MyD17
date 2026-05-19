@@ -3,7 +3,6 @@ import { Pressable, Text, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
-import { Theme } from "@/styles/themes/theme";
 import { usePathname, useRouter, Href } from "expo-router";
 import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
@@ -78,10 +77,10 @@ export default function DrawerContent() {
   );
 }
 
-const styles = StyleSheet.create((theme: Theme) => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.dark.background.main,
+    backgroundColor: colors.core.dark,
     borderTopRightRadius: 32,
     borderBottomRightRadius: 32,
     overflow: "hidden",
@@ -98,7 +97,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     width: 638,
     height: 638,
     borderRadius: 319,
-    backgroundColor: theme.colors.dark.background.accent,
+    backgroundColor: colors.core.extraDark,
   },
   content: {
     flex: 1,

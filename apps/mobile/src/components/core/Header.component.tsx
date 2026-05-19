@@ -1,9 +1,10 @@
 import React from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, StatusBar, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
+import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { DrawerNavigationProp, useDrawerStatus } from "@react-navigation/drawer";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { BellIcon, MenuIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
@@ -12,14 +13,20 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function Header() {
   const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
-  const { theme, rt } = useUnistyles();
-  const logoVariant = rt.themeName === "light" ? "color" : "white";
+  const { theme } = useUnistyles();
+  const isDark = theme.mode === "dark";
+  const logoVariant = isDark ? "white" : "color";
+  const iconColor = isDark ? colors.core.extraLight : colors.core.dark;
   const insets = useSafeAreaInsets();
   const menu = usePressAnimation(0.93);
   const bell = usePressAnimation(0.93);
 
+  const drawerStatus = useDrawerStatus();
+  const barStyle = drawerStatus === "open" || isDark ? "light-content" : "dark-content";
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top + theme.spacing.sm }]}>
+    <View style={[styles.container, { paddingTop: insets.top + theme.spacing.md }]}>
+      <StatusBar barStyle={barStyle} />
       <Pressable
         onPress={() => navigation.openDrawer()}
         onPressIn={menu.onPressIn}
@@ -27,7 +34,7 @@ export default function Header() {
         style={styles.iconButton}
       >
         <Animated.View style={menu.animStyle}>
-          <MenuIcon color={theme.colors.dark.text.secondary} size={24} />
+          <MenuIcon color={iconColor} size={24} />
         </Animated.View>
       </Pressable>
 
@@ -35,7 +42,7 @@ export default function Header() {
 
       <Pressable onPressIn={bell.onPressIn} onPressOut={bell.onPressOut} style={styles.iconButton}>
         <Animated.View style={bell.animStyle}>
-          <BellIcon color={theme.colors.dark.text.secondary} size={24} />
+          <BellIcon color={iconColor} size={24} />
         </Animated.View>
       </Pressable>
     </View>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Pressable, Text, StyleProp, ViewStyle } from "react-native";
-import { colors } from "@/styles/colors";
-import { ColorPalette } from "@/styles/themes/theme";
+import { colors, palette } from "@/styles/colors";
+import { ColorPalette, PaletteColor } from "@/styles/themes/theme";
 import { LucideIcon } from "lucide-react-native";
 import Animated, {
   useSharedValue,
@@ -11,7 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useUnistyles } from "react-native-unistyles";
 
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonSize = "sm" | "lg";
 
 type ButtonProps = {
   text?: string;
@@ -26,7 +26,7 @@ type ButtonProps = {
 export default function Button({
   text = "",
   icon: IconComponent,
-  size = "md",
+  size = "sm",
   color = "primary",
   hasBackground = true,
   onPress,
@@ -37,38 +37,38 @@ export default function Button({
   const { theme } = useUnistyles();
   const pressProgress = useSharedValue(0);
 
-  const selectedSize = useMemo(
-    () =>
-      ({
-        sm: {
-          height: theme.size.lg,
-          icon: theme.size.sm,
-          text: theme.size.xs,
-          gap: theme.spacing.xs,
-        },
-        md: {
-          height: theme.size.xl,
-          icon: theme.size.md,
-          text: theme.size.sm,
-          gap: theme.spacing.sm,
-        },
-        lg: {
-          height: theme.size.xl,
-          icon: theme.size.lg,
-          text: theme.size.md,
-          gap: theme.spacing.md,
-        },
-      })[size],
-    [size, theme],
-  );
+  const isRaw = color !== "primary" && color !== "dark" && color in palette;
+  const tcKey = color === "primary" || color === "dark" ? color : "primary";
+  const main = isRaw ? palette[color as PaletteColor].main : theme.colors[tcKey].main;
 
-  const fgColor = hasBackground ? colors.white : theme.colors[color].main;
+  const selectedSize = useMemo(() => {
+    const sizes = {
+      sm: {
+        height: theme.size.lg,
+        icon: theme.size.sm,
+        text: theme.size.xs,
+        gap: theme.spacing.xs,
+      },
+      lg: {
+        height: theme.size.xl,
+        icon: theme.size.sm,
+        text: theme.size.xs,
+        gap: theme.spacing.sm,
+      },
+    };
+    return sizes[size] ?? sizes.sm;
+  }, [size, theme]);
 
-  const bgColor = hasBackground ? theme.colors[color].main : "transparent";
+  let fgColor: string;
+  if (!hasBackground) fgColor = main;
+  else if (color === "dark") fgColor = theme.colors.dark.text;
+  else fgColor = colors.white;
+  const bgColor = hasBackground ? main : "transparent";
 
   const containerStyle = useMemo(
     () => ({
       height: selectedSize.height,
+      ...(text ? {} : { aspectRatio: 1 }),
       borderRadius: theme.borderRadius.full,
       backgroundColor: bgColor,
       alignItems: "center" as const,
@@ -77,7 +77,7 @@ export default function Button({
       gap: selectedSize.gap,
       paddingHorizontal: selectedSize.gap,
     }),
-    [bgColor, selectedSize, theme.borderRadius.full],
+    [bgColor, selectedSize, text, theme.borderRadius.full],
   );
 
   const textStyle = useMemo(
@@ -85,18 +85,15 @@ export default function Button({
       color: fgColor,
       fontSize: selectedSize.text,
       paddingRight: theme.spacing.xxs,
+      fontFamily: theme.fonts.semiBold,
     }),
-    [fgColor, selectedSize.text],
+    [fgColor, selectedSize.text, theme.fonts.semiBold],
   );
 
   const animatedStyle = useAnimatedStyle(() => {
     const scale = 1 - pressProgress.value * 0.05;
     const opacity = 1 - pressProgress.value * 0.4;
-
-    return {
-      transform: [{ scale }],
-      opacity,
-    };
+    return { transform: [{ scale }], opacity };
   });
 
   const resolvedA11yLabel = accessibilityLabel ?? (text ? text : "Button");
@@ -105,23 +102,18 @@ export default function Button({
     <Pressable
       onPress={onPress}
       onPressIn={() => {
-        pressProgress.value = withTiming(1, {
-          duration: 30,
-          easing: Easing.out(Easing.quad),
-        });
+        pressProgress.value = withTiming(1, { duration: 30, easing: Easing.out(Easing.quad) });
       }}
       onPressOut={() => {
-        pressProgress.value = withTiming(0, {
-          duration: 30,
-          easing: Easing.out(Easing.quad),
-        });
+        pressProgress.value = withTiming(0, { duration: 30, easing: Easing.out(Easing.quad) });
       }}
       accessibilityRole="button"
       accessibilityLabel={resolvedA11yLabel}
       hitSlop={8}
+      style={style}
       {...pressableProps}
     >
-      <Animated.View style={[containerStyle, animatedStyle, style]}>
+      <Animated.View style={[containerStyle, animatedStyle]}>
         {IconComponent ? <IconComponent size={selectedSize.icon} color={fgColor} /> : null}
         {text ? <Text style={textStyle}>{text}</Text> : null}
       </Animated.View>

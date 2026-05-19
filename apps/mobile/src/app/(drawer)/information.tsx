@@ -6,7 +6,7 @@ import { InfoBottomDrawer } from "@/components/information/InfoBottomDrawer";
 import { StaticInfoCard } from "@/components/information/StaticInfoCard";
 import { useInformationPage } from "@/features/information/api/useInformationPage";
 import { getIcon } from "@/lib/iconMap";
-import { strapiColorToCard } from "@/lib/strapiColors";
+import { tagColor } from "@/lib/tagColor";
 import type { Theme } from "@/styles/themes/theme";
 import type { StaticInformation } from "@repo/types";
 import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
@@ -68,7 +68,7 @@ export default function Information() {
   if (isError) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+        <TextCore variant="body" color={theme.colors.primary.subtext}>
           Nie udało się załadować informacji.
         </TextCore>
         <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
@@ -86,7 +86,7 @@ export default function Information() {
     if (isEmpty) {
       return (
         <View style={[styles.container, styles.centered]}>
-          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+          <TextCore variant="body" color={theme.colors.primary.subtext}>
             Brak dostępnych informacji.
           </TextCore>
           <Button text="Odśwież" color="primary" onPress={() => refetch()} />
@@ -106,7 +106,7 @@ export default function Information() {
               key={row.key}
               title={row.items[0].title}
               icon={resolveIcon(row.items[0], row.startIndex)}
-              color={strapiColorToCard(row.items[0].color)}
+              color={tagColor(row.items[0].color)}
               wide
               onPress={() => setSelectedItem(row.items[0])}
             />
@@ -117,7 +117,7 @@ export default function Information() {
                   key={item.documentId ?? j}
                   title={item.title}
                   icon={resolveIcon(item, row.startIndex + j)}
-                  color={strapiColorToCard(item.color)}
+                  color={tagColor(item.color)}
                   onPress={() => setSelectedItem(item)}
                 />
               ))}

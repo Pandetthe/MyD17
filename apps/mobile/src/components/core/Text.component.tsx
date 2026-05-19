@@ -72,8 +72,8 @@ const variantMap: Record<
     colorRole: "primary",
   },
   body: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 15,
+    lineHeight: 22,
     defaultWeight: "regular",
     colorRole: "primary",
   },
@@ -87,8 +87,8 @@ const variantMap: Record<
 
 const styles = StyleSheet.create((theme) => {
   const textColors: Record<TextColorRole, string> = {
-    primary: theme.colors.primary.text.primary,
-    secondary: theme.colors.primary.text.secondary,
+    primary: theme.colors.primary.text,
+    secondary: theme.colors.primary.subtext,
   };
 
   return {

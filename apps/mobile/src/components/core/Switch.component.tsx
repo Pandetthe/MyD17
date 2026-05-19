@@ -65,12 +65,12 @@ const SwitchCore = ({ onPress, value, duration = 150 }: SwitchProps) => {
 
 export default SwitchCore;
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create(() => ({
   track: {
     alignItems: "flex-start",
-    width: theme.size.xl,
-    height: theme.size.md,
-    padding: theme.spacing.half,
+    width: 48,
+    height: 24,
+    padding: 2,
   },
   thumb: {
     height: "100%",

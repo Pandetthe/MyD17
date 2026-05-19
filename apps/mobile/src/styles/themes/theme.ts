@@ -1,51 +1,34 @@
-export type ColorGroup = {
-  main: string;
-  icon: string;
-  text: {
-    primary: string;
-    secondary: string;
-  };
-  background: {
-    main: string;
-    accent: string;
-  };
-};
-
 export type SwitchColors = {
   on: string;
   off: string;
 };
 
 export type GradientGroup = {
-  settings: string[];
+  settings: readonly [string, string];
+  posts: readonly [string, string];
 };
 
 export type ThemeColors = {
   surface: string;
-  primary: ColorGroup;
-  dark: ColorGroup;
+  primary: {
+    main: string;
+    text: string;
+    subtext: string;
+    bgAccent: string;
+  };
+  dark: {
+    main: string;
+    text: string;
+    subtext: string;
+    bg: string;
+    bgAccent: string;
+  };
   gradients: GradientGroup;
-  red: ColorGroup;
-  rose: ColorGroup;
-  orange: ColorGroup;
-  amber: ColorGroup;
-  yellow: ColorGroup;
-  lime: ColorGroup;
-  green: ColorGroup;
-  emerald: ColorGroup;
-  teal: ColorGroup;
-  cyan: ColorGroup;
-  sky: ColorGroup;
-  blue: ColorGroup;
-  indigo: ColorGroup;
-  violet: ColorGroup;
-  purple: ColorGroup;
-  fuchsia: ColorGroup;
-  pink: ColorGroup;
   switch: SwitchColors;
 };
 
 export type Theme = {
+  mode: "light" | "dark";
   colors: ThemeColors;
   spacing: Record<string, number>;
   size: Record<string, number>;
@@ -58,4 +41,5 @@ export type Theme = {
   };
 };
 
-export type ColorPalette = Exclude<keyof ThemeColors, "surface" | "switch" | "gradients">;
+export type PaletteColor = "red" | "amber" | "green" | "teal" | "purple" | "pink";
+export type ColorPalette = PaletteColor | "primary" | "dark";

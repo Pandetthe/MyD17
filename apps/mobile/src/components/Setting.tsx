@@ -1,9 +1,10 @@
-import { Pressable, View } from "react-native";
-import Icon from "@/components/core/Icon.component";
+import { View } from "react-native";
+import { Card } from "@/components/core/Card.component";
 import SwitchCore from "@/components/core/Switch.component";
 import TextCore from "@/components/core/Text.component";
-import { ArrowUpRightIcon, LucideIcon } from "lucide-react-native";
-import { LinearGradient } from "react-native-linear-gradient";
+import { colors } from "@/styles/colors";
+import type { Theme } from "@/styles/themes/theme";
+import { ArrowUpRight, LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type SettingProps = {
@@ -13,58 +14,72 @@ type SettingProps = {
   value?: boolean;
 };
 
-export default function Setting({ text, icon, onPress, value }: SettingProps) {
+export default function Setting({ text, icon: IconComponent, onPress, value }: SettingProps) {
   const { theme } = useUnistyles();
-  return (
-    <LinearGradient
-      colors={theme.colors.gradients.settings}
-      angle={60}
-      useAngle
-      style={styles.container}
-    >
-      <View style={styles.iconWrapper}>
-        <Icon icon={icon}></Icon>
-      </View>
+  const isDark = theme.mode === "dark";
+  const iconBg = isDark ? colors.core.main : colors.core.disabled;
+  const iconFg = isDark ? colors.core.dark : colors.core.main;
 
-      <View style={styles.textWrapper}>
-        <TextCore variant="h3" color={theme.colors.primary.text.primary}>
+  return (
+    <Card
+      circle="none"
+      color="primary"
+      gradient={theme.colors.gradients.posts}
+      onPress={onPress}
+      style={styles.outer}
+      contentStyle={styles.shell}
+    >
+      <View style={styles.row}>
+        <View style={styles.iconOuter}>
+          <View style={[styles.iconInner, { backgroundColor: iconBg }]}>
+            <IconComponent size={theme.size.md} color={iconFg} />
+          </View>
+        </View>
+        <TextCore variant="h3" weight="semiBold" style={styles.label} numberOfLines={1}>
           {text}
         </TextCore>
-      </View>
-
-      <Pressable onPress={onPress} style={styles.switchWrapper}>
         {value == null ? (
-          <Icon icon={ArrowUpRightIcon} hasBackground={false} color="primary"></Icon>
+          <ArrowUpRight size={theme.size.md} color={colors.core.main} strokeWidth={2} />
         ) : (
           <SwitchCore onPress={onPress} value={value} />
         )}
-      </Pressable>
-    </LinearGradient>
+      </View>
+    </Card>
   );
 }
 
-const styles = StyleSheet.create((theme) => ({
-  container: {
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.lg,
-    borderColor: theme.colors.primary.main,
-    width: "95%",
+const styles = StyleSheet.create((theme: Theme) => ({
+  outer: {
+    width: "100%",
+  },
+  shell: {
     height: 72,
+  },
+  row: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    boxShadow: `10px 5px 20px ${theme.colors.primary.background.accent}33`,
-    elevation: 5,
-  },
-  iconWrapper: {
-    marginRight: theme.spacing.xs,
-    marginLeft: theme.spacing.md,
-  },
-  textWrapper: {
-    flex: 1,
-  },
-  switchWrapper: {
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
+    gap: theme.spacing.xxs,
+  },
+  iconOuter: {
+    width: 40,
+    height: 40,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.surface,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  iconInner: {
+    width: 38,
+    height: 38,
+    borderRadius: theme.borderRadius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  label: {
+    flex: 1,
+    marginLeft: theme.spacing.xxs,
   },
 }));

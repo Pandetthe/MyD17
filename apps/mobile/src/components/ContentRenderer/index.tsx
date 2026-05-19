@@ -4,6 +4,7 @@ import { CalendarBlock } from "@/components/ContentRenderer/CalendarBlock";
 import { SectionTitleBlock } from "@/components/ContentRenderer/SectionTitleBlock";
 import { TextBlock } from "@/components/ContentRenderer/TextBlock";
 import { InfoCard } from "@/components/InfoCard";
+import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import type { Theme } from "@/styles/themes/theme";
 import type { PostContentBlock } from "@repo/types";
 import { StyleSheet } from "react-native-unistyles";
@@ -12,6 +13,7 @@ type Props = {
   blocks: PostContentBlock[];
   textColor?: ColorValue;
   dark?: boolean;
+  onAddToCalendar?: (event: CalendarEvent) => void;
 };
 
 const INFO_COMPONENTS = new Set(["content.chip", "content.location", "content.event-date-time"]);
@@ -41,14 +43,21 @@ function groupBlocks(blocks: PostContentBlock[]): RenderedBlock[] {
   return result;
 }
 
-export function ContentRenderer({ blocks, textColor, dark }: Props) {
+export function ContentRenderer({ blocks, textColor, dark, onAddToCalendar }: Props) {
   const grouped = groupBlocks(blocks);
 
   return (
     <View style={styles.container}>
       {grouped.map((item) => {
         if (item.type === "info") {
-          return <InfoCard key={item.key} blocks={item.blocks} dark={dark} />;
+          return (
+            <InfoCard
+              key={item.key}
+              blocks={item.blocks}
+              dark={dark}
+              onAddToCalendar={onAddToCalendar}
+            />
+          );
         }
         const block = item.block;
         switch (block.__component) {

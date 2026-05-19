@@ -7,8 +7,8 @@ import { TagFilterBar } from "@/components/posts/TagFilterBar.component";
 import { usePosts } from "@/features/posts/api/usePosts";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag } from "@repo/types";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function PostsScreen() {
@@ -60,7 +60,6 @@ export default function PostsScreen() {
   if (isLoading) {
     return (
       <View style={styles.safe}>
-        <StatusBar style="dark" />
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.primary.main} />
         </View>
@@ -71,9 +70,8 @@ export default function PostsScreen() {
   if (isError) {
     return (
       <View style={styles.safe}>
-        <StatusBar style="dark" />
         <View style={styles.centered}>
-          <TextCore variant="body" color={theme.colors.primary.text.secondary}>
+          <TextCore variant="body" color={theme.colors.primary.subtext}>
             Nie udało się załadować postów.
           </TextCore>
           <Button text="Spróbuj ponownie" color="primary" onPress={() => refetch()} />
@@ -84,13 +82,6 @@ export default function PostsScreen() {
 
   return (
     <View style={styles.safe}>
-      <StatusBar style="dark" />
-      <TagFilterBar
-        tags={allTags}
-        selectedTagIds={selectedTagIds}
-        onSelect={handleTagToggle}
-        onClear={() => setSelectedTagIds([])}
-      />
       <FlatList
         data={filteredPosts}
         keyExtractor={(item) => item.documentId as string}
@@ -107,6 +98,7 @@ export default function PostsScreen() {
           />
         )}
         contentContainerStyle={styles.feed}
+        ListHeaderComponent={<View style={styles.barSpacer} />}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.4}
@@ -119,11 +111,7 @@ export default function PostsScreen() {
           />
         }
         ListEmptyComponent={
-          <TextCore
-            variant="body"
-            color={theme.colors.primary.text.secondary}
-            style={styles.emptyText}
-          >
+          <TextCore variant="body" color={theme.colors.primary.subtext} style={styles.emptyText}>
             Brak postów pasujących do wybranych filtrów.
           </TextCore>
         }
@@ -137,6 +125,21 @@ export default function PostsScreen() {
           ) : null
         }
       />
+
+      <LinearGradient
+        colors={[theme.colors.surface, theme.colors.surface + "00"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.barGradient}
+        pointerEvents="box-none"
+      >
+        <TagFilterBar
+          tags={allTags}
+          selectedTagIds={selectedTagIds}
+          onSelect={handleTagToggle}
+          onClear={() => setSelectedTagIds([])}
+        />
+      </LinearGradient>
     </View>
   );
 }
@@ -149,8 +152,17 @@ const styles = StyleSheet.create((theme: Theme) => ({
   feed: {
     gap: theme.spacing.lg,
     paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xs,
     paddingBottom: theme.spacing.xl * 3,
+  },
+  barSpacer: {
+    height: theme.spacing.xl,
+  },
+  barGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: theme.spacing.lg,
   },
   centered: {
     flex: 1,

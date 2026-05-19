@@ -1,74 +1,30 @@
-import { Color, colors } from "@/styles/colors";
+import { colors } from "@/styles/colors";
 import { fonts } from "@/styles/fonts";
+import { Theme } from "@/styles/themes/theme";
 import { borderRadius, size, spacing } from "@/styles/tokens";
-import { Theme } from "./theme";
-
-export function darkColorSet(color: Color) {
-  return {
-    main: color.main,
-    icon: colors.white,
-    text: {
-      primary: color.extraLight,
-      secondary: color.light,
-    },
-    background: {
-      main: color.extraDark,
-      accent: color.dark,
-    },
-  };
-}
 
 export const darkTheme: Theme = {
+  mode: "dark",
   colors: {
     surface: colors.core.extraDark,
     primary: {
       main: colors.core.main,
-      icon: colors.white,
-      text: {
-        primary: colors.white,
-        secondary: colors.core.light,
-      },
-      background: {
-        main: `linear-gradient(180deg, ${colors.core.dark} 0%, ${colors.core.extraDark} 100%)`,
-        accent: colors.core.dark,
-      },
+      text: colors.white,
+      subtext: colors.core.extraLight,
+      bgAccent: colors.core.dark,
     },
     dark: {
-      main: colors.core.light,
-      icon: colors.white,
-      text: {
-        primary: colors.white,
-        secondary: colors.core.light,
-      },
-      background: {
-        main: colors.core.dark,
-        accent: colors.core.extraDark,
-      },
+      main: colors.core.extraLight,
+      text: colors.core.dark,
+      subtext: colors.core.extraLight,
+      bg: colors.core.dark,
+      bgAccent: colors.core.extraDark,
     },
     gradients: {
-      settings: [colors.core.extraDark, colors.core.dark],
+      settings: [colors.core.dark, colors.core.extraDark],
+      posts: [colors.core.dark, colors.core.extraDark],
     },
-    red: darkColorSet(colors.red),
-    rose: darkColorSet(colors.rose),
-    orange: darkColorSet(colors.orange),
-    amber: darkColorSet(colors.amber),
-    yellow: darkColorSet(colors.yellow),
-    lime: darkColorSet(colors.lime),
-    green: darkColorSet(colors.green),
-    emerald: darkColorSet(colors.emerald),
-    teal: darkColorSet(colors.teal),
-    cyan: darkColorSet(colors.cyan),
-    sky: darkColorSet(colors.sky),
-    blue: darkColorSet(colors.blue),
-    indigo: darkColorSet(colors.indigo),
-    violet: darkColorSet(colors.violet),
-    purple: darkColorSet(colors.purple),
-    fuchsia: darkColorSet(colors.fuchsia),
-    pink: darkColorSet(colors.pink),
-    switch: {
-      on: colors.core.main,
-      off: colors.core.muted,
-    },
+    switch: { on: colors.core.main, off: colors.core.muted },
   },
   spacing,
   size,

@@ -1,8 +1,5 @@
 import "@/styles/unistyles";
 import React, { useEffect } from "react";
-import { useWindowDimensions } from "react-native";
-import DrawerContent from "@/components/core/DrawerContent.component";
-import Header from "@/components/core/Header.component";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { QueryProvider } from "@/providers/QueryProvider";
 import {
@@ -14,18 +11,15 @@ import {
 } from "@expo-google-fonts/montserrat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { Drawer } from "expo-router/drawer";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UnistylesRuntime } from "react-native-unistyles";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
-  const { width } = useWindowDimensions();
-  const drawerWidth = Math.min(width * 0.8, 310);
-
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
       if (saved === "light" || saved === "dark") {
@@ -53,29 +47,17 @@ export default function Layout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <QueryProvider>
-          <StatusBar style="auto" />
-          <Drawer
-            drawerContent={() => <DrawerContent />}
-            screenOptions={{
-              header: () => <Header />,
-              drawerType: "front",
-              drawerStyle: {
-                backgroundColor: "transparent",
-                width: drawerWidth,
-              },
-            }}
-          >
-            <Drawer.Screen name="index" />
-            <Drawer.Screen name="d17map" />
-            <Drawer.Screen name="information" />
-            <Drawer.Screen name="settings" />
-            <Drawer.Screen name="post/[id]" options={{ headerShown: false }} />
-          </Drawer>
-        </QueryProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeProvider value={DefaultTheme}>
+          <QueryProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(drawer)" />
+              <Stack.Screen name="post" options={{ animation: "slide_from_right" }} />
+            </Stack>
+          </QueryProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

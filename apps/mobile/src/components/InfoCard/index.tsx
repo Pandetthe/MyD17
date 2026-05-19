@@ -1,6 +1,9 @@
 import React from "react";
 import { View } from "react-native";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
+import Button from "@/components/core/Button.component";
+import { Card } from "@/components/core/Card.component";
+import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
@@ -11,7 +14,7 @@ import type {
   LocationValue,
   PostContentBlock,
 } from "@repo/types";
-import { Clock, Info, MapPin } from "lucide-react-native";
+import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -22,93 +25,140 @@ const LOCATION_LABELS: Record<LocationValue, string> = {
   "s4.21": "Budynek D-17, Sala 4.21",
 };
 
-function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString("pl-PL", {
+function formatDate(d: Date): string {
+  return d.toLocaleDateString("pl-PL", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatTime(d: Date): string {
+  return d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+}
+
+function formatDateTimeRange(startStr: string, endStr?: string | null): string {
+  const start = new Date(startStr);
+  if (!endStr) return `${formatDate(start)}, ${formatTime(start)}`;
+  const end = new Date(endStr);
+  const sameDay = start.toDateString() === end.toDateString();
+  if (sameDay) return `${formatDate(start)}, ${formatTime(start)} – ${formatTime(end)}`;
+  return `${formatDate(start)}, ${formatTime(start)} – ${formatDate(end)}, ${formatTime(end)}`;
+}
+
+function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
+  if (!dt.startDateTime) return null;
+  const startDate = new Date(dt.startDateTime);
+  const endDate = dt.endDateTime
+    ? new Date(dt.endDateTime)
+    : new Date(startDate.getTime() + 60 * 60 * 1000);
+  const label = startDate.toLocaleDateString("pl-PL", {
     day: "numeric",
     month: "long",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   });
+  return { label, startDate, endDate };
 }
 
 type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
+  onAddToCalendar?: (event: CalendarEvent) => void;
 };
 
-export function InfoCard({ blocks, dark = false }: Props) {
+export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
-  const iconColor = dark ? colors.white : theme.colors.primary.main;
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
   );
-  const dateTimeBlock = safeBlocks.find(
+  const dateTimeBlocks = safeBlocks.filter(
     (b): b is ContentEventDateTime => b.__component === "content.event-date-time",
   );
   const chipBlocks = safeBlocks.filter((b): b is ContentChip => b.__component === "content.chip");
 
-  if (!locationBlock && !dateTimeBlock && chipBlocks.length === 0) return null;
+  if (!locationBlock && dateTimeBlocks.length === 0 && chipBlocks.length === 0) return null;
+
+  const gradient = dark
+    ? ([colors.core.extraDark, colors.core.dark] as const)
+    : theme.colors.gradients.posts;
 
   return (
-    <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
+    <Card
+      circle="none"
+      color="primary"
+      gradient={gradient}
+      style={styles.outer}
+      contentStyle={styles.inner}
+    >
       {locationBlock && locationBlock.content && (
         <InfoRow
-          icon={<MapPin size={18} color={iconColor} />}
-          label="LOKALIZACJA"
+          icon={(c) => <MapPin size={18} color={c} />}
+          label="Lokalizacja"
           value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
           dark={dark}
         />
       )}
-      {dateTimeBlock && dateTimeBlock.startDateTime && (
-        <InfoRow
-          icon={<Clock size={18} color={iconColor} />}
-          label="KIEDY"
-          value={
-            dateTimeBlock.endDateTime
-              ? `${formatDateTime(dateTimeBlock.startDateTime)} – ${formatDateTime(dateTimeBlock.endDateTime)}`
-              : formatDateTime(dateTimeBlock.startDateTime)
-          }
-          dark={dark}
-        />
-      )}
+
+      {dateTimeBlocks.map((dtBlock, idx) => {
+        const calEvent = blockToCalendarEvent(dtBlock);
+        return (
+          <View key={dtBlock.id ?? `dt-${idx}`} style={styles.dateGroup}>
+            <View style={styles.dateRow}>
+              <View style={styles.dateInfo}>
+                <InfoRow
+                  icon={(c) => <Clock size={18} color={c} />}
+                  label="Kiedy"
+                  value={formatDateTimeRange(dtBlock.startDateTime!, dtBlock.endDateTime)}
+                  dark={dark}
+                />
+              </View>
+              {onAddToCalendar && calEvent && (
+                <Button
+                  icon={CalendarPlus}
+                  color="dark"
+                  size="lg"
+                  style={styles.calendarButton}
+                  onPress={() => onAddToCalendar(calEvent)}
+                />
+              )}
+            </View>
+          </View>
+        );
+      })}
+
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
         return (
           <InfoRow
             key={chip.id}
-            icon={<ChipIcon size={18} color={iconColor} />}
+            icon={(c) => <ChipIcon size={18} color={c} />}
             label={chip.title ?? ""}
             value={chip.content ?? ""}
             dark={dark}
           />
         );
       })}
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  card: {
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.md,
-    padding: 21,
+  outer: {
+    width: "100%",
+  },
+  inner: {
+    padding: theme.spacing.lg,
     gap: theme.spacing.md,
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
   },
-  cardLight: {
-    backgroundColor: theme.colors.primary.background.accent,
-    borderColor: theme.colors.primary.main,
-    shadowColor: theme.colors.primary.main,
+  dateGroup: {},
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: theme.spacing.sm,
   },
-  cardDark: {
-    backgroundColor: colors.core.dark,
-    borderColor: theme.colors.primary.main,
-    shadowColor: colors.core.extraDark,
+  dateInfo: {
+    flex: 1,
+  },
+  calendarButton: {
+    flexShrink: 0,
+    marginTop: 2,
   },
 }));

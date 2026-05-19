@@ -15,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -30,6 +31,7 @@ const CLOSE_TIMING = { duration: 300, easing: Easing.in(Easing.ease) } as const;
 
 export function InfoBottomDrawer({ visible, item, onClose }: Props) {
   const { height: screenHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   const translateY = useSharedValue(screenHeight);
   const [modalVisible, setModalVisible] = useState(false);
@@ -95,7 +97,10 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
 
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[
+              styles.content,
+              { paddingBottom: Math.max(32, insets.bottom + 16) },
+            ]}
             showsVerticalScrollIndicator={false}
           >
             {blocks.length > 0 && <ContentRenderer blocks={blocks} textColor={colors.white} dark />}
@@ -123,11 +128,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
     left: 0,
     right: 0,
     maxHeight: "80%",
-    backgroundColor: theme.colors.dark.background.accent,
+    backgroundColor: colors.core.dark,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingTop: theme.spacing.md,
-    shadowColor: theme.colors.dark.main,
+    shadowColor: colors.core.extraDark,
     shadowOffset: { width: 0, height: -10 },
     shadowOpacity: 1,
     shadowRadius: 80,
@@ -143,6 +148,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
     height: 6,
     borderRadius: theme.borderRadius.full,
     backgroundColor: colors.white,
+    opacity: 0.5,
   },
   scroll: {
     width: "100%",

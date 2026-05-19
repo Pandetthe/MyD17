@@ -1,20 +1,22 @@
-import React, { useCallback, useState } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import React, { useCallback } from "react";
+import { View, Pressable, StatusBar } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
+import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
-import { CalendarBottomSheet } from "@/components/posts/PostDetail/CalendarBottomSheet.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
-import {
-  addEventToCalendar,
-  extractCalendarEvents,
-  type CalendarEvent,
-} from "@/features/posts/hooks/useAddToCalendar";
+import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
+import { tagColor } from "@/lib/tagColor";
+import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
 import { useRouter } from "expo-router";
-import { Heart, Share2, CalendarPlus } from "lucide-react-native";
+import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
@@ -24,92 +26,112 @@ type Props = {
 export function PostDetail({ post }: Props) {
   const router = useRouter();
   const { theme } = useUnistyles();
+  const isDark = theme.mode === "dark";
+  const insets = useSafeAreaInsets();
+
   const heroUrl = getPostHeroImage(post);
   const description = getPostDescription(post);
   const content = post.content ?? [];
-  const tags = post.tags ?? [];
-  const calendarEvents = extractCalendarEvents(post);
+  const tags = (post.tags ?? []) as Tag[];
+  const hasHero = !!heroUrl;
+  const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const statusBarStyle = hasHero || isDark ? "light-content" : "dark-content";
 
-  const handleAddToCalendar = () => {
-    if (calendarEvents.length === 0) return;
-    if (calendarEvents.length === 1) {
-      void addEventToCalendar(post, calendarEvents[0]!);
-    } else {
-      setModalVisible(true);
-    }
-  };
-
-  const handleSelectDate = useCallback(
+  const handleAddToCalendar = useCallback(
     (event: CalendarEvent) => {
-      setModalVisible(false);
       void addEventToCalendar(post, event);
     },
     [post],
   );
 
+  const goBack = useCallback(() => router.back(), [router]);
+
+  const swipeBack = Gesture.Pan()
+    .activeOffsetX([30, 9999])
+    .failOffsetY([-15, 15])
+    .onEnd((e) => {
+      if (e.translationX > 80 || e.velocityX > 800) {
+        runOnJS(goBack)();
+      }
+    });
+
   return (
-    <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      alwaysBounceVertical={false}
-    >
-      <HeroImage imageUrl={heroUrl} onBack={() => router.back()} tags={tags as Tag[]} />
+    <View style={styles.screen}>
+      <StatusBar barStyle={statusBarStyle} />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[
+          styles.content,
+          !hasHero && {
+            paddingTop: insets.top + theme.size.xl + theme.spacing.xl + theme.spacing.lg,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        {hasHero && <HeroImage imageUrl={heroUrl} tags={tags} />}
 
-      <View style={styles.contentArea}>
-        <TextCore variant="h1" style={styles.title}>
-          {post.title}
-        </TextCore>
-
-        {description.length > 0 && (
-          <TextCore
-            variant="body"
-            color={theme.colors.primary.text.secondary}
-            style={styles.justify}
-          >
-            {description}
-          </TextCore>
-        )}
-
-        <View style={styles.actionRow}>
-          {calendarEvents.length > 0 && (
-            <Button
-              icon={CalendarPlus}
-              text="Dodaj do kalendarza"
-              color="dark"
-              size="md"
-              onPress={handleAddToCalendar}
-            />
+        <View style={styles.contentArea}>
+          {!hasHero && tags.length > 0 && (
+            <View style={styles.tagsRow}>
+              {tags.map((tag) => (
+                <TagComponent
+                  key={tag.id}
+                  text={`#${tag.title ?? ""}`}
+                  color={tagColor(tag.color)}
+                />
+              ))}
+            </View>
           )}
-          <View style={styles.socials}>
-            <Pressable hitSlop={8}>
-              <Share2 size={theme.size.md} color={theme.colors.primary.main} />
-            </Pressable>
-            <Pressable hitSlop={8}>
-              <Heart size={theme.size.md} color={theme.colors.primary.main} />
-            </Pressable>
-            <TextCore variant="h3" color={theme.colors.primary.main} weight="bold">
-              {post.likesCount}
-            </TextCore>
+
+          <TextCore variant="h1" style={styles.title}>
+            {post.title}
+          </TextCore>
+
+          <View style={styles.body}>
+            {description.length > 0 && (
+              <TextCore variant="body" color={subtextColor} style={styles.justify}>
+                {description}
+              </TextCore>
+            )}
+
+            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
+              <Pressable style={styles.iconButton} hitSlop={8}>
+                <Share2 size={theme.size.md} color={colors.core.main} />
+              </Pressable>
+              <Pressable style={styles.iconButton} hitSlop={8}>
+                <Heart size={theme.size.md} color={colors.core.main} />
+              </Pressable>
+              <TextCore variant="h3" color={colors.core.main} weight="semiBold">
+                {post.likesCount}
+              </TextCore>
+            </View>
+
+            <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
           </View>
         </View>
+      </ScrollView>
 
-        <ContentRenderer blocks={content} />
-      </View>
+      <GestureDetector gesture={swipeBack}>
+        <View style={styles.edgeTrigger} />
+      </GestureDetector>
 
-      <CalendarBottomSheet
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        calendarEvents={calendarEvents}
-        onSelectDate={handleSelectDate}
+      <Button
+        icon={ArrowLeft}
+        color="dark"
+        size="lg"
+        style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
+        onPress={goBack}
       />
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
+  screen: {
+    flex: 1,
+    backgroundColor: theme.colors.surface,
+  },
   scroll: {
     flex: 1,
     backgroundColor: theme.colors.surface,
@@ -119,7 +141,18 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   contentArea: {
     paddingHorizontal: theme.spacing.md,
-    gap: theme.spacing.md,
+    paddingTop: theme.spacing.md,
+    marginTop: -theme.spacing.lg,
+  },
+  body: {
+    backgroundColor: theme.colors.surface,
+    marginTop: theme.spacing.xs,
+  },
+  tagsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.xxs,
+    marginBottom: theme.spacing.md,
   },
   title: {
     textAlign: "center",
@@ -127,16 +160,32 @@ const styles = StyleSheet.create((theme: Theme) => ({
   },
   justify: {
     textAlign: "justify",
+    marginTop: theme.spacing.xs,
   },
-  actionRow: {
+  footer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    gap: theme.spacing.sm,
+    paddingTop: theme.spacing.xxs,
+    paddingBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
-  socials: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.xs,
-    marginLeft: "auto",
+  footerWithDescription: {
+    paddingTop: theme.spacing.md,
+  },
+  iconButton: {
+    padding: theme.spacing.xxs,
+  },
+  backButton: {
+    position: "absolute",
+    left: theme.spacing.md,
+  },
+  edgeTrigger: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 24,
   },
 }));

@@ -6,10 +6,8 @@ import { render, screen, fireEvent } from "@testing-library/react-native";
 jest.mock("@/lib/apiClient", () => ({
   strapiUrl: (path: string) => (path.startsWith("http") ? path : `http://localhost:1337${path}`),
 }));
+jest.mock("@/lib/tagColor", () => ({ tagColor: () => "primary" }));
 jest.mock("@/lib/images", () => ({ PostPlaceholder: null }));
-jest.mock("@/lib/strapiColors", () => ({
-  strapiColorToPalette: () => "primary",
-}));
 jest.mock("@/hooks/usePressAnimation", () => ({
   usePressAnimation: () => ({ animStyle: {}, onPressIn: jest.fn(), onPressOut: jest.fn() }),
 }));

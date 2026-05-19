@@ -2,7 +2,7 @@
   {
     "title": "Dziekanat",
     "isWide": false,
-    "color": "blue",
+    "color": "amber",
     "icon": "building",
     "content": [
       {
@@ -79,7 +79,7 @@
   {
     "title": "Dyżury prodziekana",
     "isWide": false,
-    "color": "yellow",
+    "color": "green",
     "icon": "users",
     "content": [
       {

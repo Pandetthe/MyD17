@@ -32,7 +32,7 @@ describe("InfoCard", () => {
   it("renders mapped location label", () => {
     render(<InfoCard blocks={[locationBlock("s1.38")]} />);
     expect(screen.getByText("Budynek D-17, Sala 1.38")).toBeTruthy();
-    expect(screen.getByText("LOKALIZACJA")).toBeTruthy();
+    expect(screen.getByText("Lokalizacja")).toBeTruthy();
   });
 
   it("renders all four known locations correctly", () => {
@@ -51,7 +51,7 @@ describe("InfoCard", () => {
 
   it("renders start datetime without end", () => {
     render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
-    expect(screen.getByText("KIEDY")).toBeTruthy();
+    expect(screen.getByText("Kiedy")).toBeTruthy();
     expect(screen.getByText(/15/)).toBeTruthy();
   });
 
@@ -59,7 +59,7 @@ describe("InfoCard", () => {
     render(
       <InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z", "2025-06-15T18:00:00.000Z")]} />,
     );
-    const kiedy = screen.getByText("KIEDY");
+    const kiedy = screen.getByText("Kiedy");
     expect(kiedy).toBeTruthy();
     // Both dates appear in the same value text (joined by " – ")
     const valueEl = screen.getByText(/–/);
@@ -94,7 +94,7 @@ describe("InfoCard", () => {
       />,
     );
     expect(screen.getByText("Budynek D-17, Sala 3.20")).toBeTruthy();
-    expect(screen.getByText("KIEDY")).toBeTruthy();
+    expect(screen.getByText("Kiedy")).toBeTruthy();
     expect(screen.getByText("Typ")).toBeTruthy();
     expect(screen.getByText("Lab")).toBeTruthy();
   });
