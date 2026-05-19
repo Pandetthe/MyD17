@@ -49,6 +49,8 @@ base64 -i myd17-release.keystore | pbcopy
 
 Use the base64 output as `ANDROID_KEYSTORE_BASE64`.
 
+Add a repository variable named `EXPO_PUBLIC_STRAPI_URL`. The Android release workflow passes that value into Expo at build time, so release builds and GitHub Release artifacts point at the live Strapi instance.
+
 ## Release artifacts
 
 After a successful tag release, download files from the GitHub Release page:
