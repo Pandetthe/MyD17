@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.10 - 2026-05-19
+
+- chore: update version to 1.0.9 in changelog, app.json, and package.json files
+
 ## v1.0.9 - 2026-05-19
 
 - feat: add EXPO_PUBLIC_STRAPI_URL variable for Android release workflow
