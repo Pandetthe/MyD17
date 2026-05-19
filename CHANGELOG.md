@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.9 - 2026-05-19
+
+- feat: add EXPO_PUBLIC_STRAPI_URL variable for Android release workflow
+- feat: add likes
+
 ## v1.0.8 - 2026-05-19
 
 - feat: add post sharing
