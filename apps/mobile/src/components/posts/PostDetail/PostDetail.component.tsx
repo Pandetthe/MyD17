@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { View, Pressable } from "react-native";
+import { View, Pressable, StatusBar } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TagComponent from "@/components/core/Tag.component";
@@ -36,6 +36,8 @@ export function PostDetail({ post }: Props) {
   const hasHero = !!heroUrl;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
+  const statusBarStyle = hasHero || isDark ? "light-content" : "dark-content";
+
   const handleAddToCalendar = useCallback(
     (event: CalendarEvent) => {
       void addEventToCalendar(post, event);
@@ -56,6 +58,7 @@ export function PostDetail({ post }: Props) {
 
   return (
     <View style={styles.screen}>
+      <StatusBar barStyle={statusBarStyle} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[

@@ -1,10 +1,10 @@
 import React from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, StatusBar, View } from "react-native";
 import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { DrawerNavigationProp, useDrawerStatus } from "@react-navigation/drawer";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { BellIcon, MenuIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
@@ -21,8 +21,12 @@ export default function Header() {
   const menu = usePressAnimation(0.93);
   const bell = usePressAnimation(0.93);
 
+  const drawerStatus = useDrawerStatus();
+  const barStyle = drawerStatus === "open" || isDark ? "light-content" : "dark-content";
+
   return (
     <View style={[styles.container, { paddingTop: insets.top + theme.spacing.md }]}>
+      <StatusBar barStyle={barStyle} />
       <Pressable
         onPress={() => navigation.openDrawer()}
         onPressIn={menu.onPressIn}

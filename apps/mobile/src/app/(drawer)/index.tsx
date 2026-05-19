@@ -9,7 +9,6 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Tag } from "@repo/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function PostsScreen() {
@@ -61,7 +60,6 @@ export default function PostsScreen() {
   if (isLoading) {
     return (
       <View style={styles.safe}>
-        <StatusBar style="dark" />
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.primary.main} />
         </View>
@@ -72,7 +70,6 @@ export default function PostsScreen() {
   if (isError) {
     return (
       <View style={styles.safe}>
-        <StatusBar style="dark" />
         <View style={styles.centered}>
           <TextCore variant="body" color={theme.colors.primary.subtext}>
             Nie udało się załadować postów.
@@ -85,7 +82,6 @@ export default function PostsScreen() {
 
   return (
     <View style={styles.safe}>
-      <StatusBar style="dark" />
       <FlatList
         data={filteredPosts}
         keyExtractor={(item) => item.documentId as string}

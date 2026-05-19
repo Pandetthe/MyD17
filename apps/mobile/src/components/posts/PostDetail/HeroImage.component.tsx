@@ -8,7 +8,6 @@ import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
 import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import { StyleSheet } from "react-native-unistyles";
 
@@ -24,11 +23,16 @@ export function HeroImage({ imageUrl, tags = [] }: Props) {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
       <Image
         source={imageUrl ? { uri: imageUrl } : PostPlaceholder}
         style={styles.image}
         contentFit="cover"
+      />
+
+      <LinearGradient
+        colors={["rgba(0,0,0,0.4)", "rgba(0,0,0,0)"]}
+        style={styles.topGradient}
+        pointerEvents="none"
       />
 
       <LinearGradient
@@ -75,6 +79,13 @@ const styles = StyleSheet.create((theme: Theme) => ({
   image: {
     width: "100%",
     height: 444,
+  },
+  topGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 90,
   },
   gradient: {
     position: "absolute",

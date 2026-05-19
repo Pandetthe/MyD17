@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UnistylesRuntime } from "react-native-unistyles";
@@ -52,7 +51,6 @@ export default function Layout() {
       <SafeAreaProvider>
         <ThemeProvider value={DefaultTheme}>
           <QueryProvider>
-            <StatusBar style="auto" />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(drawer)" />
               <Stack.Screen name="post" options={{ animation: "slide_from_right" }} />
