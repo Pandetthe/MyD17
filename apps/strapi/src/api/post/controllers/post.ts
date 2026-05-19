@@ -242,5 +242,34 @@ export default factories.createCoreController(
         isIosUA(ua),
       );
     },
+
+    async like(ctx: Context) {
+      const { documentId } = ctx.params as { documentId: string };
+      const { action } = (ctx.request.body as { action?: string }) ?? {};
+
+      const post = await strapi.documents("api::post.post").findOne({
+        documentId,
+        fields: ["likesCount"],
+        status: "published",
+      });
+
+      if (!post) {
+        ctx.status = 404;
+        ctx.body = { error: "Not found" };
+        return;
+      }
+
+      const current = (post.likesCount as number) ?? 0;
+      const newCount = action === "unlike" ? Math.max(0, current - 1) : current + 1;
+
+      await strapi.documents("api::post.post").update({
+        documentId,
+        data: { likesCount: newCount },
+      });
+
+      const published = await strapi.documents("api::post.post").publish({ documentId });
+
+      ctx.body = { likesCount: (published as any).likesCount ?? newCount };
+    },
   }),
 );

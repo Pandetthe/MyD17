@@ -3,6 +3,7 @@ import { View, Pressable } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { useLikePost } from "@/features/posts/api/useLikePost";
 import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
@@ -52,6 +53,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   const handleShare = useSharePost(post);
+  const { likePost, liked, likesCount } = useLikePost(post);
 
   return (
     <Card
@@ -139,11 +141,15 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
         <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
           <Share2 size={theme.size.md} color={colors.core.main} />
         </Pressable>
-        <Pressable style={styles.iconButton} hitSlop={8}>
-          <Heart size={theme.size.md} color={colors.core.main} />
+        <Pressable style={styles.iconButton} hitSlop={8} onPress={likePost}>
+          <Heart
+            size={theme.size.md}
+            color={colors.core.main}
+            fill={liked ? colors.core.main : "transparent"}
+          />
         </Pressable>
         <TextCore variant="h3" color={colors.core.main} weight="semiBold">
-          {post.likesCount}
+          {likesCount}
         </TextCore>
       </View>
     </Card>
