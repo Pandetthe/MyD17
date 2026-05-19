@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.11 - 2026-05-19
+
+- chore: update version to 1.0.10 in changelog, app.json, and package.json files
+- chore: update version to 1.0.9 in changelog, app.json, and package.json files
+- fix: tests and post likeing
+
 ## v1.0.10 - 2026-05-19
 
 - chore: update version to 1.0.9 in changelog, app.json, and package.json files
