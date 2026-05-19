@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiClient } from "@/lib/apiClient";
 import { postQueryKeys } from "./queryKeys";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,6 +21,10 @@ export function useLikePost(post: Post) {
   const queryClient = useQueryClient();
   const id = post.documentId ?? "";
   const [delta, setDelta] = useState(0);
+  const baseCountRef = useRef(post.likesCount ?? 0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => { if (timerRef.current !== null) clearTimeout(timerRef.current); }, []);
 
   type LikePostResponse = {
     likesCount: number;
@@ -50,11 +54,19 @@ export function useLikePost(post: Post) {
         : likedIds.filter((x) => x !== id);
       queryClient.setQueryData(LIKED_QUERY_KEY, next);
       void persistLikedIds(next);
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      baseCountRef.current = post.likesCount ?? 0;
       setDelta(nowLiked ? 1 : -1);
       return { prevIds: likedIds };
     },
     onSuccess: (response) => {
-      setDelta(0);
+      timerRef.current = setTimeout(() => {
+        setDelta(0);
+        timerRef.current = null;
+      }, 10_000);
       queryClient.setQueryData(
         postQueryKeys.detail(id),
         (old?: StrapiSingleResponse<Post> | null) => {
@@ -65,6 +77,10 @@ export function useLikePost(post: Post) {
       queryClient.invalidateQueries({ queryKey: postQueryKeys.list() });
     },
     onError: (_, _action, context) => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
       setDelta(0);
       if (context?.prevIds) {
         queryClient.setQueryData(LIKED_QUERY_KEY, context.prevIds);
@@ -76,6 +92,6 @@ export function useLikePost(post: Post) {
   return {
     likePost: () => mutate(liked ? "unlike" : "like"),
     liked,
-    likesCount: (post.likesCount ?? 0) + delta,
+    likesCount: delta !== 0 ? baseCountRef.current + delta : (post.likesCount ?? 0),
   };
 }
