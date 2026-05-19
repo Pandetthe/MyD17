@@ -2,7 +2,7 @@
   "expo": {
     "name": "MyD17",
     "slug": "MyD17",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myd17",
@@ -19,7 +19,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "io.github.stawex.myd17",
-      "versionCode": 1000011
+      "versionCode": 1000012
     },
     "web": {
       "output": "static",

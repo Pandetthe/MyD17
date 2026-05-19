@@ -88,7 +88,7 @@ jobs:
         run: pnpm release:validate
 
       - name: Run checks
-        run: pnpm turbo run lint check-types format-check test build --continue
+        run: pnpm turbo run lint types:check format:check test build --continue
 
       - name: Prepare image metadata
         id: image

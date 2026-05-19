@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.12 - 2026-05-19
+
+- Initial release
+
 ## v1.0.11 - 2026-05-19
 
 - chore: update version to 1.0.10 in changelog, app.json, and package.json files
