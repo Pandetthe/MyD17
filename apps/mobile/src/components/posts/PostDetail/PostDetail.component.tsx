@@ -6,6 +6,7 @@ import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
+import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
@@ -56,6 +57,8 @@ export function PostDetail({ post }: Props) {
       }
     });
 
+  const handleShare = useSharePost(post);
+
   return (
     <View style={styles.screen}>
       <StatusBar barStyle={statusBarStyle} />
@@ -96,7 +99,7 @@ export function PostDetail({ post }: Props) {
             )}
 
             <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
-              <Pressable style={styles.iconButton} hitSlop={8}>
+              <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
                 <Share2 size={theme.size.md} color={colors.core.main} />
               </Pressable>
               <Pressable style={styles.iconButton} hitSlop={8}>

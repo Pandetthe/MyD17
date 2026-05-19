@@ -3,6 +3,7 @@ import { View, Pressable } from "react-native";
 import { Card } from "@/components/core/Card.component";
 import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
+import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostFirstImage } from "@/features/posts/utils/postHelpers";
 import { strapiUrl } from "@/lib/apiClient";
 import { AvatarPlaceholder } from "@/lib/images";
@@ -49,6 +50,8 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
   const authorColor = isDark ? colors.white : colors.core.dark;
   const avatarBg = isDark ? colors.core.dark : colors.core.disabled;
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
+
+  const handleShare = useSharePost(post);
 
   return (
     <Card
@@ -133,7 +136,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
-        <Pressable style={styles.iconButton} hitSlop={8}>
+        <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
           <Share2 size={theme.size.md} color={colors.core.main} />
         </Pressable>
         <Pressable style={styles.iconButton} hitSlop={8}>
