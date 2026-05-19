@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   NativeScrollEvent,
@@ -13,8 +12,7 @@ import {
 import roomData from "@/assets/map/floor1/roomCoordinates.json";
 import D17MapView from "@/components/D17MapView";
 import { colors } from "@/styles/colors";
-import { Asset } from "expo-asset";
-import * as FileSystem from "expo-file-system/legacy";
+import { MAP_GLB_BASE64, MAP_TEXTURES } from "@/lib/mapAssets";
 import { SearchIcon } from "lucide-react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
@@ -30,44 +28,9 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-/* eslint-disable @typescript-eslint/no-require-imports */
-const TEXTURE_MODULES: Record<string, number> = {
-  none: require("@/assets/map/floor1/none.webp"),
-  "1.4": require("@/assets/map/floor1/1_4.webp"),
-  "1.5": require("@/assets/map/floor1/1_5.webp"),
-  "1.6": require("@/assets/map/floor1/1_6.webp"),
-  "1.7": require("@/assets/map/floor1/1_7.webp"),
-  "1.8": require("@/assets/map/floor1/1_8.webp"),
-  "1.9": require("@/assets/map/floor1/1_9.webp"),
-  "1.10": require("@/assets/map/floor1/1_10.webp"),
-  "1.11": require("@/assets/map/floor1/1_11.webp"),
-  "1.12": require("@/assets/map/floor1/1_12.webp"),
-  "1.15": require("@/assets/map/floor1/1_15.webp"),
-  "1.16": require("@/assets/map/floor1/1_16.webp"),
-  "1.17": require("@/assets/map/floor1/1_17.webp"),
-  "1.18": require("@/assets/map/floor1/1_18.webp"),
-  "1.19": require("@/assets/map/floor1/1_19.webp"),
-  "1.20": require("@/assets/map/floor1/1_20.webp"),
-  "1.21": require("@/assets/map/floor1/1_21.webp"),
-  "1.22": require("@/assets/map/floor1/1_22.webp"),
-  "1.23": require("@/assets/map/floor1/1_23.webp"),
-  "1.26": require("@/assets/map/floor1/1_26.webp"),
-  "1.27": require("@/assets/map/floor1/1_27.webp"),
-  "1.28": require("@/assets/map/floor1/1_28.webp"),
-  "1.29": require("@/assets/map/floor1/1_29.webp"),
-  "1.30": require("@/assets/map/floor1/1_30.webp"),
-  "1.31": require("@/assets/map/floor1/1_31.webp"),
-  "1.33": require("@/assets/map/floor1/1_33.webp"),
-  "1.34": require("@/assets/map/floor1/1_34.webp"),
-  "1.35": require("@/assets/map/floor1/1_35.webp"),
-  "1.36": require("@/assets/map/floor1/1_36.webp"),
-  "1.38": require("@/assets/map/floor1/1_38.webp"),
-  "1.39": require("@/assets/map/floor1/1_39.webp"),
-};
-
 function parseFloorRooms(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
-  for (const key of Object.keys(TEXTURE_MODULES)) {
+  for (const key of Object.keys(MAP_TEXTURES)) {
     if (key === "none") continue;
     const dot = key.indexOf(".");
     if (dot === -1) continue;
@@ -83,15 +46,6 @@ const FLOOR_ROOMS = parseFloorRooms();
 const FLOORS = Object.keys(FLOOR_ROOMS).sort();
 
 type RoomCoords = Record<string, { x: number; y: number }>;
-
-async function assetToBase64(module: number): Promise<string> {
-  const asset = Asset.fromModule(module);
-  await asset.downloadAsync();
-  if (!asset.localUri) return "";
-  return FileSystem.readAsStringAsync(asset.localUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-}
 
 const ITEM_H = 52;
 const VISIBLE = 5;
@@ -188,8 +142,7 @@ export default function D17MapScreen() {
   const { theme } = useUnistyles();
   const insets = useSafeAreaInsets();
 
-  const [glbBase64, setGlbBase64] = useState("");
-  const [textureBase64, setTextureBase64] = useState("");
+  const [textureBase64, setTextureBase64] = useState(MAP_TEXTURES.none);
   const [searchTarget, setSearchTarget] = useState<{ x: number; z: number } | undefined>();
 
   const [appliedFloor, setAppliedFloor] = useState<number | null>(null);
@@ -204,7 +157,6 @@ export default function D17MapScreen() {
   const [pendingRoom, setPendingRoom] = useState(0);
   const pendingFloorRef = useRef(0);
 
-  const loading = !glbBase64 || !textureBase64;
   const translateY = useSharedValue(800);
 
   const finishClose = useCallback(() => {
@@ -251,24 +203,12 @@ export default function D17MapScreen() {
     opacity: interpolate(translateY.value, [0, 800], [1, 0], Extrapolation.CLAMP),
   }));
 
-  useEffect(() => {
-    (async () => {
-      const [glb, tex] = await Promise.all([
-        assetToBase64(require("@/assets/map/floor1/model.glb")),
-        assetToBase64(TEXTURE_MODULES.none),
-      ]);
-      setGlbBase64(glb);
-      setTextureBase64(tex);
-    })();
-  }, []);
-
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = useCallback(() => {
     const floor = FLOORS[pendingFloor];
     const room = (FLOOR_ROOMS[floor] ?? [])[pendingRoom];
     if (floor && room) {
       const key = `${floor}.${room}`;
-      const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
-      setTextureBase64(tex);
+      setTextureBase64(MAP_TEXTURES[key] ?? MAP_TEXTURES.none);
       const coords = (roomData as RoomCoords)[key];
       if (coords) setSearchTarget({ x: coords.x, z: coords.y });
       setSearchKey(key);
@@ -278,13 +218,12 @@ export default function D17MapScreen() {
     closeDrawer();
   }, [pendingFloor, pendingRoom, closeDrawer]);
 
-  const handleReset = useCallback(async () => {
+  const handleReset = useCallback(() => {
     setAppliedFloor(null);
     setAppliedRoom(null);
     setSearchTarget(undefined);
     setSearchKey(undefined);
-    const tex = await assetToBase64(TEXTURE_MODULES.none);
-    setTextureBase64(tex);
+    setTextureBase64(MAP_TEXTURES.none);
     closeDrawer();
   }, [closeDrawer]);
 
@@ -315,8 +254,7 @@ export default function D17MapScreen() {
     const coords = (roomData as RoomCoords)[key];
     if (coords) setSearchTarget({ x: coords.x, z: coords.y });
 
-    const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
-    setTextureBase64(tex);
+    setTextureBase64(MAP_TEXTURES[key] ?? MAP_TEXTURES.none);
   }, []);
 
   const currentPendingRooms = FLOOR_ROOMS[FLOORS[pendingFloor]] ?? [];
@@ -325,26 +263,20 @@ export default function D17MapScreen() {
     <View style={styles.root}>
       <View style={StyleSheet.absoluteFill}>
         <D17MapView
-          glbBase64={glbBase64}
+          glbBase64={MAP_GLB_BASE64}
           textureBase64={textureBase64}
           searchTargetX={searchTarget?.x}
           searchTargetZ={searchTarget?.z}
           onRoomPress={handleMapRoomClick}
           roomCoords={
             Object.fromEntries(
-              Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES),
+              Object.entries(roomData as RoomCoords).filter(([k]) => k in MAP_TEXTURES),
             ) as RoomCoords
           }
           searchKey={searchKey}
         />
       </View>
 
-      {loading && (
-        <View style={[styles.loadingOverlay, { backgroundColor: theme.colors.surface + "CC" }]}>
-          <ActivityIndicator color={colors.core.light} size="large" />
-          <Text style={[styles.loadingText, { color: colors.core.light }]}>Ładowanie planu…</Text>
-        </View>
-      )}
 
       {!drawerVisible && (
         <TouchableOpacity

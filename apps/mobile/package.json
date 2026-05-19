@@ -14,7 +14,9 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check './**/*.{js,jsx,ts,tsx}'",
     "types:check": "tsc --noEmit",
-    "test": "jest -i --passWithNoTests"
+    "test": "jest -i --passWithNoTests",
+    "bundle:three": "node scripts/bundle-three.mjs",
+    "bundle:map": "node scripts/bundle-map-assets.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.4.2",

@@ -47,3 +47,4 @@ e2e-results.xml
 
 .claude
 .CLAUDE.md
+src/lib/threeBundle.ts
