@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.13 - 2026-05-19
+
+- Initial release
+
+## v1.0.12 - 2026-05-19
+
+- Initial release
+
 ## v1.0.12 - 2026-05-19
 
 - Initial release

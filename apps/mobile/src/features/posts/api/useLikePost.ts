@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "@/lib/apiClient";
 import { postQueryKeys } from "./queryKeys";
-import type { Post } from "@repo/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Post, StrapiSingleResponse } from "@repo/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const STORAGE_KEY = "@liked_posts";
 const LIKED_QUERY_KEY = ["likedPosts"] as const;
@@ -22,6 +22,14 @@ export function useLikePost(post: Post) {
   const id = post.documentId ?? "";
   const [delta, setDelta] = useState(0);
 
+  type LikePostResponse = {
+    likesCount: number;
+  };
+
+  type LikePostContext = {
+    prevIds: string[];
+  };
+
   const { data: likedIds = [] } = useQuery({
     queryKey: LIKED_QUERY_KEY,
     queryFn: loadLikedIds,
@@ -30,9 +38,11 @@ export function useLikePost(post: Post) {
 
   const liked = likedIds.includes(id);
 
-  const { mutate } = useMutation({
-    mutationFn: (action: "like" | "unlike") =>
-      apiClient.post<{ likesCount: number }>(`/api/posts/${id}/like`, { action }),
+  const { mutate } = useMutation<LikePostResponse, Error, "like" | "unlike", LikePostContext>({
+    mutationFn: async (action) => {
+      const response = await apiClient.post<LikePostResponse>(`/api/posts/${id}/like`, { action });
+      return response.data;
+    },
     onMutate: (action) => {
       const nowLiked = action === "like";
       const next = nowLiked
@@ -43,12 +53,15 @@ export function useLikePost(post: Post) {
       setDelta(nowLiked ? 1 : -1);
       return { prevIds: likedIds };
     },
-    onSuccess: (res) => {
+    onSuccess: (response) => {
       setDelta(0);
-      queryClient.setQueryData(postQueryKeys.detail(id), (old: any) => {
-        if (!old?.data) return old;
-        return { ...old, data: { ...old.data, likesCount: res.data.likesCount } };
-      });
+      queryClient.setQueryData(
+        postQueryKeys.detail(id),
+        (old?: StrapiSingleResponse<Post> | null) => {
+          if (!old?.data) return old;
+          return { ...old, data: { ...old.data, likesCount: response.likesCount } };
+        },
+      );
       queryClient.invalidateQueries({ queryKey: postQueryKeys.list() });
     },
     onError: (_, _action, context) => {
