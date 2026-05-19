@@ -11,6 +11,10 @@ function isMobileUA(ua: string): boolean {
   return /Android|iPhone|iPad|iPod/i.test(ua);
 }
 
+function isIosUA(ua: string): boolean {
+  return /iPhone|iPad|iPod/i.test(ua);
+}
+
 function escape(str: string): string {
   return str.replace(
     /[<>"&]/g,
@@ -47,9 +51,16 @@ function mobileRedirectHtml(
   description: string,
   imageUrl: string | null,
   pageUrl: string,
+  isIos: boolean,
 ): string {
-  const deepLink = `myd17://post/${documentId}`;
+  const iosDeepLink = `myd17://post/${documentId}`;
+  const androidDeepLink = `intent://post/${documentId}#Intent;scheme=myd17;package=io.github.stawex.myd17;S.browser_fallback_url=${encodeURIComponent(ANDROID_STORE_URL)};end`;
+  const deepLink = isIos ? iosDeepLink : androidDeepLink;
+  const storeUrl = isIos ? IOS_STORE_URL : ANDROID_STORE_URL;
+  const storeIcon = isIos ? APPLE_SVG : GPLAY_SVG;
+  const storeName = isIos ? "App Store" : "Google Play";
   const safeTitle = escape(title);
+
   return `<!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -65,10 +76,9 @@ function mobileRedirectHtml(
     p  { color: #555; font-size: 0.9rem; }
     .spinner { width: 40px; height: 40px; border: 4px solid #cce3fb;
                border-top-color: #208AEF; border-radius: 50%;
-               animation: spin 0.8s linear infinite; margin: 24px auto; }
+               animation: spin 0.8s linear infinite; margin: 16px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .actions { opacity: 0; transition: opacity .4s ease; margin-top: 8px; }
-    .actions.visible { opacity: 1; }
+    .fallback { display: flex; flex-direction: column; align-items: center; }
     .btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 28px;
            background: #208AEF; color: #fff; border-radius: 10px;
            font-size: 1rem; font-weight: 600; text-decoration: none; }
@@ -82,29 +92,47 @@ function mobileRedirectHtml(
 <body>
   <div class="spinner"></div>
   <h1>${safeTitle}</h1>
-  <div class="actions" id="actions">
-    <p>Jeśli aplikacja nie otworzyła się automatycznie, kliknij poniżej.</p>
-    <a href="${deepLink}" class="btn">Otwórz w aplikacji</a>
-    <p style="margin-top:24px;color:#555;font-size:.9rem">Nie masz jeszcze aplikacji?</p>
-    <a id="store-btn" href="#" class="store-btn">
-      <span id="store-icon"></span>
+  <p>Otwieranie w aplikacji MyD17...</p>
+  <div class="fallback" id="fallback">
+    <p>Jeśli aplikacja nie otworzyła się automatycznie:</p>
+    <a href="${escape(deepLink)}" class="btn">Otwórz w aplikacji</a>
+    <p style="margin-top:24px">Nie masz jeszcze aplikacji?</p>
+    <a href="${escape(storeUrl)}" class="store-btn">
+      ${storeIcon}
       <span class="store-label">
-        <span class="store-sub" id="store-sub"></span>
-        <span id="store-name"></span>
+        <span class="store-sub">Pobierz z</span>
+        ${storeName}
       </span>
     </a>
   </div>
   <script>
-    var ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    var storeBtn = document.getElementById('store-btn');
-    storeBtn.href = ios ? '${IOS_STORE_URL}' : '${ANDROID_STORE_URL}';
-    document.getElementById('store-icon').innerHTML = ios ? '${APPLE_SVG}' : '${GPLAY_SVG}';
-    document.getElementById('store-sub').textContent = ios ? 'Pobierz z' : 'Pobierz z';
-    document.getElementById('store-name').textContent = ios ? 'App Store' : 'Google Play';
-    window.location.href = '${deepLink}';
-    setTimeout(function() {
-      document.getElementById('actions').classList.add('visible');
-    }, 2000);
+    var deepLink = '${deepLink.replace(/'/g, "\\'")}';
+    var storeUrl = '${storeUrl}';
+    var isIos = ${isIos};
+
+    function hideSpinner() {
+      document.querySelector('.spinner').style.display = 'none';
+    }
+
+    function tryOpenApp() {
+      if (isIos) {
+        var start = Date.now();
+        window.location.href = deepLink;
+        setTimeout(function() {
+          hideSpinner();
+          if (Date.now() - start < 2000) {
+            window.location.href = storeUrl;
+          }
+        }, 1500);
+      } else {
+        window.location.href = deepLink;
+        setTimeout(hideSpinner, 2000);
+      }
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(tryOpenApp, 100);
+    });
   </script>
 </body>
 </html>`;
@@ -211,6 +239,7 @@ export default factories.createCoreController(
         description,
         imageUrl,
         pageUrl,
+        isIosUA(ua),
       );
     },
   }),
