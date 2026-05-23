@@ -259,7 +259,8 @@ export default factories.createCoreController(
       }
 
       const current = (post.likesCount as number) ?? 0;
-      const newCount = action === "unlike" ? Math.max(0, current - 1) : current + 1;
+      const newCount =
+        action === "unlike" ? Math.max(0, current - 1) : current + 1;
 
       await strapi.db.query("api::post.post").updateMany({
         where: { documentId, publishedAt: { $notNull: true } },
