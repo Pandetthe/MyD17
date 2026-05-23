@@ -1,5 +1,4 @@
 import { factories } from "@strapi/strapi";
-import type { Context } from "koa";
 
 const IOS_STORE_URL =
   process.env.IOS_APP_STORE_URL ?? "https://apps.apple.com/app/myd17";
@@ -188,7 +187,7 @@ function desktopDownloadHtml(
 export default factories.createCoreController(
   "api::post.post",
   ({ strapi }) => ({
-    async share(ctx: Context) {
+    async share(ctx) {
       const { documentId } = ctx.params as { documentId: string };
 
       const post = await strapi.documents("api::post.post").findOne({
@@ -243,7 +242,7 @@ export default factories.createCoreController(
       );
     },
 
-    async like(ctx: Context) {
+    async like(ctx) {
       const { documentId } = ctx.params as { documentId: string };
       const { action } = (ctx.request.body as { action?: string }) ?? {};
 

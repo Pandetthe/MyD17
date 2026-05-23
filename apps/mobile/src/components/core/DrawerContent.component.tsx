@@ -14,12 +14,13 @@ type NavItemProps = {
   label: string;
   active: boolean;
   onPress: () => void;
+  testID?: string;
 };
 
-function NavItem({ icon: Icon, label, active, onPress }: NavItemProps) {
+function NavItem({ icon: Icon, label, active, onPress, testID }: NavItemProps) {
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
   return (
-    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+    <Pressable testID={testID} onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Animated.View style={[styles.navItem, active && styles.navItemActive, animStyle]}>
         <Icon size={24} color={colors.white} strokeWidth={1.8} />
         <Text style={styles.navItemText}>{label}</Text>
@@ -41,8 +42,14 @@ export default function DrawerContent() {
     { icon: InfoIcon, label: "INFORMACJE", href: "/information" },
   ];
 
+  const navTestIDs: Record<string, string> = {
+    "/": "drawer-nav-home",
+    "/d17map": "drawer-nav-map",
+    "/information": "drawer-nav-information",
+  };
+
   return (
-    <View style={styles.container}>
+    <View testID="drawer-content" style={styles.container}>
       <View style={styles.decorativeCircle} />
 
       <View style={[styles.content, { paddingTop: insets.top ? insets.top + 32 : 64 }]}>
@@ -58,6 +65,7 @@ export default function DrawerContent() {
               label={item.label}
               active={pathname === item.href}
               onPress={() => navigate(item.href)}
+              testID={navTestIDs[item.href as string]}
             />
           ))}
         </View>
@@ -71,6 +79,7 @@ export default function DrawerContent() {
           label="USTAWIENIA"
           active={pathname === "/settings"}
           onPress={() => navigate("/settings")}
+          testID="drawer-nav-settings"
         />
       </View>
     </View>

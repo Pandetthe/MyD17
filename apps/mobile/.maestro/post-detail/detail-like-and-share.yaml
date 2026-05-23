@@ -1,0 +1,31 @@
+appId: io.github.stawex.myd17
+# Open a post detail and verify the like and share buttons are tappable.
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "posts-feed-list"
+    timeout: 30000
+- tapOn:
+    point: "50%, 40%"
+- extendedWaitUntil:
+    visible:
+      id: "post-detail-scroll"
+    timeout: 15000
+# Tap share — OS share sheet appears as a bottom sheet overlay
+- tapOn:
+    id: "post-detail-share-btn"
+# Dismiss share sheet: swipe down from center of screen (language-independent)
+- swipe:
+    start: "50%, 50%"
+    end: "50%, 100%"
+    duration: 400
+- extendedWaitUntil:
+    visible:
+      id: "post-detail-scroll"
+    timeout: 8000
+# Tap like — heart fill toggles (no crash)
+- tapOn:
+    id: "post-detail-like-btn"
+- assertVisible:
+    id: "post-detail-scroll"

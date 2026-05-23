@@ -84,14 +84,14 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
   return (
     <Modal transparent visible={modalVisible} animationType="none" onRequestClose={handleClose}>
       <GestureHandlerRootView style={styles.root}>
-        <Animated.View style={[styles.backdrop, backdropStyle]}>
+        <Animated.View testID="info-drawer-backdrop" style={[styles.backdrop, backdropStyle]}>
           <Pressable style={styles.backdropPressable} onPress={handleClose} />
         </Animated.View>
 
-        <Animated.View style={[styles.sheet, sheetStyle]}>
+        <Animated.View testID="info-bottom-drawer" style={[styles.sheet, sheetStyle]}>
           <GestureDetector gesture={panGesture}>
             <View style={styles.handleArea}>
-              <View style={styles.handle} />
+              <View testID="info-drawer-handle" style={styles.handle} />
             </View>
           </GestureDetector>
 

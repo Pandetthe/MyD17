@@ -1,0 +1,29 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-information"
+- extendedWaitUntil:
+    visible:
+      id: "information-screen"
+    timeout: 15000
+- extendedWaitUntil:
+    notVisible:
+      id: "information-loading"
+    timeout: 20000
+- assertVisible:
+    id: "information-scroll"
+# Verify seeded static information cards are rendered
+- assertVisible: "Dziekanat"
+- assertVisible: "Dyżury prodziekana"
+- assertVisible: "Informacje dla pierwszaków"

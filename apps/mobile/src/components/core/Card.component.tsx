@@ -16,6 +16,7 @@ type CardProps = {
   /** Optional two-stop gradient rendered as card background (top-left → bottom-right). */
   gradient?: readonly [string, string];
   onPress?: () => void;
+  testID?: string;
   /** Applies to the outermost element (Pressable when interactive, View otherwise). */
   style?: StyleProp<ViewStyle>;
   /** Applies to the inner card shell — use for height, padding, flexDirection, etc. */
@@ -47,7 +48,7 @@ function hashToPos(key: string): AbsPos & { size: number } {
 }
 
 export function Card(props: CardProps) {
-  const { color = "primary", gradient, onPress, style, contentStyle, children } = props;
+  const { color = "primary", gradient, onPress, testID, style, contentStyle, children } = props;
   const { theme } = useUnistyles();
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
 
@@ -122,7 +123,13 @@ export function Card(props: CardProps) {
 
   if (onPress) {
     return (
-      <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} style={style}>
+      <Pressable
+        testID={testID}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={style}
+      >
         <Animated.View style={[styles.fill, animStyle]}>{shell}</Animated.View>
       </Pressable>
     );

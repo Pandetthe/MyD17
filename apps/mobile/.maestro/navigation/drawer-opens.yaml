@@ -1,0 +1,21 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- assertVisible:
+    id: "drawer-nav-home"
+- assertVisible:
+    id: "drawer-nav-map"
+- assertVisible:
+    id: "drawer-nav-information"
+- assertVisible:
+    id: "drawer-nav-settings"

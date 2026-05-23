@@ -1,0 +1,18 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "posts-feed-list"
+    timeout: 30000
+# Pull-to-refresh: swipe down from the top third of the feed
+- swipe:
+    start: "50%, 30%"
+    end: "50%, 80%"
+    duration: 500
+- extendedWaitUntil:
+    notVisible:
+      id: "posts-loading"
+    timeout: 15000
+- assertVisible:
+    id: "posts-feed-list"

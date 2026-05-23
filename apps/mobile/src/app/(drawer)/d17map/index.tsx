@@ -322,7 +322,7 @@ export default function D17MapScreen() {
   const currentPendingRooms = FLOOR_ROOMS[FLOORS[pendingFloor]] ?? [];
 
   return (
-    <View style={styles.root}>
+    <View testID="d17map-screen" style={styles.root}>
       <View style={StyleSheet.absoluteFill}>
         <D17MapView
           glbBase64={glbBase64}

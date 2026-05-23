@@ -14,7 +14,11 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check './**/*.{js,jsx,ts,tsx}'",
     "types:check": "tsc --noEmit",
-    "test": "jest -i --passWithNoTests"
+    "test": "jest -i --passWithNoTests",
+    "test:e2e:ios": "bash scripts/e2e-ios.sh",
+    "test:e2e:ios:run": "bash scripts/e2e-ios-run.sh",
+    "test:e2e:android": "bash scripts/e2e-android.sh",
+    "test:e2e:android:run": "bash scripts/e2e-android-run.sh"
   },
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.4.2",

@@ -25,9 +25,13 @@ export default function Header() {
   const barStyle = drawerStatus === "open" || isDark ? "light-content" : "dark-content";
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + theme.spacing.md }]}>
+    <View
+      testID="app-header"
+      style={[styles.container, { paddingTop: insets.top + theme.spacing.md }]}
+    >
       <StatusBar barStyle={barStyle} />
       <Pressable
+        testID="header-menu-button"
         onPress={() => navigation.openDrawer()}
         onPressIn={menu.onPressIn}
         onPressOut={menu.onPressOut}
@@ -40,7 +44,12 @@ export default function Header() {
 
       <Logo height={45} variant={logoVariant} />
 
-      <Pressable onPressIn={bell.onPressIn} onPressOut={bell.onPressOut} style={styles.iconButton}>
+      <Pressable
+        testID="header-bell-button"
+        onPressIn={bell.onPressIn}
+        onPressOut={bell.onPressOut}
+        style={styles.iconButton}
+      >
         <Animated.View style={bell.animStyle}>
           <BellIcon color={iconColor} size={24} />
         </Animated.View>
