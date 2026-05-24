@@ -454,7 +454,7 @@ async function sendPushNotificationsForPost(strapi: Core.Strapi, documentId: str
 
   const title = (post as { title?: string } | null)?.title;
 
-  const result = await admin.messaging().sendEachForMulticast({
+  await admin.messaging().sendEachForMulticast({
     tokens: subscribers.map(s => s.pushToken),
     notification: { title: "New post on main page", body: title ?? "Check out the post" },
     data: { postId: documentId },
