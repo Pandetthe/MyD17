@@ -63,6 +63,13 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^/create-service$": "<rootDir>/create-service"
-    }
+    },
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", { "tsconfig": "./tsconfig.jest.json" }]
+    },
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).[jt]s"
+    ]
   }
 }
