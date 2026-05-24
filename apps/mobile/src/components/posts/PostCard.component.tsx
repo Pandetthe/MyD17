@@ -62,6 +62,7 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
       circle="hash"
       hashKey={post.documentId ?? post.title ?? ""}
       onPress={onPress}
+      testID={`post-card-${post.documentId}`}
       style={styles.wrapper}
       contentStyle={styles.cardShell}
     >
@@ -138,10 +139,20 @@ export function PostCard({ post, onPress, onTagPress }: Props) {
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
-        <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
+        <Pressable
+          testID={`post-card-share-${post.documentId}`}
+          style={styles.iconButton}
+          hitSlop={8}
+          onPress={handleShare}
+        >
           <Share2 size={theme.size.md} color={colors.core.main} />
         </Pressable>
-        <Pressable style={styles.iconButton} hitSlop={8} onPress={likePost}>
+        <Pressable
+          testID={`post-card-like-${post.documentId}`}
+          style={styles.iconButton}
+          hitSlop={8}
+          onPress={likePost}
+        >
           <Heart
             size={theme.size.md}
             color={colors.core.main}

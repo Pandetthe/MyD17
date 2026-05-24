@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "@/lib/apiClient";
 import { postQueryKeys } from "./queryKeys";
-import type { Post } from "@repo/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Post, StrapiSingleResponse } from "@repo/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const STORAGE_KEY = "@liked_posts";
 const LIKED_QUERY_KEY = ["likedPosts"] as const;
@@ -45,10 +45,13 @@ export function useLikePost(post: Post) {
     },
     onSuccess: (res) => {
       setDelta(0);
-      queryClient.setQueryData(postQueryKeys.detail(id), (old: any) => {
-        if (!old?.data) return old;
-        return { ...old, data: { ...old.data, likesCount: res.data.likesCount } };
-      });
+      queryClient.setQueryData<StrapiSingleResponse<Post> | undefined>(
+        postQueryKeys.detail(id),
+        (old) => {
+          if (!old?.data) return old;
+          return { ...old, data: { ...old.data, likesCount: res.data.likesCount } };
+        },
+      );
       queryClient.invalidateQueries({ queryKey: postQueryKeys.list() });
     },
     onError: (_, _action, context) => {

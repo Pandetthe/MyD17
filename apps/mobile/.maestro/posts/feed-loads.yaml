@@ -1,0 +1,15 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "posts-screen"
+    timeout: 30000
+- extendedWaitUntil:
+    notVisible:
+      id: "posts-loading"
+    timeout: 20000
+- assertVisible:
+    id: "posts-feed-list"
+- assertVisible:
+    id: "tag-filter-bar"

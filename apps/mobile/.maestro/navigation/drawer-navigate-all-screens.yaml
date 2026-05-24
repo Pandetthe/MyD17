@@ -1,0 +1,63 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+
+# Navigate to D17 Map
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-map"
+- extendedWaitUntil:
+    visible:
+      id: "d17map-screen"
+    timeout: 10000
+
+# Navigate to Information
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-information"
+- extendedWaitUntil:
+    visible:
+      id: "information-screen"
+    timeout: 10000
+
+# Navigate to Settings
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-screen"
+    timeout: 10000
+
+# Navigate back to Home
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-home"
+- extendedWaitUntil:
+    visible:
+      id: "posts-screen"
+    timeout: 10000

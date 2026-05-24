@@ -1,0 +1,28 @@
+appId: io.github.stawex.myd17
+# Navigate to the notifications/subscriptions screen from settings.
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-screen"
+    timeout: 10000
+- tapOn:
+    id: "setting-notifications"
+- extendedWaitUntil:
+    visible:
+      id: "notifications-screen"
+    timeout: 15000
+- assertVisible:
+    id: "notifications-select-all"

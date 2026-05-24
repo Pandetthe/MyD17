@@ -12,9 +12,16 @@ type SettingProps = {
   icon: LucideIcon;
   onPress: () => void;
   value?: boolean;
+  testID?: string;
 };
 
-export default function Setting({ text, icon: IconComponent, onPress, value }: SettingProps) {
+export default function Setting({
+  text,
+  icon: IconComponent,
+  onPress,
+  value,
+  testID,
+}: SettingProps) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
   const iconBg = isDark ? colors.core.main : colors.core.disabled;
@@ -26,6 +33,7 @@ export default function Setting({ text, icon: IconComponent, onPress, value }: S
       color="primary"
       gradient={theme.colors.gradients.posts}
       onPress={onPress}
+      testID={testID}
       style={styles.outer}
       contentStyle={styles.shell}
     >

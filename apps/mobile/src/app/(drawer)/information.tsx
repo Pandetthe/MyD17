@@ -67,7 +67,7 @@ export default function Information() {
 
   if (isError) {
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View testID="information-error" style={[styles.container, styles.centered]}>
         <TextCore variant="body" color={theme.colors.primary.subtext}>
           Nie udało się załadować informacji.
         </TextCore>
@@ -80,12 +80,18 @@ export default function Information() {
 
   const renderContent = () => {
     if (isLoading) {
-      return <ActivityIndicator style={styles.loader} color={theme.colors.primary.main} />;
+      return (
+        <ActivityIndicator
+          testID="information-loading"
+          style={styles.loader}
+          color={theme.colors.primary.main}
+        />
+      );
     }
 
     if (isEmpty) {
       return (
-        <View style={[styles.container, styles.centered]}>
+        <View testID="information-empty" style={[styles.container, styles.centered]}>
           <TextCore variant="body" color={theme.colors.primary.subtext}>
             Brak dostępnych informacji.
           </TextCore>
@@ -96,6 +102,7 @@ export default function Information() {
 
     return (
       <ScrollView
+        testID="information-scroll"
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
@@ -129,7 +136,7 @@ export default function Information() {
   };
 
   return (
-    <View style={styles.container}>
+    <View testID="information-screen" style={styles.container}>
       {renderContent()}
 
       <InfoBottomDrawer
