@@ -4,7 +4,8 @@ const ANDROID_UA =
   "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/112 Mobile Safari/537.36";
 const IPHONE_UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15";
-const IPAD_UA = "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15";
+const IPAD_UA =
+  "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15";
 const DESKTOP_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/112 Safari/537.36";
 
@@ -114,7 +115,7 @@ describe("ogMeta", () => {
   });
 
   it("escapes special characters in title and description", () => {
-    const result = ogMeta('<b>Title</b>', 'Desc & "more"', null, pageUrl);
+    const result = ogMeta("<b>Title</b>", 'Desc & "more"', null, pageUrl);
     expect(result).toContain("&lt;b&gt;Title&lt;/b&gt;");
     expect(result).toContain("Desc &amp; &quot;more&quot;");
   });

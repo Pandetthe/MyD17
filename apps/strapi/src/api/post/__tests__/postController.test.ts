@@ -1,4 +1,6 @@
-let controllerFactory: ((deps: { strapi: any }) => { like: (ctx: any) => Promise<void> }) | undefined;
+let controllerFactory:
+  | ((deps: { strapi: any }) => { like: (ctx: any) => Promise<void> })
+  | undefined;
 
 jest.mock("@strapi/strapi", () => ({
   factories: {
