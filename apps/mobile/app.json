@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "io.github.stawex.myd17"
+      "bundleIdentifier": "io.github.stawex.myd17",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,13 +23,20 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "io.github.stawex.myd17",
-      "versionCode": 1000007
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 1000007,
+      "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ]
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
       "expo-router",
       [
         "expo-calendar",

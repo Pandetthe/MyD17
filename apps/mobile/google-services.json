@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "393709027973",
+    "project_id": "myd17-2b505",
+    "storage_bucket": "myd17-2b505.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:393709027973:android:2c5f8cd412ab5fb3855fec",
+        "android_client_info": {
+          "package_name": "io.github.stawex.myd17"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6QtMPODyUg-J-Qts8Iz-mIDEmRWCcVRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

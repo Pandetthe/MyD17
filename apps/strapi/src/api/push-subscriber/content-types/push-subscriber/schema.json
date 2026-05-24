@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "push_subscribers",
+  "info": {
+    "singularName": "push-subscriber",
+    "pluralName": "push-subscribers",
+    "displayName": "Push Subscriber"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "pushToken": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "push_subscribers"
+    }
+  }
+}
