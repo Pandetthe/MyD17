@@ -3,7 +3,7 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "./apiClient";
 import { FCM_TOKEN_KEY } from "./storageKeys";
-import { getMessaging, getToken, deleteToken } from "@react-native-firebase/messaging";
+import { getMessaging, getToken } from "@react-native-firebase/messaging";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
