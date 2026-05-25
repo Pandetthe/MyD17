@@ -2,7 +2,7 @@ module.exports = {
   preset: "jest-expo",
   testEnvironment: "node",
   transformIgnorePatterns: [
-    "node_modules/(?!(jest-)?react-native|@react-native-async-storage|react-native-reanimated|react-native-unistyles|react-native-gesture-handler|react-native-screens|expo-symbols|lucide-react-native|@react-navigation|expo-router|expo-linking|expo-font|expo-splash-screen|expo-status-bar|expo-constants|expo-web-browser|expo-system-ui|expo-device|expo-image|react-native-drawer-layout)/",
+    "node_modules/(?!(jest-)?react-native|@react-native-async-storage|@react-native-masked-view|react-native-reanimated|react-native-unistyles|react-native-gesture-handler|react-native-screens|expo-symbols|lucide-react-native|@react-navigation|expo-router|expo-linking|expo-font|expo-splash-screen|expo-status-bar|expo-constants|expo-web-browser|expo-system-ui|expo-device|expo-image|react-native-drawer-layout)/",
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
