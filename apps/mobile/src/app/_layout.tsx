@@ -36,7 +36,9 @@ export default function Layout() {
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        const postId = response.notification.request.content.data?.postId as string | undefined;
+        const data = response.notification.request.content.data;
+        if (data?._source !== "foreground") return;
+        const postId = data?.postId as string | undefined;
         if (postId) router.push({ pathname: "/post/[id]", params: { id: postId } });
       },
     );
@@ -50,7 +52,7 @@ export default function Layout() {
   useEffect(() => {
     return onMessage(getMessaging(), async (msg) => {
       await Notifications.scheduleNotificationAsync({
-        content: { title: msg.notification?.title, body: msg.notification?.body, data: msg.data },
+        content: { title: msg.notification?.title, body: msg.notification?.body, data: { ...msg.data, _source: "foreground" } },
         trigger: null,
       });
     });
