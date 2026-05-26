@@ -3,7 +3,7 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "./apiClient";
 import { FCM_TOKEN_KEY } from "./storageKeys";
-import { getMessaging, getToken } from "@react-native-firebase/messaging";
+import { getMessaging, getToken, deleteToken } from "@react-native-firebase/messaging";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,6 +24,11 @@ export async function registerForPushNotifications() {
   }
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== "granted") return null;
+  try {
+    await deleteToken(getMessaging());
+  } catch (err) {
+    console.warn("Failed to delete stale FCM token:", err);
+  }
 
   const token = await getToken(getMessaging());
   console.log("FCM token:", token);
