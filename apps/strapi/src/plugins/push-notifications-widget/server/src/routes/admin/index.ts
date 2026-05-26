@@ -5,7 +5,7 @@ export default () => ({
       method: "GET",
       path: "/tags",
       handler: "controller.getTags",
-      config: { policies: [] },
+      config: { policies: [], auth: false },
     },
     {
       method: "POST",
