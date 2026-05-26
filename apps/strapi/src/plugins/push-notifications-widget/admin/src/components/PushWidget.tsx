@@ -45,7 +45,7 @@ export default function PushWidget() {
     setSuccess(null);
     setSending(true);
     try {
-      const res: any = await post(`/${PLUGIN_ID}/send`, {
+      await post(`/${PLUGIN_ID}/send`, {
         tagIds: Array.from(selected),
         title,
         body,
