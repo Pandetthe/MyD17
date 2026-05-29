@@ -1,5 +1,6 @@
 import React from "react";
-import { View } from "react-native";
+import { Linking, View } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
@@ -14,7 +15,7 @@ import type {
   LocationValue,
   PostContentBlock,
 } from "@repo/types";
-import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
+import { ArrowUpRight, CalendarPlus, Clock, Copy, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -40,6 +41,25 @@ function formatDateTimeRange(startStr: string, endStr?: string | null): string {
   const sameDay = start.toDateString() === end.toDateString();
   if (sameDay) return `${formatDate(start)}, ${formatTime(start)} – ${formatTime(end)}`;
   return `${formatDate(start)}, ${formatTime(start)} – ${formatDate(end)}, ${formatTime(end)}`;
+}
+
+function buildChipHandler(
+  variant: string | undefined,
+  content: string | undefined,
+): (() => void) | undefined {
+  if (!content) return undefined;
+  switch (variant) {
+    case "phone":
+      return () => Linking.openURL(`tel:${content}`);
+    case "email":
+      return () => Linking.openURL(`mailto:${content}`);
+    case "link":
+      return () => Linking.openURL(content);
+    case "copy":
+      return () => Clipboard.setStringAsync(content);
+    default:
+      return undefined;
+  }
 }
 
 function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
@@ -126,14 +146,31 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
 
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
+        const onPress = buildChipHandler(chip.variant, chip.content);
+        const ActionIcon =
+          chip.variant === "copy" ? Copy : chip.variant !== "normal" && onPress ? ArrowUpRight : undefined;
+
         return (
-          <InfoRow
-            key={chip.id}
-            icon={(c) => <ChipIcon size={18} color={c} />}
-            label={chip.title ?? ""}
-            value={chip.content ?? ""}
-            dark={dark}
-          />
+          <View key={chip.id} style={ActionIcon ? styles.dateRow : undefined}>
+            <View style={ActionIcon ? styles.dateInfo : undefined}>
+              <InfoRow
+                icon={(c) => <ChipIcon size={18} color={c} />}
+                label={chip.title ?? ""}
+                value={chip.content ?? ""}
+                dark={dark}
+              />
+            </View>
+            {ActionIcon && onPress && (
+              <Button
+                icon={ActionIcon}
+                color="dark"
+                size="lg"
+                style={styles.calendarButton}
+                onPress={onPress}
+                testID="chip-action-button"
+              />
+            )}
+          </View>
         );
       })}
     </Card>

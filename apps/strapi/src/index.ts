@@ -15,6 +15,7 @@ const CONTENT_TYPES = [
   "api::tag.tag",
   "api::static-information.static-information",
   "api::information-page.information-page",
+  "api::contact.contact",
 ];
 
 const CONTENT_ACTION_IDS = [
@@ -224,6 +225,7 @@ export default {
         staticInformation: "api::static-information.static-information",
       },
     );
+    await seedFromFile("api::contact.contact", "contact.json");
 
     await setupPublicPermissions(strapi);
     await setupAdminRoles(strapi);
@@ -376,6 +378,8 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     "api::information-page.information-page.findOne",
     "api::static-information.static-information.find",
     "api::static-information.static-information.findOne",
+    "api::contact.contact.find",
+    "api::contact.contact.findOne",
     "plugin::users-permissions.user.find",
   ];
 

@@ -4,7 +4,7 @@ import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import { usePathname, useRouter, Href } from "expo-router";
-import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
+import { HomeIcon, InfoIcon, LucideIcon, MapIcon, PhoneIcon, SettingsIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
@@ -40,12 +40,14 @@ export default function DrawerContent() {
     { icon: HomeIcon, label: "STRONA GŁÓWNA", href: "/" },
     { icon: MapIcon, label: "MAPA D17", href: "/d17map" },
     { icon: InfoIcon, label: "INFORMACJE", href: "/information" },
+    { icon: PhoneIcon, label: "KONTAKT", href: "/contact" },
   ];
 
   const navTestIDs: Record<string, string> = {
     "/": "drawer-nav-home",
     "/d17map": "drawer-nav-map",
     "/information": "drawer-nav-information",
+    "/contact": "drawer-nav-contact",
   };
 
   return (
