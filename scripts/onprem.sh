@@ -160,7 +160,15 @@ restore_db() {
 migrate_stack() {
   require_env
   backup_db
-  "${COMPOSE[@]}" --profile prod pull strapi
+  
+  local strapi_image
+  strapi_image="$(env_value STRAPI_IMAGE)"
+  
+  # Only pull if image is from a registry (contains /)
+  if [[ "$strapi_image" == */* ]]; then
+    "${COMPOSE[@]}" --profile prod pull strapi
+  fi
+  
   "${COMPOSE[@]}" --profile prod up -d
   echo "Strapi restarted. Application schema changes run during Strapi startup."
 }
