@@ -40,7 +40,7 @@ secret() {
 }
 
 password() {
-  openssl rand -hex 18 | cut -c1-24
+  printf 'A1%s' "$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-22)"
 }
 
 fail() {
