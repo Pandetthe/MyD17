@@ -53,7 +53,15 @@ Strapi applies application schema changes during startup. For a normal on-premis
 pnpm onprem migrate
 ```
 
-The command creates a PostgreSQL backup, pulls the configured Strapi image and restarts the stack.
+The command warns about risky production secrets, creates a verified PostgreSQL backup, pulls the configured Strapi image and restarts the stack.
+
+To verify a running on-premise environment without applying changes, run:
+
+```bash
+pnpm onprem verify
+```
+
+The verification warns when `.env` is group/world-readable or required secrets look like placeholders. It still fails if PostgreSQL cannot produce a schema dump or Strapi does not respond on its health endpoint.
 
 ## Backups and restore
 
@@ -62,6 +70,8 @@ Create a database dump:
 ```bash
 pnpm onprem backup
 ```
+
+The backup command also confirms that the generated custom dump can be read by `pg_restore`.
 
 Restore a dump:
 

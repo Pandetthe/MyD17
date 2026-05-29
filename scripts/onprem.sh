@@ -6,6 +6,11 @@ ENV_FILE="${ENV_FILE:-$ROOT_DIR/.env}"
 BACKUP_DIR="${BACKUP_DIR:-$ROOT_DIR/backups}"
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-myd17}"
 COMPOSE=(docker compose --project-name "$PROJECT_NAME" --env-file "$ENV_FILE" -f "$ROOT_DIR/compose.yaml")
+REQUIRED_ENV=(
+  APP_KEYS API_TOKEN_SALT ADMIN_JWT_SECRET TRANSFER_TOKEN_SALT JWT_SECRET
+  ENCRYPTION_KEY DATABASE_NAME DATABASE_USERNAME DATABASE_PASSWORD
+  STRAPI_SUPERADMIN_PASSWORD STRAPI_ADMIN_PASSWORD STRAPI_EDITOR_PASSWORD
+)
 
 usage() {
   cat <<'EOF'
@@ -17,6 +22,7 @@ Commands:
   down          Stop the stack
   restart       Restart Strapi
   migrate       Backup DB, pull image and restart Strapi so schema changes apply
+  verify        Check secrets, backup readiness and running Strapi health
   backup        Dump PostgreSQL to backups/
   restore FILE  Restore PostgreSQL dump created by backup
   logs [svc]    Follow logs (all services or one service)
@@ -35,6 +41,11 @@ secret() {
 
 password() {
   openssl rand -hex 18 | cut -c1-24
+}
+
+fail() {
+  echo "$1" >&2
+  exit 1
 }
 
 generate_env() {
@@ -81,23 +92,96 @@ env_value() {
   awk -F '=' -v key="$key" '$1 == key { sub(/^[^=]*=/, ""); value = $0 } END { print value }' "$ENV_FILE"
 }
 
+file_mode() {
+  stat -c "%a" "$1" 2>/dev/null || stat -f "%Lp" "$1" 2>/dev/null
+}
+
+looks_like_placeholder() {
+  local lower
+  lower="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+
+  case "$lower" in
+    ""|password|username|secret|*_secret|change-me*|*change_me*|*changeme*|your_*|example*)
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
 require_env() {
   if [[ ! -f "$ENV_FILE" ]]; then
-    echo "Missing $ENV_FILE. Run: scripts/onprem.sh init"
-    exit 1
+    fail "Missing $ENV_FILE. Run: scripts/onprem.sh init"
   fi
 
-  local required=(
-    APP_KEYS API_TOKEN_SALT ADMIN_JWT_SECRET TRANSFER_TOKEN_SALT JWT_SECRET
-    ENCRYPTION_KEY DATABASE_NAME DATABASE_USERNAME DATABASE_PASSWORD
-  )
-
-  for key in "${required[@]}"; do
+  for key in "${REQUIRED_ENV[@]}"; do
     if [[ -z "$(env_value "$key")" ]]; then
-      echo "Missing required env value: $key"
-      exit 1
+      fail "Missing required env value: $key"
     fi
   done
+}
+
+validate_env_file() {
+  local issues=0
+  local mode
+  mode="$(file_mode "$ENV_FILE")"
+
+  if [[ -z "$mode" ]]; then
+    echo "Warning: could not read file permissions for $ENV_FILE" >&2
+    issues=$((issues + 1))
+  elif (( (8#$mode & 8#077) != 0 )); then
+    echo "Warning: $ENV_FILE is readable by group or others. Run: chmod 600 $ENV_FILE" >&2
+    issues=$((issues + 1))
+  fi
+
+  if [[ "$(env_value NODE_ENV)" != "production" ]]; then
+    echo "Warning: NODE_ENV should be set to production in $ENV_FILE" >&2
+    issues=$((issues + 1))
+  fi
+
+  local key value
+  for key in "${REQUIRED_ENV[@]}"; do
+    value="$(env_value "$key")"
+    if looks_like_placeholder "$value"; then
+      echo "Warning: replace placeholder value for $key in $ENV_FILE" >&2
+      issues=$((issues + 1))
+    fi
+  done
+
+  local app_keys
+  IFS=',' read -r -a app_keys <<<"$(env_value APP_KEYS)"
+  if [[ "${#app_keys[@]}" -lt 2 ]]; then
+    echo "Warning: APP_KEYS should contain at least two comma-separated keys" >&2
+    issues=$((issues + 1))
+  fi
+
+  for key in "${app_keys[@]}"; do
+    if [[ "${#key}" -lt 32 ]]; then
+      echo "Warning: each APP_KEYS entry should be at least 32 characters" >&2
+      issues=$((issues + 1))
+      break
+    fi
+  done
+
+  for key in API_TOKEN_SALT ADMIN_JWT_SECRET TRANSFER_TOKEN_SALT JWT_SECRET ENCRYPTION_KEY; do
+    value="$(env_value "$key")"
+    if [[ "${#value}" -lt 32 ]]; then
+      echo "Warning: $key should be at least 32 characters" >&2
+      issues=$((issues + 1))
+    fi
+  done
+
+  for key in STRAPI_SUPERADMIN_PASSWORD STRAPI_ADMIN_PASSWORD STRAPI_EDITOR_PASSWORD DATABASE_PASSWORD; do
+    value="$(env_value "$key")"
+    if [[ "${#value}" -lt 12 ]]; then
+      echo "Warning: $key should be at least 12 characters" >&2
+      issues=$((issues + 1))
+    fi
+  done
+
+  if [[ "$issues" -ne 0 ]]; then
+    echo "Warning: environment verification found $issues issue(s)." >&2
+  fi
 }
 
 wait_for_db() {
@@ -116,13 +200,34 @@ wait_for_db() {
   exit 1
 }
 
+verify_backup_readiness() {
+  local db_user db_name
+  db_user="$(env_value DATABASE_USERNAME)"
+  db_name="$(env_value DATABASE_NAME)"
+
+  "${COMPOSE[@]}" up -d database
+  wait_for_db
+  "${COMPOSE[@]}" exec -T database pg_dump -U "$db_user" -d "$db_name" --schema-only --no-owner --no-acl >/dev/null
+  echo "Database backup pre-check passed."
+}
+
+verify_strapi_health() {
+  if ! "${COMPOSE[@]}" exec -T strapi wget -qO- http://localhost:1337/_health >/dev/null; then
+    fail "Strapi healthcheck failed"
+  fi
+
+  echo "Strapi healthcheck passed."
+}
+
 start_stack() {
   require_env
+  validate_env_file
   "${COMPOSE[@]}" --profile prod up -d
 }
 
 backup_db() {
   require_env
+  validate_env_file
   mkdir -p "$BACKUP_DIR"
   local db_user db_name output
   db_user="$(env_value DATABASE_USERNAME)"
@@ -132,6 +237,16 @@ backup_db() {
   "${COMPOSE[@]}" up -d database
   wait_for_db
   "${COMPOSE[@]}" exec -T database pg_dump -U "$db_user" -d "$db_name" --format=custom --no-owner --no-acl >"$output"
+  if [[ ! -s "$output" ]]; then
+    rm -f "$output"
+    fail "Backup failed: dump file is empty."
+  fi
+
+  if ! "${COMPOSE[@]}" exec -T database pg_restore --list <"$output" >/dev/null; then
+    rm -f "$output"
+    fail "Backup failed: dump file could not be read by pg_restore."
+  fi
+
   chmod 600 "$output"
   echo "Backup saved to $output"
 }
@@ -173,6 +288,15 @@ migrate_stack() {
   echo "Strapi restarted. Application schema changes run during Strapi startup."
 }
 
+verify_stack() {
+  require_env
+  validate_env_file
+  "${COMPOSE[@]}" config --quiet
+  verify_backup_readiness
+  verify_strapi_health
+  echo "Verification passed: migration backup readiness and Strapi health are OK."
+}
+
 case "${1:-}" in
   init)
     generate_env
@@ -190,6 +314,9 @@ case "${1:-}" in
     ;;
   migrate)
     migrate_stack
+    ;;
+  verify)
+    verify_stack
     ;;
   backup)
     backup_db
