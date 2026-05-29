@@ -103,10 +103,17 @@ See [docs/release.md](docs/release.md) for the full release and deployment proce
 
 ### Strapi backend and PostgreSQL database in production environment
 
-Create a `.env` file in the root directory and configure it based on `.env.example.prod`.
-Replace all placeholder secrets before running a production environment.
+Generate a production `.env` with unique secrets and start the stack:
 
-From the root folder run
+```bash
+pnpm onprem init
+pnpm onprem up
+```
+
+For updates, backups and restores see [docs/on-premise.md](docs/on-premise.md).
+
+If you prefer manual setup, create a `.env` file in the root directory and configure it based on `.env.example.prod`.
+Replace all placeholder secrets before running production:
 
 ```bash
 docker compose up --profile prod -d
