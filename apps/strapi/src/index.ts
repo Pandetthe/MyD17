@@ -290,6 +290,8 @@ async function setupAdminRoles(strapi: Core.Strapi) {
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
+  const isProduction = process.env.NODE_ENV === "production";
+
   const superAdminRole = (await strapi.db
     .query("admin::role")
     .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
@@ -307,21 +309,27 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       firstname: "Super",
       lastname: "Admin",
       email: "superadmin@myd17.pl",
-      password: "SuperAdmin123!",
+      password:
+        process.env.STRAPI_SUPERADMIN_PASSWORD ??
+        (isProduction ? undefined : "SuperAdmin123!"),
       role: superAdminRole,
     },
     {
       firstname: "Admin",
       lastname: "MYD17",
       email: "admin@myd17.pl",
-      password: "Admin123!",
+      password:
+        process.env.STRAPI_ADMIN_PASSWORD ??
+        (isProduction ? undefined : "Admin123!"),
       role: adminRole,
     },
     {
       firstname: "Editor",
       lastname: "MYD17",
       email: "editor@myd17.pl",
-      password: "Editor123!",
+      password:
+        process.env.STRAPI_EDITOR_PASSWORD ??
+        (isProduction ? undefined : "Editor123!"),
       role: editorRole,
     },
   ];
@@ -329,6 +337,10 @@ async function seedAdminUsers(strapi: Core.Strapi) {
   let created = false;
   for (const { firstname, lastname, email, password, role } of DEFAULT_USERS) {
     if (!role) continue;
+    if (!password) {
+      strapi.log.warn(`Skipping admin user ${email}: password env is not set`);
+      continue;
+    }
 
     const existing = await strapi.db
       .query("admin::user")
