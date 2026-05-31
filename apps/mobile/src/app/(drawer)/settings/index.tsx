@@ -21,9 +21,16 @@ export default function Settings() {
   };
 
   return (
-    <View style={styles.container}>
-      <Setting icon={MoonIcon} text="Tryb ciemny" onPress={darkModeClick} value={darkMode} />
+    <View testID="settings-screen" style={styles.container}>
       <Setting
+        testID="setting-dark-mode"
+        icon={MoonIcon}
+        text="Tryb ciemny"
+        onPress={darkModeClick}
+        value={darkMode}
+      />
+      <Setting
+        testID="setting-notifications"
         icon={BellRingIcon}
         text="Zarządzaj powiadomieniami"
         onPress={() => router.push("/settings/notifications")}

@@ -132,7 +132,7 @@ export default function Notifications() {
 
   return (
     <GestureDetector gesture={swipeBack}>
-      <View style={styles.wrapper}>
+      <View testID="notifications-screen" style={styles.wrapper}>
         <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
           <Button icon={ArrowLeft} color="dark" size="lg" onPress={() => router.back()} />
           <TextCore variant="h2" style={styles.title}>
@@ -142,7 +142,11 @@ export default function Notifications() {
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <Pressable style={styles.selectAllRow} onPress={toggleAll}>
+          <Pressable
+            testID="notifications-select-all"
+            style={styles.selectAllRow}
+            onPress={toggleAll}
+          >
             <TextCore variant="h2">Wszystkie</TextCore>
             <SwitchCore onPress={toggleAll} value={allSelected} />
           </Pressable>

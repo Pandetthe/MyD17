@@ -59,8 +59,8 @@ export default function PostsScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.safe}>
-        <View style={styles.centered}>
+      <View testID="posts-screen" style={styles.safe}>
+        <View testID="posts-loading" style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.primary.main} />
         </View>
       </View>
@@ -69,8 +69,8 @@ export default function PostsScreen() {
 
   if (isError) {
     return (
-      <View style={styles.safe}>
-        <View style={styles.centered}>
+      <View testID="posts-screen" style={styles.safe}>
+        <View testID="posts-error" style={styles.centered}>
           <TextCore variant="body" color={theme.colors.primary.subtext}>
             Nie udało się załadować postów.
           </TextCore>
@@ -81,8 +81,9 @@ export default function PostsScreen() {
   }
 
   return (
-    <View style={styles.safe}>
+    <View testID="posts-screen" style={styles.safe}>
       <FlatList
+        testID="posts-feed-list"
         data={filteredPosts}
         keyExtractor={(item) => item.documentId as string}
         renderItem={({ item }) => (
@@ -111,13 +112,19 @@ export default function PostsScreen() {
           />
         }
         ListEmptyComponent={
-          <TextCore variant="body" color={theme.colors.primary.subtext} style={styles.emptyText}>
+          <TextCore
+            testID="posts-empty"
+            variant="body"
+            color={theme.colors.primary.subtext}
+            style={styles.emptyText}
+          >
             Brak postów pasujących do wybranych filtrów.
           </TextCore>
         }
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
+              testID="posts-footer-loader"
               size="small"
               color={theme.colors.primary.main}
               style={styles.footerLoader}

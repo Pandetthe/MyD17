@@ -1,0 +1,17 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "tag-filter-bar"
+    timeout: 30000
+# Tap #Konferencja — seeded on multiple posts; it appears first in the filter bar.
+- tapOn: "#Konferencja"
+- assertVisible:
+    id: "tag-filter-clear"
+- tapOn:
+    id: "tag-filter-clear"
+- assertNotVisible:
+    id: "tag-filter-clear"
+- assertVisible:
+    id: "posts-feed-list"

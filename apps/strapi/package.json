@@ -1,6 +1,6 @@
 {
   "name": "strapi",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "description": "A Strapi application",
   "scripts": {
@@ -27,7 +27,11 @@
     "@strapi/plugin-users-permissions": "5.45.0",
     "@strapi/strapi": "5.46.0",
     "firebase-admin": "^13.10.0",
+    "@strapi/admin": "5.46.0",
+    "@strapi/design-system": "2.2.0",
+    "@strapi/icons": "2.2.0",
     "lucide-react": "^1.0.0",
+    "react-intl": "6.6.2",
     "pg": "8.20.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -35,6 +39,7 @@
     "styled-components": "^6.4.1"
   },
   "devDependencies": {
+    "@types/koa": "2.15.1",
     "@types/node": "^25.8.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^18.3.7",
@@ -59,6 +64,13 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^/create-service$": "<rootDir>/create-service"
-    }
+    },
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", { "tsconfig": "./tsconfig.jest.json" }]
+    },
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).[jt]s"
+    ]
   }
 }

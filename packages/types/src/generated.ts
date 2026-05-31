@@ -1935,6 +1935,7 @@ export interface components {
       documentId?: string;
       title: string;
       description: string;
+      websiteUrl?: string;
       images?: {
         id?: string | number;
         documentId?: string;

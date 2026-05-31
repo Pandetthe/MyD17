@@ -1,0 +1,30 @@
+appId: io.github.stawex.myd17
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-screen"
+    timeout: 10000
+- assertVisible: "Tryb ciemny"
+- tapOn:
+    id: "setting-dark-mode"
+# Verify the app survives the theme switch
+- assertVisible:
+    id: "settings-screen"
+# Toggle back to original state
+- tapOn:
+    id: "setting-dark-mode"
+- assertVisible:
+    id: "settings-screen"

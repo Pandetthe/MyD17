@@ -15,6 +15,16 @@ jest.mock("expo-image", () => ({ Image: () => null }));
 jest.mock("expo-linear-gradient", () => ({
   LinearGradient: ({ children }: { children: React.ReactNode }) => children,
 }));
+jest.mock("@/features/posts/api/useLikePost", () => ({
+  useLikePost: (post: Post) => ({
+    likePost: jest.fn(),
+    liked: false,
+    likesCount: post.likesCount ?? 0,
+  }),
+}));
+jest.mock("@/features/posts/hooks/useSharePost", () => ({
+  useSharePost: () => jest.fn(),
+}));
 
 const makePost = (overrides: Partial<Post> = {}): Post =>
   ({

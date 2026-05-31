@@ -2,7 +2,7 @@
   "expo": {
     "name": "MyD17",
     "slug": "MyD17",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myd17",
@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false,
       "package": "io.github.stawex.myd17",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 1000007,
+      "versionCode": 1000008,
       "permissions": [
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR"

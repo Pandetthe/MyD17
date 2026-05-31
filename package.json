@@ -13,7 +13,12 @@
     "release:prepare": "node scripts/prepare-release.mjs",
     "release:validate": "node scripts/validate-release.mjs",
     "android:configure-signing": "node scripts/configure-android-signing.mjs",
-    "mobile:setup": "node scripts/setup-mobile-env.mjs"
+    "mobile:setup": "node scripts/setup-mobile-env.mjs",
+    "onprem": "bash scripts/onprem.sh",
+    "load:stress": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=stress",
+    "load:staging:smoke": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=smoke",
+    "load:staging:test": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=load",
+    "load:staging:stress": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=stress"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",

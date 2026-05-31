@@ -1,0 +1,34 @@
+appId: io.github.stawex.myd17
+# Uses "Dyżury prodziekana" — second seeded card.
+# Note: react-native-gesture-handler pan gestures inside a Modal are unreliable in
+# Maestro's touch simulation. This test verifies open + close via backdrop tap.
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-information"
+- extendedWaitUntil:
+    visible:
+      id: "information-scroll"
+    timeout: 20000
+- tapOn: "Dyżury prodziekana"
+- extendedWaitUntil:
+    visible:
+      id: "info-bottom-drawer"
+    timeout: 10000
+# Close via backdrop tap (top of screen, above the sheet)
+- tapOn:
+    point: "50%, 10%"
+- extendedWaitUntil:
+    visible:
+      id: "information-scroll"
+    timeout: 8000

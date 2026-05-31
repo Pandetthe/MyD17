@@ -49,6 +49,8 @@ base64 -i myd17-release.keystore | pbcopy
 
 Use the base64 output as `ANDROID_KEYSTORE_BASE64`.
 
+Add a repository variable named `EXPO_PUBLIC_STRAPI_URL`. The Android release workflow passes that value into Expo at build time, so release builds and GitHub Release artifacts point at the live Strapi instance.
+
 ## Release artifacts
 
 After a successful tag release, download files from the GitHub Release page:
@@ -60,22 +62,23 @@ Dry-run workflow runs upload the same files as GitHub Actions artifacts instead 
 
 ## Backend deployment
 
-Copy the production environment template:
+Create the production environment:
 
 ```bash
-cp .env.example.prod .env
+pnpm onprem init
 ```
 
-Set secrets in `.env`, then choose the image version:
+Set secrets in `.env`, then choose the image version in `.env` or pass it when starting/migrating:
 
 ```bash
 STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 ```
 
-Start the production profile:
+Start or update the production stack:
 
 ```bash
-docker compose --profile prod up -d
+pnpm onprem up
+pnpm onprem migrate
 ```
 
 The production Strapi container uses the released image and only mounts a persistent upload volume. Source code is not mounted into the container.
