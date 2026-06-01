@@ -7,21 +7,17 @@ import TextCore from "@/components/core/Text.component";
 import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
 import { apiClient } from "@/lib/apiClient";
 import { syncSubscriptions } from "@/lib/pushNotifications";
+import { FCM_TOKEN_KEY } from "@/lib/storageKeys";
 import { tagColor } from "@/lib/tagColor";
 import { Theme } from "@/styles/themes/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationAction, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ArrowLeft, SaveIcon } from "lucide-react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  runOnJS,
-  useSharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import Animated, { runOnJS, useSharedValue, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { FCM_TOKEN_KEY } from "@/lib/storageKeys";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TagData = {
   id: number;
@@ -64,11 +60,11 @@ export default function Notifications() {
       let savedTagIds = new Set<number>();
       if (storedToken) {
         const sub = await apiClient
-         .get<{ data: Array<{ tags: Array<{ id: number }> }> }>(
-           `/api/push-subscribers?filters[pushToken][$eq]=${encodeURIComponent(storedToken)}&populate[tags][fields][0]=id`,
-         )
-         .then((r) => r.data.data[0] ?? null)
-         .catch(() => null);
+          .get<{ data: Array<{ tags: Array<{ id: number }> }> }>(
+            `/api/push-subscribers?filters[pushToken][$eq]=${encodeURIComponent(storedToken)}&populate[tags][fields][0]=id`,
+          )
+          .then((r) => r.data.data[0] ?? null)
+          .catch(() => null);
         if (sub) savedTagIds = new Set(sub.tags.map((t) => t.id));
       }
       const initial = data.reduce(
@@ -107,11 +103,11 @@ export default function Notifications() {
   const save = async () => {
     setIsSaving(true);
     try {
-    const tagIds = Object.keys(selected)
-      .filter((id) => selected[Number(id)])
-      .map(Number);
-    await syncSubscriptions(tagIds);
-    setSaved({ ...selected });
+      const tagIds = Object.keys(selected)
+        .filter((id) => selected[Number(id)])
+        .map(Number);
+      await syncSubscriptions(tagIds);
+      setSaved({ ...selected });
     } catch {
       Alert.alert("Błąd", "Nie udało się zapisać powiadomień.");
     } finally {
@@ -181,7 +177,14 @@ export default function Notifications() {
           style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
           pointerEvents="auto"
         >
-          <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} disabled={isSaving} />
+          <Button
+            text="Zapisz"
+            icon={SaveIcon}
+            color="primary"
+            size="lg"
+            onPress={save}
+            disabled={isSaving}
+          />
         </Animated.View>
 
         <UnsavedChangesModal
