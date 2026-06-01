@@ -11,7 +11,7 @@ pnpm onprem init
 pnpm onprem up
 ```
 
-`init` creates `.env` with generated database credentials, Strapi keys and initial admin passwords.
+`init` creates `.env` with generated database credentials, Strapi keys and initial admin passwords. It also links `apps/strapi/.env` to that root `.env`, so Strapi sees the same values when it starts from its own package directory.
 
 ### Accessing the Strapi image
 
