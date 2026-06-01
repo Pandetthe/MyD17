@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import WebView from "react-native-webview";
 
@@ -542,17 +542,24 @@ export default function D17MapView({
   onRoomPress,
 }: Props) {
   const webViewRef = useRef<WebView>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!textureBase64 || !webViewRef.current) return;
+    if (!textureBase64 || !webViewRef.current || !loaded) return;
     const msg = JSON.stringify({ type: "texture", base64: textureBase64, mime: "image/webp" });
     webViewRef.current.injectJavaScript(
       `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
     );
-  }, [textureBase64]);
+  }, [textureBase64, loaded]);
 
   useEffect(() => {
-    if (searchTargetX === undefined || searchTargetZ === undefined || !webViewRef.current) return;
+    if (
+      searchTargetX === undefined ||
+      searchTargetZ === undefined ||
+      !webViewRef.current ||
+      !loaded
+    )
+      return;
     const msg = JSON.stringify({
       type: "search",
       x: searchTargetX,
@@ -562,15 +569,15 @@ export default function D17MapView({
     webViewRef.current.injectJavaScript(
       `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
     );
-  }, [searchTargetX, searchTargetZ, searchKey]);
+  }, [searchTargetX, searchTargetZ, searchKey, loaded]);
 
   useEffect(() => {
-    if (!webViewRef.current) return;
+    if (!webViewRef.current || !loaded) return;
     const msg = JSON.stringify({ type: "selectMarker", key: searchKey ?? null });
     webViewRef.current.injectJavaScript(
       `window.dispatchEvent(new MessageEvent('message',{data:${JSON.stringify(msg)}}));true;`,
     );
-  }, [searchKey]);
+  }, [searchKey, loaded]);
 
   const html = useRef<string | null>(null);
   if (!html.current && glbBase64 && textureBase64) {
@@ -594,6 +601,7 @@ export default function D17MapView({
         onMessage={(e) => {
           const msg = JSON.parse(e.nativeEvent.data);
           if (msg.type === "loaded") {
+            setLoaded(true);
             onLoad?.();
           } else if (msg.type === "roomPress") {
             onRoomPress?.(msg.key);

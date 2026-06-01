@@ -1,7 +1,7 @@
 import React from "react";
 import { InfoCard } from "../index";
 import type { PostContentBlock } from "@repo/types";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 
 const locationBlock = (content: string): PostContentBlock =>
   ({ __component: "content.location", id: 1, content }) as PostContentBlock;
@@ -33,6 +33,15 @@ describe("InfoCard", () => {
     render(<InfoCard blocks={[locationBlock("s1.38")]} />);
     expect(screen.getByText("Budynek D-17, Sala 1.38")).toBeTruthy();
     expect(screen.getByText("Lokalizacja")).toBeTruthy();
+  });
+
+  it("opens map for first-floor location", () => {
+    const onLocationPress = jest.fn();
+    render(<InfoCard blocks={[locationBlock("s1.38")]} onLocationPress={onLocationPress} />);
+
+    fireEvent.press(screen.getByTestId("info-card-location-link"));
+
+    expect(onLocationPress).toHaveBeenCalledWith("1.38");
   });
 
   it("renders all four known locations correctly", () => {

@@ -15,6 +15,7 @@ import D17MapView from "@/components/D17MapView";
 import { colors } from "@/styles/colors";
 import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
+import { useLocalSearchParams } from "expo-router";
 import { SearchIcon } from "lucide-react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
@@ -187,6 +188,8 @@ const FAB_SIZE = 52;
 export default function D17MapScreen() {
   const { theme } = useUnistyles();
   const insets = useSafeAreaInsets();
+  const { room } = useLocalSearchParams<{ room?: string }>();
+  const routeRoom = typeof room === "string" && room in TEXTURE_MODULES ? room : undefined;
 
   const [glbBase64, setGlbBase64] = useState("");
   const [textureBase64, setTextureBase64] = useState("");
@@ -253,30 +256,50 @@ export default function D17MapScreen() {
 
   useEffect(() => {
     (async () => {
-      const [glb, tex] = await Promise.all([
-        assetToBase64(require("@/assets/map/floor1/model.glb")),
-        assetToBase64(TEXTURE_MODULES.none),
-      ]);
+      const glb = await assetToBase64(require("@/assets/map/floor1/model.glb"));
       setGlbBase64(glb);
-      setTextureBase64(tex);
     })();
   }, []);
+
+  const selectRoom = useCallback(async (key: string) => {
+    const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
+    setTextureBase64(tex);
+    const [floorStr, roomStr] = key.split(".");
+    const floorIndex = FLOORS.indexOf(floorStr);
+    const roomIndex = (FLOOR_ROOMS[floorStr] ?? []).indexOf(roomStr);
+
+    if (floorIndex !== -1 && roomIndex !== -1) {
+      setAppliedFloor(floorIndex);
+      setAppliedRoom(roomIndex);
+      setPendingFloor(floorIndex);
+      pendingFloorRef.current = floorIndex;
+      setPendingRoom(roomIndex);
+    }
+
+    setSearchKey(key);
+    const coords = (roomData as RoomCoords)[key];
+    if (coords) setSearchTarget({ x: coords.x, z: coords.y });
+  }, []);
+
+  useEffect(() => {
+    if (routeRoom) {
+      void selectRoom(routeRoom);
+      return;
+    }
+
+    setAppliedFloor(null);
+    setAppliedRoom(null);
+    setSearchTarget(undefined);
+    setSearchKey(undefined);
+    void assetToBase64(TEXTURE_MODULES.none).then(setTextureBase64);
+  }, [routeRoom, selectRoom]);
 
   const handleConfirm = useCallback(async () => {
     const floor = FLOORS[pendingFloor];
     const room = (FLOOR_ROOMS[floor] ?? [])[pendingRoom];
-    if (floor && room) {
-      const key = `${floor}.${room}`;
-      const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
-      setTextureBase64(tex);
-      const coords = (roomData as RoomCoords)[key];
-      if (coords) setSearchTarget({ x: coords.x, z: coords.y });
-      setSearchKey(key);
-      setAppliedFloor(pendingFloor);
-      setAppliedRoom(pendingRoom);
-    }
+    if (floor && room) await selectRoom(`${floor}.${room}`);
     closeDrawer();
-  }, [pendingFloor, pendingRoom, closeDrawer]);
+  }, [pendingFloor, pendingRoom, closeDrawer, selectRoom]);
 
   const handleReset = useCallback(async () => {
     setAppliedFloor(null);
@@ -298,27 +321,6 @@ export default function D17MapScreen() {
     setPendingRoom(idx);
   }, []);
 
-  const handleMapRoomClick = useCallback(async (key: string) => {
-    const [floorStr, roomStr] = key.split(".");
-    const floorIndex = FLOORS.indexOf(floorStr);
-    const roomIndex = (FLOOR_ROOMS[floorStr] ?? []).indexOf(roomStr);
-
-    if (floorIndex !== -1 && roomIndex !== -1) {
-      setAppliedFloor(floorIndex);
-      setAppliedRoom(roomIndex);
-      setPendingFloor(floorIndex);
-      pendingFloorRef.current = floorIndex;
-      setPendingRoom(roomIndex);
-    }
-
-    setSearchKey(key);
-    const coords = (roomData as RoomCoords)[key];
-    if (coords) setSearchTarget({ x: coords.x, z: coords.y });
-
-    const tex = await assetToBase64(TEXTURE_MODULES[key] ?? TEXTURE_MODULES.none);
-    setTextureBase64(tex);
-  }, []);
-
   const currentPendingRooms = FLOOR_ROOMS[FLOORS[pendingFloor]] ?? [];
 
   return (
@@ -329,7 +331,7 @@ export default function D17MapScreen() {
           textureBase64={textureBase64}
           searchTargetX={searchTarget?.x}
           searchTargetZ={searchTarget?.z}
-          onRoomPress={handleMapRoomClick}
+          onRoomPress={selectRoom}
           roomCoords={
             Object.fromEntries(
               Object.entries(roomData as RoomCoords).filter(([k]) => k in TEXTURE_MODULES),

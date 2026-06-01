@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Pressable, View, type StyleProp, type TextStyle } from "react-native";
 import TextCore from "@/components/core/Text.component";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
@@ -10,9 +10,12 @@ type Props = {
   label: string;
   value: string;
   dark?: boolean;
+  onPress?: () => void;
+  testID?: string;
+  valueStyle?: StyleProp<TextStyle>;
 };
 
-export function InfoRow({ icon, label, value, dark = false }: Props) {
+export function InfoRow({ icon, label, value, dark = false, onPress, testID, valueStyle }: Props) {
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
 
@@ -24,17 +27,31 @@ export function InfoRow({ icon, label, value, dark = false }: Props) {
   const iconBg = dark || isDark ? colors.core.main : colors.core.disabled;
   const iconFg = dark || isDark ? colors.core.dark : colors.core.main;
 
-  return (
-    <View style={styles.row}>
+  const content = (
+    <>
       <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>{icon(iconFg)}</View>
       <View style={styles.textColumn}>
         <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}
         </TextCore>
-        <TextCore variant="h3" color={valueColor} weight="medium">
+        <TextCore variant="h3" color={valueColor} weight="medium" style={valueStyle}>
           {value}
         </TextCore>
       </View>
+    </>
+  );
+
+  if (onPress) {
+    return (
+      <Pressable accessibilityRole="button" testID={testID} style={styles.row} onPress={onPress}>
+        {content}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View testID={testID} style={styles.row}>
+      {content}
     </View>
   );
 }

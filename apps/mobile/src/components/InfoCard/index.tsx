@@ -60,9 +60,14 @@ type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
   onAddToCalendar?: (event: CalendarEvent) => void;
+  onLocationPress?: (room: string) => void;
 };
 
-export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
+function mapRoomFromLocation(location?: string | null): string | null {
+  return location?.match(/^s1\.\d+$/) ? location.slice(1) : null;
+}
+
+export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPress }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
 
@@ -79,6 +84,8 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
   const gradient = dark
     ? ([colors.core.extraDark, colors.core.dark] as const)
     : theme.colors.gradients.posts;
+  const mapRoom = mapRoomFromLocation(locationBlock?.content);
+  const openLocation = mapRoom && onLocationPress ? () => onLocationPress(mapRoom) : undefined;
 
   return (
     <Card
@@ -94,6 +101,9 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
           label="Lokalizacja"
           value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
           dark={dark}
+          onPress={openLocation}
+          testID={openLocation ? "info-card-location-link" : undefined}
+          valueStyle={openLocation ? styles.linkText : undefined}
         />
       )}
 
@@ -160,5 +170,8 @@ const styles = StyleSheet.create((theme: Theme) => ({
   calendarButton: {
     flexShrink: 0,
     marginTop: 2,
+  },
+  linkText: {
+    textDecorationLine: "underline",
   },
 }));

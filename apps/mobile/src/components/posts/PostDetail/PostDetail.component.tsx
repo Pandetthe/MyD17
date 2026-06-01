@@ -47,6 +47,13 @@ export function PostDetail({ post }: Props) {
     [post],
   );
 
+  const handleLocationPress = useCallback(
+    (room: string) => {
+      router.push({ pathname: "/d17map", params: { room } });
+    },
+    [router],
+  );
+
   const goBack = useCallback(() => router.back(), [router]);
 
   const swipeBack = Gesture.Pan()
@@ -127,7 +134,11 @@ export function PostDetail({ post }: Props) {
               </TextCore>
             </View>
 
-            <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
+            <ContentRenderer
+              blocks={content}
+              onAddToCalendar={handleAddToCalendar}
+              onLocationPress={handleLocationPress}
+            />
           </View>
         </View>
       </ScrollView>
