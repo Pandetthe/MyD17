@@ -39,9 +39,9 @@ const config = ({
     enabled: true,
     resolve: "./src/plugins/color-picker",
   },
-  'push-notifications-widget': {
+  "push-notifications-widget": {
     enabled: true,
-    resolve: './src/plugins/push-notifications-widget'
+    resolve: "./src/plugins/push-notifications-widget",
   },
 });
 
