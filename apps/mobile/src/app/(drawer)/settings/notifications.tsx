@@ -17,11 +17,11 @@ import Animated, {
   runOnJS,
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
-  Easing,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { FCM_TOKEN_KEY } from "@/lib/storageKeys";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TagData = {
   id: number;
@@ -45,14 +45,8 @@ export default function Notifications() {
   const hasUnsavedRef = useRef(false);
   hasUnsavedRef.current = hasUnsaved;
 
-  const saveOpacity = useSharedValue(0);
-  const saveTranslateY = useSharedValue(16);
-
-  useEffect(() => {
-    const cfg = { duration: 220, easing: Easing.out(Easing.cubic) };
-    saveOpacity.value = withTiming(hasUnsaved ? 1 : 0, cfg);
-    saveTranslateY.value = withTiming(hasUnsaved ? 0 : 16, cfg);
-  }, [hasUnsaved]);
+  const saveOpacity = useSharedValue(1);
+  const saveTranslateY = useSharedValue(0);
 
   const saveAnimStyle = useAnimatedStyle(() => ({
     opacity: saveOpacity.value,
@@ -61,11 +55,24 @@ export default function Notifications() {
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await apiClient.get<{ data: TagData[] }>("/api/tags");
-      const data = res.data.data;
+      const [tagsRes, storedToken] = await Promise.all([
+        apiClient.get<{ data: TagData[] }>("/api/tags"),
+        AsyncStorage.getItem(FCM_TOKEN_KEY).catch(() => null),
+      ]);
+      const data = tagsRes.data.data;
       setTags(data);
+      let savedTagIds = new Set<number>();
+      if (storedToken) {
+        const sub = await apiClient
+         .get<{ data: Array<{ tags: Array<{ id: number }> }> }>(
+           `/api/push-subscribers?filters[pushToken][$eq]=${encodeURIComponent(storedToken)}&populate[tags][fields][0]=id`,
+         )
+         .then((r) => r.data.data[0] ?? null)
+         .catch(() => null);
+        if (sub) savedTagIds = new Set(sub.tags.map((t) => t.id));
+      }
       const initial = data.reduce(
-        (acc, tag) => ({ ...acc, [tag.id]: false }),
+        (acc, tag) => ({ ...acc, [tag.id]: savedTagIds.has(tag.id) }),
         {} as Record<number, boolean>,
       );
       setSelected(initial);
@@ -172,7 +179,7 @@ export default function Notifications() {
 
         <Animated.View
           style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
-          pointerEvents={hasUnsaved ? "auto" : "none"}
+          pointerEvents="auto"
         >
           <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} disabled={isSaving} />
         </Animated.View>
