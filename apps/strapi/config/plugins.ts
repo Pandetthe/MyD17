@@ -6,7 +6,7 @@ const config = ({
   env,
 }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
   documentation: {
-    enabled: true,
+    enabled: env("NODE_ENV") !== "production",
     config: {
       openapi: "3.0.0",
       info: { version: "1.0.0", title: "MyD17 API" },
@@ -28,6 +28,14 @@ const config = ({
             }
           } catch {}
         },
+      },
+    },
+  },
+  "users-permissions": {
+    config: {
+      ratelimit: {
+        interval: 60000,
+        max: 5,
       },
     },
   },

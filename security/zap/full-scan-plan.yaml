@@ -1,0 +1,108 @@
+---
+env:
+  vars:
+    TARGET_URL: "http://localhost:1337"
+    REPORT_DIR: "/zap/reports"
+    ZAP_AUTH_USER: "jan.nowak@example.com"
+    ZAP_AUTH_PASS: "SecurePassword123!"
+  contexts:
+    - name: MyD17-API-Full
+      urls:
+        - "${TARGET_URL}/api/posts"
+      includePaths:
+        - "${TARGET_URL}/api/.*"
+        - "${TARGET_URL}/admin.*"
+      excludePaths:
+        - "${TARGET_URL}/api/auth/forgot-password"
+        - "${TARGET_URL}/api/auth/send-email-confirmation"
+        - "${TARGET_URL}/api/documentation/.*"
+        - "${TARGET_URL}/upload.*"
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - name: passiveScan-config
+    type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+      scanOnlyInScope: true
+      maxBodySizeInBytesToScan: 10000
+
+  - name: openapi
+    type: openapi
+    parameters:
+      apiFile: "/zap/openapi/full_documentation.json"
+      targetUrl: "${TARGET_URL}"
+      context: MyD17-API-Full
+
+  - name: spider
+    type: spider
+    parameters:
+      context: MyD17-API-Full
+      url: "${TARGET_URL}/api/posts"
+      maxDuration: 3
+      maxDepth: 5
+      acceptCookies: false
+
+  - name: spiderAjax
+    type: spiderAjax
+    parameters:
+      context: MyD17-API-Full
+      url: "${TARGET_URL}/api/posts"
+      maxDuration: 2
+      browserId: "htmlunit"
+
+  - name: passiveScan-wait
+    type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - name: activeScan
+    type: activeScan
+    parameters:
+      context: MyD17-API-Full
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 60
+      threadPerHost: 2
+      delayInMs: 200
+    policyDefinition:
+      defaultStrength: medium
+      defaultThreshold: medium
+      rules:
+        # SQL Injection
+        - id: 40018
+          strength: high
+          threshold: medium
+        # IDOR / BOLA — traverse object IDs
+        - id: 40034
+          strength: high
+          threshold: medium
+        # JWT None Algorithm
+        - id: 10106
+          strength: high
+          threshold: low
+        # HTTP Header Injection
+        - id: 90019
+          strength: medium
+          threshold: medium
+
+  - name: report-html
+    type: report
+    parameters:
+      template: traditional-html
+      reportDir: "${REPORT_DIR}"
+      reportFile: "zap-full-report.html"
+      reportTitle: "MyD17 ZAP Full API Scan"
+      reportDescription: "Active + Passive security scan — run manually only against a disposable environment"
+      displayReport: false
+
+  - name: report-json
+    type: report
+    parameters:
+      template: traditional-json
+      reportDir: "${REPORT_DIR}"
+      reportFile: "zap-full-report.json"
+      reportTitle: "MyD17 ZAP Full API Scan"
+      displayReport: false
