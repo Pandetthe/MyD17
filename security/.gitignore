@@ -1,0 +1,11 @@
+reports/*.html
+reports/*.json
+reports/*.xml
+reports/*.pdf
+reports/*.md
+reports/zap-*.log
+*.session
+*.session.lock
+*.session.prop
+*.script
+!reports/.gitkeep
