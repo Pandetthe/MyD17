@@ -15,7 +15,13 @@ import { NavigationAction, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ArrowLeft, SaveIcon } from "lucide-react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { runOnJS, useSharedValue, useAnimatedStyle } from "react-native-reanimated";
+import Animated, {
+  runOnJS,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -41,8 +47,14 @@ export default function Notifications() {
   const hasUnsavedRef = useRef(false);
   hasUnsavedRef.current = hasUnsaved;
 
-  const saveOpacity = useSharedValue(1);
-  const saveTranslateY = useSharedValue(0);
+  const saveOpacity = useSharedValue(0);
+  const saveTranslateY = useSharedValue(16);
+
+  useEffect(() => {
+    const cfg = { duration: 220, easing: Easing.out(Easing.cubic) };
+    saveOpacity.value = withTiming(hasUnsaved ? 1 : 0, cfg);
+    saveTranslateY.value = withTiming(hasUnsaved ? 0 : 16, cfg);
+  }, [hasUnsaved]);
 
   const saveAnimStyle = useAnimatedStyle(() => ({
     opacity: saveOpacity.value,
