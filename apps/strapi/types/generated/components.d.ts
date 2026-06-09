@@ -65,6 +65,11 @@ export interface ContentChip extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    variant: Schema.Attribute.Enumeration<
+      ['normal', 'phone', 'email', 'link', 'copy']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'normal'>;
   };
 }
 
