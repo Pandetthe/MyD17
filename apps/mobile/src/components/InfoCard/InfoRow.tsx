@@ -31,7 +31,7 @@ export function InfoRow({ icon, label, value, dark = false }: Props) {
         <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}
         </TextCore>
-        <TextCore variant="h3" color={valueColor} weight="medium">
+        <TextCore variant="h3" color={valueColor} weight="medium" style={{ fontSize: 11 }}>
           {value}
         </TextCore>
       </View>

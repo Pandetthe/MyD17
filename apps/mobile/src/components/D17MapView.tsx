@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { StyleSheet, View, useColorScheme } from "react-native";
+import { StyleSheet, View } from "react-native";
 import WebView from "react-native-webview";
 
 type RoomCoords = Record<string, { x: number; y: number }>;
@@ -26,7 +26,7 @@ type Props = {
   onRoomPress?: (key: string) => void;
 };
 
-function buildHtml(glbBase64: string, textureBase64: string, roomCoords: RoomCoords, darkMode: boolean): string {
+function buildHtml(glbBase64: string, textureBase64: string, roomCoords: RoomCoords): string {
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -49,11 +49,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const FOV = 55, NEAR = 0.1, FAR = 300;
 const ZOOM_MIN = 0.3, ZOOM_SENS = 0.005, ROT_SENS = 0.005;
 const FOV_RAD = FOV * Math.PI / 180;
-const INIT_PHI   = Math.PI / 4;
-const INIT_THETA = -Math.PI / 4;
+const INIT_PHI   = 35 * Math.PI / 180;
+const INIT_THETA = 3 * Math.PI / 4 - 10 * Math.PI / 180;
 const LABEL_ZOOM_THRESHOLD = 0.55; // show full labels when sph.radius < this
 let labelOpacity = 1;
-let LABEL_BG = '${darkMode ? '#212C3F' : '#0C1220'}';
+let LABEL_BG = '#1065AF';
 
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', alpha: true });
 renderer.setClearColor(0x000000, 0);
@@ -350,7 +350,10 @@ function transitionToFloor(newGlbB64, direction, newRoomCoords, texB64, texMime)
 const cv = renderer.domElement;
 let numT = 0, lastX = 0, lastY = 0, lastDist = 0, lastMidX = 0, lastMidY = 0;
 let initialDist = 0, initialMidX = 0, initialMidY = 0;
+let lastAngle = 0, initialAngle = 0;
+let initialT0X = 0, initialT0Y = 0, initialT1X = 0, initialT1Y = 0;
 let activeGesture = null;
+let holdTimer = null;
 
 let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
 let isTap = false;
@@ -371,10 +374,14 @@ function initTouches(touches) {
     lastDist = Math.sqrt(dx*dx + dy*dy);
     lastMidX = (touches[0].clientX + touches[1].clientX) / 2;
     lastMidY = (touches[0].clientY + touches[1].clientY) / 2;
+    lastAngle = Math.atan2(touches[1].clientY - touches[0].clientY, touches[1].clientX - touches[0].clientX);
 
     initialDist = lastDist;
     initialMidX = lastMidX;
     initialMidY = lastMidY;
+    initialAngle = lastAngle;
+    initialT0X = touches[0].clientX; initialT0Y = touches[0].clientY;
+    initialT1X = touches[1].clientX; initialT1Y = touches[1].clientY;
   }
 }
 
@@ -393,13 +400,18 @@ cv.addEventListener('touchstart', e => {
       doubleTapStartRadius = sph.radius;
       doubletapActive = true;
     } else {
-      activeGesture = 'rotate';
+      activeGesture = 'pan';
+      holdTimer = setTimeout(() => {
+        holdTimer = null;
+        if (isTap && numT === 1) { activeGesture = 'rotate'; isTap = false; }
+      }, 220);
     }
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     touchStartTime = now;
     isTap = true;
   } else if (e.touches.length >= 2) {
+    clearTimeout(holdTimer); holdTimer = null;
     activeGesture = 'detect_2_finger';
     isTap = false;
   }
@@ -418,15 +430,30 @@ cv.addEventListener('touchmove', e => {
   if (t.length !== numT) { initTouches(t); return; }
 
   if (t.length === 1) {
-    if (activeGesture === 'rotate') {
+    if (activeGesture === 'pan') {
+      const panDx = t[0].clientX - lastX, panDy = t[0].clientY - lastY;
+      lastX = t[0].clientX; lastY = t[0].clientY;
+      const camPos = new THREE.Vector3().setFromSpherical(sph).add(tgt);
+      const fwd = new THREE.Vector3().subVectors(tgt, camPos);
+      fwd.y = 0;
+      if (fwd.lengthSq() < 0.001) fwd.set(0, 0, -1);
+      fwd.normalize();
+      const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+      const wpp = 2 * sph.radius * Math.tan(FOV_RAD / 2) / innerHeight;
+      tgt.addScaledVector(right, -panDx * wpp);
+      tgt.addScaledVector(fwd, panDy * wpp);
+      if (modelBounds) {
+        tgt.x = Math.max(modelBounds.min.x, Math.min(modelBounds.max.x, tgt.x));
+        tgt.z = Math.max(modelBounds.min.z, Math.min(modelBounds.max.z, tgt.z));
+      }
+    } else if (activeGesture === 'rotate') {
       const rawDx = t[0].clientX - lastX, rawDy = t[0].clientY - lastY;
       lastX = t[0].clientX; lastY = t[0].clientY;
       const dx = Math.max(-40, Math.min(40, rawDx));
       const dy = Math.max(-40, Math.min(40, rawDy));
       sph.theta -= dx * ROT_SENS;
-      // Keep theta in [-π, π] so reset always takes the shortest path.
       sph.theta = ((sph.theta + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
-      sph.phi = Math.max(0.1, Math.min(Math.PI / 2.05, sph.phi - dy * ROT_SENS));
+      sph.phi = Math.max(0.1, Math.min(Math.PI / 3, sph.phi - dy * ROT_SENS));
       sph.makeSafe();
     } else if (activeGesture === 'doubletap_zoom') {
       const dy = t[0].clientY - doubleTapStartY;
@@ -437,50 +464,59 @@ cv.addEventListener('touchmove', e => {
     const dist = Math.sqrt(dx*dx + dy*dy);
     const midX = (t[0].clientX + t[1].clientX) / 2;
     const midY = (t[0].clientY + t[1].clientY) / 2;
+    const angle = Math.atan2(t[1].clientY - t[0].clientY, t[1].clientX - t[0].clientX);
 
     if (activeGesture === 'detect_2_finger') {
-      const deltaDist = Math.abs(dist - initialDist);
-      const deltaPan = Math.sqrt(Math.pow(midX - initialMidX, 2) + Math.pow(midY - initialMidY, 2));
+      const dX0 = t[0].clientX - initialT0X, dY0 = t[0].clientY - initialT0Y;
+      const dX1 = t[1].clientX - initialT1X, dY1 = t[1].clientY - initialT1Y;
 
-      if (deltaDist > 20 || deltaPan > 20) {
-        if (deltaDist > deltaPan) {
-          activeGesture = 'zoom';
-        } else {
-          activeGesture = 'pan';
-        }
+      // Tilt: both fingers moving in the same vertical direction.
+      // Check this first — even if one finger lags, their Y signs will agree.
+      const bothSameY = dY0 * dY1 > 0 && Math.abs(dY0) > 4 && Math.abs(dY1) > 4;
+      if (bothSameY) {
+        activeGesture = 'tilt';
       } else {
-        lastDist = dist; lastMidX = midX; lastMidY = midY;
-        return;
+        const commonY = (dY0 + dY1) / 2;
+        const diffX = (dX0 - dX1) / 2, diffY = (dY0 - dY1) / 2;
+        const fLen = initialDist || 1;
+        const fAxisX = (initialT1X - initialT0X) / fLen;
+        const fAxisY = (initialT1Y - initialT0Y) / fLen;
+        const rotComponent = Math.abs(-diffX * fAxisY + diffY * fAxisX) * 2;
+        const deltaDist = Math.abs(dist - initialDist);
+        const tiltComponent = Math.abs(commonY);
+
+        if (deltaDist > 10 || rotComponent > 10 || tiltComponent > 10) {
+          const max = Math.max(deltaDist, rotComponent, tiltComponent);
+          if (max === deltaDist) activeGesture = 'zoom';
+          else if (max === rotComponent) activeGesture = 'spin';
+          else activeGesture = 'tilt';
+        } else {
+          lastDist = dist; lastMidX = midX; lastMidY = midY; lastAngle = angle;
+          return;
+        }
       }
     }
 
     if (activeGesture === 'zoom') {
       sph.radius = Math.max(ZOOM_MIN, Math.min(zoomMax,
         sph.radius + (lastDist - dist) * ZOOM_SENS * sph.radius));
-    } else if (activeGesture === 'pan') {
-      const panDx = midX - lastMidX, panDy = midY - lastMidY;
-      const camPos = new THREE.Vector3().setFromSpherical(sph).add(tgt);
-      const fwd = new THREE.Vector3().subVectors(tgt, camPos);
-      fwd.y = 0;
-      if (fwd.lengthSq() < 0.001) fwd.set(0, 0, -1);
-      fwd.normalize();
-      const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
-      const wpp = 2 * sph.radius * Math.tan(FOV_RAD / 2) / innerHeight;
-      tgt.addScaledVector(right, -panDx * wpp);
-      tgt.addScaledVector(fwd, panDy * wpp);
-
-      if (modelBounds) {
-        tgt.x = Math.max(modelBounds.min.x, Math.min(modelBounds.max.x, tgt.x));
-        tgt.z = Math.max(modelBounds.min.z, Math.min(modelBounds.max.z, tgt.z));
-      }
+    } else if (activeGesture === 'spin') {
+      const dAngle = angle - lastAngle;
+      sph.theta += dAngle;
+      sph.theta = ((sph.theta + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+      sph.makeSafe();
+    } else if (activeGesture === 'tilt') {
+      sph.phi = Math.max(0.1, Math.min(Math.PI / 3, sph.phi - (midY - lastMidY) * ROT_SENS));
+      sph.makeSafe();
     }
 
-    lastDist = dist; lastMidX = midX; lastMidY = midY;
+    lastDist = dist; lastMidX = midX; lastMidY = midY; lastAngle = angle;
   }
   markDirty();
 }, {passive:false});
 
 cv.addEventListener('touchend', e => {
+  clearTimeout(holdTimer); holdTimer = null;
   const wasTap = isTap && e.changedTouches.length === 1 && (performance.now() - touchStartTime) < 500;
   if (wasTap) {
     if (activeGesture === 'doubletap_zoom') {
@@ -499,7 +535,7 @@ cv.addEventListener('touchend', e => {
       pendingTapTimer = setTimeout(() => { pendingTapTimer = null; handleTap(tapX, tapY); }, DOUBLE_TAP_MS);
     }
   }
-  if (activeGesture === 'rotate' && wasTap) {
+  if (activeGesture === 'pan' && wasTap) {
     lastTapEndTime = performance.now();
     lastTapEndX = e.changedTouches[0].clientX;
     lastTapEndY = e.changedTouches[0].clientY;
@@ -527,7 +563,9 @@ function makeDotTexture() {
   c.arc(8, 8, 8, 0, Math.PI * 2);
   c.fillStyle = LABEL_BG;
   c.fill();
-  return new THREE.CanvasTexture(cv);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 const globalDotMat = new THREE.SpriteMaterial({
@@ -536,7 +574,8 @@ const globalDotMat = new THREE.SpriteMaterial({
   alphaTest: 0.1,
   depthTest: false,
   depthWrite: false,
-  sizeAttenuation: false
+  sizeAttenuation: false,
+  toneMapped: false,
 });
 
 function makeLabelTexture(text) {
@@ -565,7 +604,9 @@ function makeLabelTexture(text) {
   c.textAlign = 'center';
   c.textBaseline = 'middle';
   c.fillText(text, W / 2, H / 2);
-  return { tex: new THREE.CanvasTexture(cv), aspect: W / H };
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return { tex, aspect: W / H };
 }
 
 function createLabels(floorY) {
@@ -577,7 +618,8 @@ function createLabels(floorY) {
       alphaTest: 0.1,
       depthTest: false,
       depthWrite: false,
-      sizeAttenuation: false
+      sizeAttenuation: false,
+      toneMapped: false,
     });
     const position = new THREE.Vector3(c.x, floorY + 0.05, c.y);
 
@@ -811,17 +853,9 @@ export default function D17MapView({
     );
   }, [floorPayload]);
 
-  const darkMode = useColorScheme() === "dark";
-
-  useEffect(() => {
-    if (!webViewRef.current || !html.current) return;
-    const bg = darkMode ? "#212C3F" : "#0C1220";
-    webViewRef.current.injectJavaScript(`updateLabelColors('${bg}');true;`);
-  }, [darkMode]);
-
   const html = useRef<string | null>(null);
   if (!html.current && glbBase64 && textureBase64) {
-    html.current = buildHtml(glbBase64, textureBase64, roomCoords, darkMode);
+    html.current = buildHtml(glbBase64, textureBase64, roomCoords);
   }
 
   if (!html.current) return null;

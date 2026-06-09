@@ -47,7 +47,7 @@ export default function Contact() {
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
     >
-      <ContentRenderer blocks={blocks} />
+      <ContentRenderer blocks={blocks} textColor={theme.colors.primary.text} />
     </ScrollView>
   );
 }
@@ -63,7 +63,9 @@ const styles = StyleSheet.create((theme: Theme) => ({
     gap: theme.spacing.sm,
   },
   content: {
-    padding: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.xs,
+    paddingBottom: theme.spacing.md,
     gap: theme.spacing.sm,
   },
 }));
