@@ -26,6 +26,7 @@
     "@strapi/plugin-documentation": "5.46.0",
     "@strapi/plugin-users-permissions": "5.45.0",
     "@strapi/strapi": "5.46.0",
+    "firebase-admin": "^13.10.0",
     "@strapi/admin": "5.46.0",
     "@strapi/design-system": "2.2.0",
     "@strapi/icons": "2.2.0",

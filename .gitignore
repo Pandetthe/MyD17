@@ -45,6 +45,7 @@ public/uploads/*
 *.db
 *.sqlite
 *.sqlite3
+backups/
 
 # ==============================
 # Environment Variables

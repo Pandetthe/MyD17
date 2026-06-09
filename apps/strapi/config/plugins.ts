@@ -6,7 +6,7 @@ const config = ({
   env,
 }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
   documentation: {
-    enabled: true,
+    enabled: env("NODE_ENV") !== "production",
     config: {
       openapi: "3.0.0",
       info: { version: "1.0.0", title: "MyD17 API" },
@@ -31,6 +31,14 @@ const config = ({
       },
     },
   },
+  "users-permissions": {
+    config: {
+      ratelimit: {
+        interval: 60000,
+        max: 5,
+      },
+    },
+  },
   "strapi-lucide-icons": {
     enabled: true,
     resolve: "./src/plugins/icon-picker",
@@ -38,6 +46,10 @@ const config = ({
   "color-picker": {
     enabled: true,
     resolve: "./src/plugins/color-picker",
+  },
+  'push-notifications-widget': {
+    enabled: true,
+    resolve: './src/plugins/push-notifications-widget'
   },
 });
 

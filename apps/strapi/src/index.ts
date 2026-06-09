@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import { tmpdir } from "os";
 import path from "path";
 import type { Core, UID } from "@strapi/strapi";
+import * as admin from "firebase-admin";
 
 type AdminPermission = {
   action: string;
@@ -85,9 +86,36 @@ function buildPluginPermissions(actionIds: string[]): AdminPermission[] {
 type SeedItem = Record<string, unknown>;
 
 export default {
-  register() {},
+  register({ strapi }: { strapi: Core.Strapi }) {
+    strapi.documents.use(async (ctx, next) => {
+      const result = await next();
+
+      if (ctx.uid === "api::post.post" && ctx.action === "publish") {
+        const documentId = (ctx.params as { documentId?: string }).documentId;
+        if (documentId) {
+          await sendPushNotificationsForPost(strapi, documentId).catch((err) =>
+            strapi.log.error("sendPushNotificationsForPost failed:", err),
+          );
+        }
+      }
+
+      return result;
+    });
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    if (!admin.apps.length) {
+      try {
+        const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT ?? "");
+        if (parsed?.project_id) {
+          admin.initializeApp({ credential: admin.credential.cert(parsed) });
+        } else {
+          strapi.log.warn("FIREBASE_SERVICE_ACCOUNT invalid — push notifications disabled");
+        }
+      } catch {
+        strapi.log.warn("FIREBASE_SERVICE_ACCOUNT not set or not valid JSON — push notifications disabled");
+      }
+    }
     const createdIds: Record<string, number[]> = {};
 
     const uploadImageFromUrl = async (url: string): Promise<number | null> => {
@@ -292,6 +320,10 @@ async function setupAdminRoles(strapi: Core.Strapi) {
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
+  if (process.env.NODE_ENV === "production") {
+    strapi.log.info("Skipping default admin seeding in production");
+    return;
+  }
   const superAdminRole = (await strapi.db
     .query("admin::role")
     .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
@@ -309,21 +341,24 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       firstname: "Super",
       lastname: "Admin",
       email: "superadmin@myd17.pl",
-      password: "SuperAdmin123!",
+      password:
+        process.env.STRAPI_SUPERADMIN_PASSWORD ?? "SuperAdmin123!",
       role: superAdminRole,
     },
     {
       firstname: "Admin",
       lastname: "MYD17",
       email: "admin@myd17.pl",
-      password: "Admin123!",
+      password:
+        process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
       role: adminRole,
     },
     {
       firstname: "Editor",
       lastname: "MYD17",
       email: "editor@myd17.pl",
-      password: "Editor123!",
+      password:
+        process.env.STRAPI_EDITOR_PASSWORD ?? "Editor123!",
       role: editorRole,
     },
   ];
@@ -331,6 +366,10 @@ async function seedAdminUsers(strapi: Core.Strapi) {
   let created = false;
   for (const { firstname, lastname, email, password, role } of DEFAULT_USERS) {
     if (!role) continue;
+    if (!password) {
+      strapi.log.warn(`Skipping admin user ${email}: password env is not set`);
+      continue;
+    }
 
     const existing = await strapi.db
       .query("admin::user")
@@ -380,7 +419,10 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     "api::static-information.static-information.findOne",
     "api::contact.contact.find",
     "api::contact.contact.findOne",
-    "plugin::users-permissions.user.find",
+    "api::push-subscriber.push-subscriber.find",
+    "api::push-subscriber.push-subscriber.findOne",
+    "api::push-subscriber.push-subscriber.create",
+    "api::push-subscriber.push-subscriber.update",
   ];
 
   for (const action of publicActions) {
@@ -400,4 +442,62 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
       strapi.log.info(`Enabled public permission: ${action}`);
     }
   }
+
+  // Explicitly revoke permissions that must not be public
+  const actionsToRevoke = [
+    "plugin::users-permissions.user.find",
+    "plugin::users-permissions.user.findOne",
+    "plugin::users-permissions.user.me",
+    "plugin::users-permissions.user.update",
+    "plugin::users-permissions.user.destroy",
+  ];
+
+  for (const action of actionsToRevoke) {
+    const existing = await strapi.db
+      .query("plugin::users-permissions.permission")
+      .findOne({ where: { action, role: publicRole.id } });
+
+    if (existing && existing.enabled) {
+      await strapi.db
+        .query("plugin::users-permissions.permission")
+        .update({ where: { id: existing.id }, data: { enabled: false } });
+      strapi.log.info(`Revoked public permission: ${action}`);
+    }
+  }
+}
+
+async function sendPushNotificationsForPost(strapi: Core.Strapi, documentId: string) {
+  if (!admin.apps.length) return;
+
+  const post = await strapi.documents("api::post.post").findOne({
+    documentId,
+    populate: ["tags"],
+  });
+
+  const tags = (post as { tags?: { id: number }[] } | null)?.tags;
+  if (!tags?.length) return;
+
+  const tagIds = tags.map((t) => t.id);
+
+  const subscribers = (await strapi.db
+    .query("api::push-subscriber.push-subscriber")
+    .findMany({
+      where: { tags: { id: { $in: tagIds } } },
+      select: ["id", "pushToken"],
+    })) as { id: number; pushToken: string }[];
+
+  if (!subscribers.length) return;
+
+  const title = (post as { title?: string } | null)?.title;
+
+  await admin.messaging().sendEachForMulticast({
+    tokens: subscribers.map(s => s.pushToken),
+    notification: { title: "New post on main page", body: title ?? "Check out the post" },
+    data: { postId: documentId },
+  }).catch((err) => { strapi.log.error("Push send failed:", err); return null; });
+  // }
+
+  strapi.log.info(
+    `Push sent to ${subscribers.length} subscribers for post ${documentId}`,
+  );
 }

@@ -1,0 +1,14 @@
+{
+  "name": "push-notifications-widget",
+  "version": "0.0.0",
+  "strapi": {
+    "kind": "plugin",
+    "name": "push-notifications-widget",
+    "displayName": "Push Notifications Widget",
+    "description": ""
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "*",
+    "firebase-admin": "*"
+  }
+}
