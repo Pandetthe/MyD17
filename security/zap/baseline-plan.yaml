@@ -1,0 +1,69 @@
+---
+env:
+  vars:
+    TARGET_URL: "http://localhost:1337"
+    REPORT_DIR: "/zap/reports"
+  contexts:
+    - name: MyD17-API
+      urls:
+        - "${TARGET_URL}/api/posts"
+      includePaths:
+        - "${TARGET_URL}/api/.*"
+        - "${TARGET_URL}/admin.*"
+      excludePaths:
+        - "${TARGET_URL}/api/auth/forgot-password"
+        - "${TARGET_URL}/api/auth/send-email-confirmation"
+        - "${TARGET_URL}/api/documentation/.*"
+        - "${TARGET_URL}/upload.*"
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - name: passiveScan-config
+    type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+      scanOnlyInScope: true
+      maxBodySizeInBytesToScan: 10000
+
+  - name: openapi
+    type: openapi
+    parameters:
+      apiFile: "/zap/openapi/full_documentation.json"
+      targetUrl: "${TARGET_URL}"
+      context: MyD17-API
+
+  - name: spider
+    type: spider
+    parameters:
+      context: MyD17-API
+      url: "${TARGET_URL}/api/posts"
+      maxDuration: 2
+      maxDepth: 3
+      acceptCookies: false
+
+  - name: passiveScan-wait
+    type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - name: report-html
+    type: report
+    parameters:
+      template: traditional-html
+      reportDir: "${REPORT_DIR}"
+      reportFile: "zap-baseline-report.html"
+      reportTitle: "MyD17 ZAP Baseline Scan"
+      reportDescription: "Passive security scan — safe for CI"
+      displayReport: false
+
+  - name: report-json
+    type: report
+    parameters:
+      template: traditional-json
+      reportDir: "${REPORT_DIR}"
+      reportFile: "zap-baseline-report.json"
+      reportTitle: "MyD17 ZAP Baseline Scan"
+      displayReport: false

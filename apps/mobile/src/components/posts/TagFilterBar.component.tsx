@@ -21,7 +21,7 @@ function ClearPill({ onPress }: { onPress: () => void }) {
       onPressOut={onPressOut}
     >
       <Animated.View style={[styles.clearPill, animStyle]}>
-        <TextCore variant="label" color={colors.white} numberOfLines={1}>
+        <TextCore variant="label" color={colors.white} numberOfLines={1} style={styles.clearPillText}>
           Wyczyść
         </TextCore>
       </Animated.View>
@@ -107,12 +107,18 @@ const styles = StyleSheet.create((theme: Theme) => ({
     borderRadius: theme.borderRadius.full,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xxs,
+    borderWidth: 1,
+    borderColor: "transparent",
     justifyContent: "center",
     shadowColor: theme.colors.dark.main,
     shadowOffset: { width: 5, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
     elevation: 4,
+  },
+  clearPillText: {
+    fontSize: 14,
+    lineHeight: 18,
   },
   dimmed: {
     opacity: 0.4,

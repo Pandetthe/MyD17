@@ -8,12 +8,14 @@ import { StyleSheet } from "react-native-unistyles";
 export function SectionTitleBlock({
   block,
   color,
+  isFirst = false,
 }: {
   block: ContentSectionTitle;
   color?: ColorValue;
+  isFirst?: boolean;
 }) {
   return (
-    <View style={styles.wrapper}>
+    <View style={!isFirst && styles.notFirst}>
       <TextCore variant="h1" weight="bold" color={color}>
         {block.content}
       </TextCore>
@@ -22,7 +24,7 @@ export function SectionTitleBlock({
 }
 
 const styles = StyleSheet.create((theme: Theme) => ({
-  wrapper: {
+  notFirst: {
     marginTop: theme.spacing.lg,
   },
 }));

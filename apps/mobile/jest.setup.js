@@ -11,6 +11,10 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 
+jest.mock("expo-clipboard", () => ({
+  setStringAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
 const mockTheme = {
   colors: {
     surface: "#F8FAFC",
@@ -77,11 +81,14 @@ jest.mock("react-native-unistyles", () => ({
 
 const mockIcon = () => null;
 jest.mock("lucide-react-native", () => ({
+  ArrowUpRight: mockIcon,
   Bell: mockIcon,
   BookOpen: mockIcon,
   Building: mockIcon,
   Calendar: mockIcon,
   CalendarPlus: mockIcon,
+  ChevronRight: mockIcon,
+  Copy: mockIcon,
   Clock: mockIcon,
   Coffee: mockIcon,
   FileText: mockIcon,

@@ -16,6 +16,7 @@ const CONTENT_TYPES = [
   "api::tag.tag",
   "api::static-information.static-information",
   "api::information-page.information-page",
+  "api::contact.contact",
 ];
 
 const CONTENT_ACTION_IDS = [
@@ -256,6 +257,7 @@ export default {
         staticInformation: "api::static-information.static-information",
       },
     );
+    await seedFromFile("api::contact.contact", "contact.json");
 
     await setupPublicPermissions(strapi);
     await setupAdminRoles(strapi);
@@ -322,8 +324,10 @@ async function setupAdminRoles(strapi: Core.Strapi) {
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
-  const isProduction = process.env.NODE_ENV === "production";
-
+  if (process.env.NODE_ENV === "production") {
+    strapi.log.info("Skipping default admin seeding in production");
+    return;
+  }
   const superAdminRole = (await strapi.db
     .query("admin::role")
     .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
@@ -342,8 +346,7 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       lastname: "Admin",
       email: "superadmin@myd17.pl",
       password:
-        process.env.STRAPI_SUPERADMIN_PASSWORD ??
-        (isProduction ? undefined : "SuperAdmin123!"),
+        process.env.STRAPI_SUPERADMIN_PASSWORD ?? "SuperAdmin123!",
       role: superAdminRole,
     },
     {
@@ -351,8 +354,7 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       lastname: "MYD17",
       email: "admin@myd17.pl",
       password:
-        process.env.STRAPI_ADMIN_PASSWORD ??
-        (isProduction ? undefined : "Admin123!"),
+        process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
       role: adminRole,
     },
     {
@@ -360,8 +362,7 @@ async function seedAdminUsers(strapi: Core.Strapi) {
       lastname: "MYD17",
       email: "editor@myd17.pl",
       password:
-        process.env.STRAPI_EDITOR_PASSWORD ??
-        (isProduction ? undefined : "Editor123!"),
+        process.env.STRAPI_EDITOR_PASSWORD ?? "Editor123!",
       role: editorRole,
     },
   ];
@@ -420,7 +421,8 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     "api::information-page.information-page.findOne",
     "api::static-information.static-information.find",
     "api::static-information.static-information.findOne",
-    "plugin::users-permissions.user.find",
+    "api::contact.contact.find",
+    "api::contact.contact.findOne",
     "api::push-subscriber.push-subscriber.find",
     "api::push-subscriber.push-subscriber.findOne",
     "api::push-subscriber.push-subscriber.create",
@@ -442,6 +444,28 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
         .query("plugin::users-permissions.permission")
         .update({ where: { id: permission.id }, data: { enabled: true } });
       strapi.log.info(`Enabled public permission: ${action}`);
+    }
+  }
+
+  // Explicitly revoke permissions that must not be public
+  const actionsToRevoke = [
+    "plugin::users-permissions.user.find",
+    "plugin::users-permissions.user.findOne",
+    "plugin::users-permissions.user.me",
+    "plugin::users-permissions.user.update",
+    "plugin::users-permissions.user.destroy",
+  ];
+
+  for (const action of actionsToRevoke) {
+    const existing = await strapi.db
+      .query("plugin::users-permissions.permission")
+      .findOne({ where: { action, role: publicRole.id } });
+
+    if (existing && existing.enabled) {
+      await strapi.db
+        .query("plugin::users-permissions.permission")
+        .update({ where: { id: existing.id }, data: { enabled: false } });
+      strapi.log.info(`Revoked public permission: ${action}`);
     }
   }
 }

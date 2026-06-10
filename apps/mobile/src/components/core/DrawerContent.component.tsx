@@ -4,7 +4,7 @@ import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import { usePathname, useRouter, Href } from "expo-router";
-import { HomeIcon, InfoIcon, LucideIcon, MapIcon, SettingsIcon } from "lucide-react-native";
+import { HomeIcon, InfoIcon, LucideIcon, MapIcon, PhoneIcon, SettingsIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
@@ -19,11 +19,12 @@ type NavItemProps = {
 
 function NavItem({ icon: Icon, label, active, onPress, testID }: NavItemProps) {
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.97);
+  const iconColor = active ? colors.white : colors.core.extraLight;
   return (
     <Pressable testID={testID} onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Animated.View style={[styles.navItem, active && styles.navItemActive, animStyle]}>
-        <Icon size={24} color={colors.white} strokeWidth={1.8} />
-        <Text style={styles.navItemText}>{label}</Text>
+        <Icon size={22} color={iconColor} strokeWidth={active ? 2 : 1.6} />
+        <Text style={[styles.navItemText, active && styles.navItemTextActive]}>{label}</Text>
       </Animated.View>
     </Pressable>
   );
@@ -40,12 +41,14 @@ export default function DrawerContent() {
     { icon: HomeIcon, label: "STRONA GŁÓWNA", href: "/" },
     { icon: MapIcon, label: "MAPA D17", href: "/d17map" },
     { icon: InfoIcon, label: "INFORMACJE", href: "/information" },
+    { icon: PhoneIcon, label: "KONTAKT", href: "/contact" },
   ];
 
   const navTestIDs: Record<string, string> = {
     "/": "drawer-nav-home",
     "/d17map": "drawer-nav-map",
     "/information": "drawer-nav-information",
+    "/contact": "drawer-nav-contact",
   };
 
   return (
@@ -89,13 +92,13 @@ export default function DrawerContent() {
 const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.core.dark,
+    backgroundColor: theme.colors.dark.bg,
     borderTopRightRadius: 32,
     borderBottomRightRadius: 32,
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: colors.core.extraDark,
     shadowOffset: { width: 10, height: 0 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.35,
     shadowRadius: 20,
     elevation: 10,
   },
@@ -125,17 +128,19 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.spacing.sm,
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md,
-    backgroundColor: "transparent",
     borderRadius: theme.borderRadius.sm,
     marginBottom: theme.spacing.xxs,
   },
   navItemActive: {
-    backgroundColor: "rgba(255,255,255,0.07)",
+    backgroundColor: "rgba(16,101,175,0.15)",
   },
   navItemText: {
     fontFamily: theme.fonts.semiBold,
+    color: colors.core.extraLight,
+    fontSize: 14,
+    letterSpacing: 0.4,
+  },
+  navItemTextActive: {
     color: colors.white,
-    fontSize: 16,
-    letterSpacing: 0.5,
   },
 }));
