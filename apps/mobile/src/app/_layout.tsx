@@ -1,6 +1,6 @@
 import "@/styles/unistyles";
 import React, { useEffect, useRef } from "react";
-import * as Notifications from "expo-notifications";
+import { handleTokenRefresh } from "@/lib/pushNotifications";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { QueryProvider } from "@/providers/QueryProvider";
 import {
@@ -11,14 +11,20 @@ import {
   Montserrat_700Bold,
 } from "@expo-google-fonts/montserrat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getMessaging,
+  onMessage,
+  onNotificationOpenedApp,
+  getInitialNotification,
+  onTokenRefresh,
+} from "@react-native-firebase/messaging";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UnistylesRuntime } from "react-native-unistyles";
-import { getMessaging, onMessage, onNotificationOpenedApp, getInitialNotification, onTokenRefresh } from "@react-native-firebase/messaging";
-import { handleTokenRefresh } from "@/lib/pushNotifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,7 +58,11 @@ export default function Layout() {
   useEffect(() => {
     return onMessage(getMessaging(), async (msg) => {
       await Notifications.scheduleNotificationAsync({
-        content: { title: msg.notification?.title, body: msg.notification?.body, data: { ...msg.data, _source: "foreground" } },
+        content: {
+          title: msg.notification?.title,
+          body: msg.notification?.body,
+          data: { ...msg.data, _source: "foreground" },
+        },
         trigger: null,
       });
     });
@@ -70,7 +80,8 @@ export default function Layout() {
     getInitialNotification(getMessaging()).then((msg) => {
       if (!msg) return;
       const postId = msg.data?.postId as string | undefined;
-      if (postId) setTimeout(() => router.push({ pathname: "/post/[id]", params: { id: postId } }), 0);
+      if (postId)
+        setTimeout(() => router.push({ pathname: "/post/[id]", params: { id: postId } }), 0);
     });
   }, [loaded, error]);
 

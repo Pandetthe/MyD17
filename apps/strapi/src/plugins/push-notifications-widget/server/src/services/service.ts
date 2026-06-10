@@ -21,7 +21,9 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     if (!subscribers.length) return { sent: 0 };
 
     const tokens = subscribers.map((s) => s.pushToken);
-    await admin.messaging().sendEachForMulticast({ tokens, notification: { title, body } });
+    await admin
+      .messaging()
+      .sendEachForMulticast({ tokens, notification: { title, body } });
     return { sent: tokens.length };
   },
 });

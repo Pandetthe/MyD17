@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { useFetchClient } from "@strapi/strapi/admin";
-import { Box, Button, TextInput, Checkbox, Typography, Flex, Loader } from "@strapi/design-system";
+import {
+  Box,
+  Button,
+  TextInput,
+  Checkbox,
+  Typography,
+  Flex,
+  Loader,
+} from "@strapi/design-system";
 import { PLUGIN_ID } from "../pluginId";
 
 type Tag = {
@@ -37,7 +45,7 @@ export default function PushWidget() {
     setSelected(
       selected.size === tags.length
         ? new Set()
-        : new Set(tags.map((t) => t.id))
+        : new Set(tags.map((t) => t.id)),
     );
 
   const handleSend = async () => {
@@ -55,7 +63,11 @@ export default function PushWidget() {
       setBody("");
       setSelected(new Set());
     } catch (err: any) {
-      setError(err?.response?.data?.error?.message ?? err?.message ?? "Failed to send notifications");
+      setError(
+        err?.response?.data?.error?.message ??
+          err?.message ??
+          "Failed to send notifications",
+      );
     } finally {
       setSending(false);
     }
@@ -70,7 +82,8 @@ export default function PushWidget() {
   }
 
   const allSelected = tags.length > 0 && selected.size === tags.length;
-  const canSend = selected.size > 0 && title.trim().length > 0 && body.trim().length > 0;
+  const canSend =
+    selected.size > 0 && title.trim().length > 0 && body.trim().length > 0;
 
   return (
     <Box padding={4}>
@@ -85,7 +98,12 @@ export default function PushWidget() {
 
       <Box
         marginBottom={4}
-        style={{ maxHeight: 180, overflowY: "auto", border: "1px solid #dcdce4", borderRadius: 4 }}
+        style={{
+          maxHeight: 180,
+          overflowY: "auto",
+          border: "1px solid #dcdce4",
+          borderRadius: 4,
+        }}
       >
         {tags.length === 0 ? (
           <Box padding={3}>
@@ -96,7 +114,12 @@ export default function PushWidget() {
             <Box
               key={tag.id}
               padding={2}
-              style={{ display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #f0f0f3" }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                borderBottom: "1px solid #f0f0f3",
+              }}
             >
               <Checkbox
                 checked={selected.has(tag.id)}

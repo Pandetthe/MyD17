@@ -1,9 +1,9 @@
-import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiClient } from "./apiClient";
 import { FCM_TOKEN_KEY } from "./storageKeys";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMessaging, getToken, deleteToken } from "@react-native-firebase/messaging";
+import * as Notifications from "expo-notifications";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,7 +13,6 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
-
 
 export async function registerForPushNotifications() {
   if (Platform.OS === "android") {

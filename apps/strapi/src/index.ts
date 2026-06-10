@@ -110,10 +110,14 @@ export default {
         if (parsed?.project_id) {
           admin.initializeApp({ credential: admin.credential.cert(parsed) });
         } else {
-          strapi.log.warn("FIREBASE_SERVICE_ACCOUNT invalid — push notifications disabled");
+          strapi.log.warn(
+            "FIREBASE_SERVICE_ACCOUNT invalid — push notifications disabled",
+          );
         }
       } catch {
-        strapi.log.warn("FIREBASE_SERVICE_ACCOUNT not set or not valid JSON — push notifications disabled");
+        strapi.log.warn(
+          "FIREBASE_SERVICE_ACCOUNT not set or not valid JSON — push notifications disabled",
+        );
       }
     }
     const createdIds: Record<string, number[]> = {};
@@ -466,7 +470,10 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
   }
 }
 
-async function sendPushNotificationsForPost(strapi: Core.Strapi, documentId: string) {
+async function sendPushNotificationsForPost(
+  strapi: Core.Strapi,
+  documentId: string,
+) {
   if (!admin.apps.length) return;
 
   const post = await strapi.documents("api::post.post").findOne({
@@ -490,11 +497,20 @@ async function sendPushNotificationsForPost(strapi: Core.Strapi, documentId: str
 
   const title = (post as { title?: string } | null)?.title;
 
-  await admin.messaging().sendEachForMulticast({
-    tokens: subscribers.map(s => s.pushToken),
-    notification: { title: "New post on main page", body: title ?? "Check out the post" },
-    data: { postId: documentId },
-  }).catch((err) => { strapi.log.error("Push send failed:", err); return null; });
+  await admin
+    .messaging()
+    .sendEachForMulticast({
+      tokens: subscribers.map((s) => s.pushToken),
+      notification: {
+        title: "New post on main page",
+        body: title ?? "Check out the post",
+      },
+      data: { postId: documentId },
+    })
+    .catch((err) => {
+      strapi.log.error("Push send failed:", err);
+      return null;
+    });
   // }
 
   strapi.log.info(

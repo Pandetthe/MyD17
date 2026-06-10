@@ -15,7 +15,8 @@ const thresholdsByScenario = {
   },
 };
 
-export const thresholds = thresholdsByScenario[__ENV.SCENARIO || "load"] || thresholdsByScenario.load;
+export const thresholds =
+  thresholdsByScenario[__ENV.SCENARIO || "load"] || thresholdsByScenario.load;
 
 const SCENARIO = __ENV.SCENARIO || "load";
 

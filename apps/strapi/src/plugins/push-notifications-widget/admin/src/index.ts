@@ -5,18 +5,18 @@ import { PaperPlane } from "@strapi/icons";
 export default {
   register(app: any) {
     app.widgets.register({
-    icon: PaperPlane,
-    title: {
-      id: `${PLUGIN_ID}.widget.push.title`,
-      defaultMessage: "Push Notifications",
-    },
-    component: async () => {
-      const component = await import("./components/PushWidget");
-      return component.default;
-    },
-    id: "content-push",
-    pluginId: PLUGIN_ID,
-  });
+      icon: PaperPlane,
+      title: {
+        id: `${PLUGIN_ID}.widget.push.title`,
+        defaultMessage: "Push Notifications",
+      },
+      component: async () => {
+        const component = await import("./components/PushWidget");
+        return component.default;
+      },
+      id: "content-push",
+      pluginId: PLUGIN_ID,
+    });
 
     app.registerPlugin({
       id: PLUGIN_ID,
@@ -38,7 +38,7 @@ export default {
         } catch {
           return { data: {}, locale };
         }
-      })
+      }),
     );
   },
 };
