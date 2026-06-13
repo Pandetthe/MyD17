@@ -57,6 +57,8 @@ export type PostContentBlock =
   | ContentEventDateTime
   | ContentCalendar;
 
+export type ContactPage = Schema["Contact"];
+
 // ─── Tag color ────────────────────────────────────────────────────────────────
 
 export type TailwindColorName =
@@ -79,6 +81,8 @@ export type TailwindColorName =
   | "rose";
 
 export type LocationValue = "s1.38" | "s2.41" | "s3.20" | "s4.21";
+
+export type ChipVariant = NonNullable<ContentChip["variant"]>;
 
 export type DayOfWeek =
   | "monday"

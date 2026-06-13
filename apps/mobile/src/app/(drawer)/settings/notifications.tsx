@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import Button from "@/components/core/Button.component";
 import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import UnsavedChangesModal from "@/components/core/UnsavedChangesModal.component";
 import { apiClient } from "@/lib/apiClient";
+import { syncSubscriptions } from "@/lib/pushNotifications";
+import { FCM_TOKEN_KEY } from "@/lib/storageKeys";
 import { tagColor } from "@/lib/tagColor";
 import { Theme } from "@/styles/themes/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationAction, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ArrowLeft, SaveIcon } from "lucide-react-native";
@@ -60,11 +63,24 @@ export default function Notifications() {
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await apiClient.get<{ data: TagData[] }>("/api/tags");
-      const data = res.data.data;
+      const [tagsRes, storedToken] = await Promise.all([
+        apiClient.get<{ data: TagData[] }>("/api/tags"),
+        AsyncStorage.getItem(FCM_TOKEN_KEY).catch(() => null),
+      ]);
+      const data = tagsRes.data.data;
       setTags(data);
+      let savedTagIds = new Set<number>();
+      if (storedToken) {
+        const sub = await apiClient
+          .get<{ data: Array<{ tags: Array<{ id: number }> }> }>(
+            `/api/push-subscribers?filters[pushToken][$eq]=${encodeURIComponent(storedToken)}&populate[tags][fields][0]=id`,
+          )
+          .then((r) => r.data.data[0] ?? null)
+          .catch(() => null);
+        if (sub) savedTagIds = new Set(sub.tags.map((t) => t.id));
+      }
       const initial = data.reduce(
-        (acc, tag) => ({ ...acc, [tag.id]: false }),
+        (acc, tag) => ({ ...acc, [tag.id]: savedTagIds.has(tag.id) }),
         {} as Record<number, boolean>,
       );
       setSelected(initial);
@@ -94,7 +110,22 @@ export default function Notifications() {
     );
   };
 
-  const save = () => setSaved({ ...selected });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const save = async () => {
+    setIsSaving(true);
+    try {
+      const tagIds = Object.keys(selected)
+        .filter((id) => selected[Number(id)])
+        .map(Number);
+      await syncSubscriptions(tagIds);
+      setSaved({ ...selected });
+    } catch {
+      Alert.alert("Błąd", "Nie udało się zapisać powiadomień.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleDiscard = () => {
     setShowModal(false);
@@ -156,9 +187,16 @@ export default function Notifications() {
 
         <Animated.View
           style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
-          pointerEvents={hasUnsaved ? "auto" : "none"}
+          pointerEvents="auto"
         >
-          <Button text="Zapisz" icon={SaveIcon} color="primary" size="lg" onPress={save} />
+          <Button
+            text="Zapisz"
+            icon={SaveIcon}
+            color="primary"
+            size="lg"
+            onPress={save}
+            disabled={isSaving}
+          />
         </Animated.View>
 
         <UnsavedChangesModal

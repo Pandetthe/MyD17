@@ -55,7 +55,8 @@ export function ContentRenderer({
 
   return (
     <View style={styles.container}>
-      {grouped.map((item) => {
+      {grouped.map((item, index) => {
+        const isFirst = index === 0;
         if (item.type === "info") {
           return (
             <InfoCard
@@ -79,6 +80,7 @@ export function ContentRenderer({
                 key={`${block.__component}-${block.id}`}
                 block={block}
                 color={textColor}
+                isFirst={isFirst}
               />
             );
           case "content.calendar":

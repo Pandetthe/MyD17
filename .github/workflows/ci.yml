@@ -10,6 +10,7 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,4 +51,6 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: Build and Test
+        env:
+          TURBO_UI: false
         run: pnpm turbo run build test

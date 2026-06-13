@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ENV_FILE:-$ROOT_DIR/.env}"
+STRAPI_ENV_FILE="${STRAPI_ENV_FILE:-$ROOT_DIR/apps/strapi/.env}"
 BACKUP_DIR="${BACKUP_DIR:-$ROOT_DIR/backups}"
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-myd17}"
 COMPOSE=(docker compose --project-name "$PROJECT_NAME" --env-file "$ENV_FILE" -f "$ROOT_DIR/compose.yaml")
@@ -30,6 +31,7 @@ Commands:
 
 Env overrides:
   ENV_FILE=/path/to/.env
+  STRAPI_ENV_FILE=/path/to/apps/strapi/.env
   BACKUP_DIR=/path/to/backups
   STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:tag
 EOF
@@ -83,7 +85,19 @@ DATABASE_SSL=false
 EOF
 
   chmod 600 "$ENV_FILE"
+
+  local linked_strapi_env=0
+  if [[ "$STRAPI_ENV_FILE" != "$ENV_FILE" ]]; then
+    mkdir -p "$(dirname "$STRAPI_ENV_FILE")"
+    rm -f "$STRAPI_ENV_FILE"
+    ln -s "$(realpath --relative-to="$(dirname "$STRAPI_ENV_FILE")" "$ENV_FILE" 2>/dev/null || printf '%s' "$ENV_FILE")" "$STRAPI_ENV_FILE"
+    linked_strapi_env=1
+  fi
+
   echo "Created $ENV_FILE with mode 600."
+  if [[ "$linked_strapi_env" -eq 1 ]]; then
+    echo "Linked $STRAPI_ENV_FILE to $ENV_FILE."
+  fi
   echo "Store a secure copy of this file before starting production."
 }
 

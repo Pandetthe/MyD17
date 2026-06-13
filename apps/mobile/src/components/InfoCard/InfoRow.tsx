@@ -34,7 +34,12 @@ export function InfoRow({ icon, label, value, dark = false, onPress, testID, val
         <TextCore variant="label" color={labelColor} style={styles.label}>
           {label}
         </TextCore>
-        <TextCore variant="h3" color={valueColor} weight="medium" style={valueStyle}>
+        <TextCore
+          variant="h3"
+          color={valueColor}
+          weight="medium"
+          style={[styles.value, valueStyle]}
+        >
           {value}
         </TextCore>
       </View>
@@ -77,5 +82,8 @@ const styles = StyleSheet.create((theme: Theme) => ({
   label: {
     letterSpacing: 0.6,
     textTransform: "uppercase",
+  },
+  value: {
+    fontSize: 11,
   },
 }));
