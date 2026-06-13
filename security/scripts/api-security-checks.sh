@@ -127,9 +127,8 @@ check_admin_login() {
     fi
 }
 
-check_admin_login "superadmin@myd17.pl" "SuperAdmin123!" "superadmin"
-check_admin_login "admin@myd17.pl"      "Admin123!"      "admin"
-check_admin_login "editor@myd17.pl"     "Editor123!"     "editor"
+check_admin_login "admin@myd17.pl"      "SuperAdmin123!" "admin"
+check_admin_login "employee@myd17.pl"   "Admin123!"      "employee"
 
 # ── API2: Broken Authentication ───────────────────────────────────────────────
 
@@ -176,7 +175,7 @@ brute_protected \
 
 brute_protected \
     "${TARGET_URL}/admin/login" \
-    '{"email":"superadmin@myd17.pl","password":"WrongAdmin_ATTEMPT"}' \
+    '{"email":"admin@myd17.pl","password":"WrongAdmin_ATTEMPT"}' \
     "POST /admin/login"
 
 # ── API2: Admin panel exposure ────────────────────────────────────────────────

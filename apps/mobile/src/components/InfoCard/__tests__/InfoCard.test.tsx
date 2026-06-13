@@ -1,8 +1,8 @@
 import React from "react";
+import { Linking } from "react-native";
 import { InfoCard } from "../index";
 import type { PostContentBlock } from "@repo/types";
 import { render, screen, fireEvent } from "@testing-library/react-native";
-import { Linking } from "react-native";
 import * as Clipboard from "expo-clipboard";
 
 const locationBlock = (content: string): PostContentBlock =>
@@ -22,7 +22,14 @@ const chipBlock = (
   content: string,
   variant: "normal" | "phone" | "email" | "link" | "copy" = "normal",
 ): PostContentBlock =>
-  ({ __component: "content.chip", id, title, content, icon: null, variant }) as unknown as PostContentBlock;
+  ({
+    __component: "content.chip",
+    id,
+    title,
+    content,
+    icon: null,
+    variant,
+  }) as unknown as PostContentBlock;
 
 describe("InfoCard", () => {
   it("returns null when blocks array is empty", () => {
@@ -40,6 +47,15 @@ describe("InfoCard", () => {
     render(<InfoCard blocks={[locationBlock("s1.38")]} />);
     expect(screen.getByText("Budynek D-17, Sala 1.38")).toBeTruthy();
     expect(screen.getByText("Lokalizacja")).toBeTruthy();
+  });
+
+  it("opens map for first-floor location", () => {
+    const onLocationPress = jest.fn();
+    render(<InfoCard blocks={[locationBlock("s1.38")]} onLocationPress={onLocationPress} />);
+
+    fireEvent.press(screen.getByTestId("info-card-location-link"));
+
+    expect(onLocationPress).toHaveBeenCalledWith("1.38");
   });
 
   it("renders all four known locations correctly", () => {

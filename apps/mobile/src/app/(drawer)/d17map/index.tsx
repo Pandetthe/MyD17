@@ -23,7 +23,20 @@ import type { PaletteColor } from "@/styles/themes/theme";
 import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
 import { LinearGradient } from "expo-linear-gradient";
-import { ChevronDown, ChevronLeft, Coffee, DoorOpen, Footprints, GraduationCap, MoveVertical, RotateCcw, SearchIcon, Toilet, XIcon } from "lucide-react-native";
+import { useLocalSearchParams } from "expo-router";
+import {
+  ChevronDown,
+  ChevronLeft,
+  Coffee,
+  DoorOpen,
+  Footprints,
+  GraduationCap,
+  MoveVertical,
+  RotateCcw,
+  SearchIcon,
+  Toilet,
+  XIcon,
+} from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
@@ -548,12 +561,13 @@ function FloorPill({
                   {floor}
                 </Text>
               </View>
-              <Text style={[pillStyles.dropText, isActive && pillStyles.dropTextActive]} numberOfLines={1}>
+              <Text
+                style={[pillStyles.dropText, isActive && pillStyles.dropTextActive]}
+                numberOfLines={1}
+              >
                 {getFloorDisplayName(floor)}
               </Text>
-              {!isLoaded && (
-                <ActivityIndicator size="small" color="rgba(255,255,255,0.4)" />
-              )}
+              {!isLoaded && <ActivityIndicator size="small" color="rgba(255,255,255,0.4)" />}
             </Pressable>
           );
         })}
@@ -798,6 +812,8 @@ const FAB_SIZE = 52; // kept for the unused styles.fab entry — safe to remove 
 export default function D17MapScreen() {
   const { theme } = useUnistyles();
   const insets = useSafeAreaInsets();
+  const { room } = useLocalSearchParams<{ room?: string }>();
+  const routeRoom = typeof room === "string" && room in TEXTURE_MODULES ? room : undefined;
 
   // Pre-loaded GLB base64 strings for all floors
   const [glbBase64s, setGlbBase64s] = useState<Record<string, string>>({});
@@ -926,8 +942,10 @@ export default function D17MapScreen() {
     })
     .onEnd((e) => {
       if (
-        e.translationY > CLOSE_THRESHOLD || e.velocityY > CLOSE_VELOCITY * 1000 ||
-        e.translationY < -CLOSE_THRESHOLD || e.velocityY < -CLOSE_VELOCITY * 1000
+        e.translationY > CLOSE_THRESHOLD ||
+        e.velocityY > CLOSE_VELOCITY * 1000 ||
+        e.translationY < -CLOSE_THRESHOLD ||
+        e.velocityY < -CLOSE_VELOCITY * 1000
       ) {
         runOnJS(closeDrawer)();
       } else {
@@ -974,6 +992,56 @@ export default function D17MapScreen() {
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateY.value, [0, 800], [1, 0], Extrapolation.CLAMP),
   }));
+
+  useEffect(() => {
+    if (!routeRoom) {
+      setAppliedFloor(null);
+      setAppliedRoom(null);
+      setSearchTarget(undefined);
+      setSearchKey(undefined);
+      setSpecialType(null);
+      void assetToBase64(NONE_MODULES["1"]).then(setTextureBase64);
+      return;
+    }
+
+    void (async () => {
+      const canonicalFloor = getCanonicalFloor(routeRoom);
+      const floorIndex = FLOORS.indexOf(canonicalFloor);
+      const suffix = routeRoom.slice(routeRoom.indexOf(".") + 1);
+      const roomIndex = (FLOOR_ROOMS[canonicalFloor] ?? []).indexOf(suffix);
+      const tex = await assetToBase64(getRoomTextureModule(routeRoom, canonicalFloor));
+
+      if (floorIndex !== -1 && roomIndex !== -1) {
+        setAppliedFloor(floorIndex);
+        setAppliedRoom(roomIndex);
+        setPendingFloor(floorIndex);
+        pendingFloorRef.current = floorIndex;
+        setPendingRoom(roomIndex);
+      }
+
+      setSearchKey(routeRoom);
+      setSpecialType(null);
+      const coords = (ROOM_COORDS_BY_FLOOR[canonicalFloor] as RoomCoords)?.[routeRoom];
+      if (coords) setSearchTarget({ x: coords.x, z: coords.y });
+      setTextureBase64(tex);
+
+      if (canonicalFloor !== activeFloor && glbBase64s[canonicalFloor]) {
+        const currentIdx = FLOORS.indexOf(activeFloor);
+        const targetIdx = FLOORS.indexOf(canonicalFloor);
+        const direction = targetIdx > currentIdx ? 1 : -1;
+        const noneTexture = await assetToBase64(NONE_MODULES[canonicalFloor]);
+        setActiveFloor(canonicalFloor);
+        setFloorPayload({
+          glb: glbBase64s[canonicalFloor],
+          direction,
+          roomCoords: ROOM_COORDS_BY_FLOOR[canonicalFloor] ?? {},
+          noneTexture: tex,
+          selectedKey: routeRoom,
+        });
+        void noneTexture;
+      }
+    })();
+  }, [routeRoom, glbBase64s]);
 
   const handleConfirm = useCallback(async () => {
     const pickerFloor = FLOORS[pendingFloor];
@@ -1163,7 +1231,10 @@ export default function D17MapScreen() {
       {!loading && (
         <>
           {floorDropdownOpen && (
-            <Pressable style={StyleSheet.absoluteFill} onPress={() => floorPillCloseRef.current?.()} />
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => floorPillCloseRef.current?.()}
+            />
           )}
           <LinearGradient
             colors={[theme.colors.surface, theme.colors.surface + "00"]}
@@ -1199,108 +1270,142 @@ export default function D17MapScreen() {
         onRequestClose={closeDrawer}
       >
         <ScopedTheme name="dark">
-        <GestureHandlerRootView style={styles.modalRoot}>
-          <Animated.View style={[styles.backdrop, backdropStyle]}>
-            <Pressable style={styles.backdropPressable} onPress={closeDrawer} />
-          </Animated.View>
+          <GestureHandlerRootView style={styles.modalRoot}>
+            <Animated.View style={[styles.backdrop, backdropStyle]}>
+              <Pressable style={styles.backdropPressable} onPress={closeDrawer} />
+            </Animated.View>
 
-          <Animated.View
-            style={[styles.sheet, sheetStyle, { paddingBottom: theme.spacing.lg + insets.bottom }]}
-          >
-            <GestureDetector gesture={panGesture}>
-              <View style={styles.handleArea}>
-                <View style={styles.handle} />
-              </View>
-            </GestureDetector>
-
-            {drawerView === "menu" ? (
-              <GestureDetector gesture={menuContentPan}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.sectionTitleWrapper}>
-                    <TextCore variant="h1" weight="bold" color={colors.white}>
-                      Wyszukaj
-                    </TextCore>
-                  </View>
-
-                  <View style={styles.tilesGrid}>
-                    <View style={styles.tilesRow}>
-                      <CategoryTile icon={DoorOpen} label="Sale" color="teal" onPress={() => setDrawerView("rooms")} />
-                      <CategoryTile icon={GraduationCap} label="Dziekanat" color="pink" onPress={() => handleSelectRoom("1.4")} />
-                    </View>
-                    <View style={styles.tilesRow}>
-                      <CategoryTile icon={Toilet} label="Łazienki" color="purple" onPress={() => handleSpecial("bathrooms")} />
-                      <CategoryTile icon={MoveVertical} label="Windy" color="red" onPress={() => handleSpecial("lifts")} />
-                    </View>
-                    <View style={styles.tilesRow}>
-                      <CategoryTile icon={Footprints} label="Schody" color="green" onPress={() => handleSpecial("stairs")} />
-                      <CategoryTile icon={Coffee} label="Pomarańczowe bistro" color="amber" onPress={() => handleSelectRoom("1.33")} />
-                    </View>
-                  </View>
+            <Animated.View
+              style={[
+                styles.sheet,
+                sheetStyle,
+                { paddingBottom: theme.spacing.lg + insets.bottom },
+              ]}
+            >
+              <GestureDetector gesture={panGesture}>
+                <View style={styles.handleArea}>
+                  <View style={styles.handle} />
                 </View>
               </GestureDetector>
-            ) : (
-              <View style={{ flex: 1 }}>
-                <GestureDetector gesture={roomsHeaderPan}>
-                  <View style={styles.sheetHeader}>
-                    <TouchableOpacity
-                      onPress={() => setDrawerView("menu")}
-                      hitSlop={8}
-                      style={styles.backBtn}
-                    >
-                      <ChevronLeft color="rgba(255,255,255,0.7)" size={26} strokeWidth={2.2} />
-                      <Text style={styles.backText}>Wyszukaj</Text>
-                    </TouchableOpacity>
-                  </View>
-                </GestureDetector>
 
-                <GestureDetector gesture={roomsPickerPan}>
-                  <View style={styles.pickersRow}>
-                    <View style={styles.pickerCol}>
-                      <Text style={styles.pickerLabel}>Piętro</Text>
-                      <SlotPicker
-                        key={`floor-${openSeq}`}
-                        items={FLOORS}
-                        initialIndex={pendingFloor}
-                        onIndexChange={handlePendingFloorChange}
-                      />
+              {drawerView === "menu" ? (
+                <GestureDetector gesture={menuContentPan}>
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.sectionTitleWrapper}>
+                      <TextCore variant="h1" weight="bold" color={colors.white}>
+                        Wyszukaj
+                      </TextCore>
                     </View>
 
-                    <View style={styles.pickerDivider} />
-
-                    <View style={styles.pickerCol}>
-                      <Text style={styles.pickerLabel}>Sala</Text>
-                      <SlotPicker
-                        key={`room-${openSeq}-${pendingFloor}`}
-                        items={currentPendingRooms}
-                        initialIndex={pendingRoom}
-                        onIndexChange={handlePendingRoomChange}
-                      />
+                    <View style={styles.tilesGrid}>
+                      <View style={styles.tilesRow}>
+                        <CategoryTile
+                          icon={DoorOpen}
+                          label="Sale"
+                          color="teal"
+                          onPress={() => setDrawerView("rooms")}
+                        />
+                        <CategoryTile
+                          icon={GraduationCap}
+                          label="Dziekanat"
+                          color="pink"
+                          onPress={() => handleSelectRoom("1.4")}
+                        />
+                      </View>
+                      <View style={styles.tilesRow}>
+                        <CategoryTile
+                          icon={Toilet}
+                          label="Łazienki"
+                          color="purple"
+                          onPress={() => handleSpecial("bathrooms")}
+                        />
+                        <CategoryTile
+                          icon={MoveVertical}
+                          label="Windy"
+                          color="red"
+                          onPress={() => handleSpecial("lifts")}
+                        />
+                      </View>
+                      <View style={styles.tilesRow}>
+                        <CategoryTile
+                          icon={Footprints}
+                          label="Schody"
+                          color="green"
+                          onPress={() => handleSpecial("stairs")}
+                        />
+                        <CategoryTile
+                          icon={Coffee}
+                          label="Pomarańczowe bistro"
+                          color="amber"
+                          onPress={() => handleSelectRoom("1.33")}
+                        />
+                      </View>
                     </View>
                   </View>
                 </GestureDetector>
+              ) : (
+                <View style={{ flex: 1 }}>
+                  <GestureDetector gesture={roomsHeaderPan}>
+                    <View style={styles.sheetHeader}>
+                      <TouchableOpacity
+                        onPress={() => setDrawerView("menu")}
+                        hitSlop={8}
+                        style={styles.backBtn}
+                      >
+                        <ChevronLeft color="rgba(255,255,255,0.7)" size={26} strokeWidth={2.2} />
+                        <Text style={styles.backText}>Wyszukaj</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </GestureDetector>
 
-                <GestureDetector gesture={roomsHeaderPan}>
-                  <View style={styles.actions}>
-                    <TouchableOpacity
-                      style={styles.btnDiscard}
-                      onPress={closeDrawer}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.btnDiscardText}>Odrzuć</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.btnSelect}
-                      onPress={handleConfirm}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.btnSelectText}>Wybierz</Text>
-                    </TouchableOpacity>
-                  </View>
-                </GestureDetector>
-              </View>
-            )}
-          </Animated.View>
-        </GestureHandlerRootView>
+                  <GestureDetector gesture={roomsPickerPan}>
+                    <View style={styles.pickersRow}>
+                      <View style={styles.pickerCol}>
+                        <Text style={styles.pickerLabel}>Piętro</Text>
+                        <SlotPicker
+                          key={`floor-${openSeq}`}
+                          items={FLOORS}
+                          initialIndex={pendingFloor}
+                          onIndexChange={handlePendingFloorChange}
+                        />
+                      </View>
+
+                      <View style={styles.pickerDivider} />
+
+                      <View style={styles.pickerCol}>
+                        <Text style={styles.pickerLabel}>Sala</Text>
+                        <SlotPicker
+                          key={`room-${openSeq}-${pendingFloor}`}
+                          items={currentPendingRooms}
+                          initialIndex={pendingRoom}
+                          onIndexChange={handlePendingRoomChange}
+                        />
+                      </View>
+                    </View>
+                  </GestureDetector>
+
+                  <GestureDetector gesture={roomsHeaderPan}>
+                    <View style={styles.actions}>
+                      <TouchableOpacity
+                        style={styles.btnDiscard}
+                        onPress={closeDrawer}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.btnDiscardText}>Odrzuć</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.btnSelect}
+                        onPress={handleConfirm}
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.btnSelectText}>Wybierz</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </GestureDetector>
+                </View>
+              )}
+            </Animated.View>
+          </GestureHandlerRootView>
         </ScopedTheme>
       </Modal>
     </View>
