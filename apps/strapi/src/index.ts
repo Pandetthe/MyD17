@@ -295,7 +295,7 @@ async function upsertRole(
 async function setupAdminRoles(strapi: Core.Strapi) {
   await upsertRole(
     strapi,
-    "Admin",
+    "Employee",
     "Full CRUD on all collections, media and users",
     [
       ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
@@ -310,17 +310,6 @@ async function setupAdminRoles(strapi: Core.Strapi) {
       ...buildPluginPermissions(USERS_PERMISSIONS_ADMIN_ACTIONS),
     ],
   );
-
-  await upsertRole(strapi, "Editor", "Full CRUD on all collections and media", [
-    ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
-    ...buildUploadPermissions([
-      "plugin::upload.read",
-      "plugin::upload.assets.create",
-      "plugin::upload.assets.update",
-      "plugin::upload.assets.download",
-      "plugin::upload.assets.copy-link",
-    ]),
-  ]);
 }
 
 async function seedAdminUsers(strapi: Core.Strapi) {
@@ -332,38 +321,24 @@ async function seedAdminUsers(strapi: Core.Strapi) {
     .query("admin::role")
     .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
 
-  const adminRole = (await strapi.db
+  const employeeRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { name: "Admin" } })) as RoleRecord | null;
-
-  const editorRole = (await strapi.db
-    .query("admin::role")
-    .findOne({ where: { name: "Editor" } })) as RoleRecord | null;
+    .findOne({ where: { name: "Employee" } })) as RoleRecord | null;
 
   const DEFAULT_USERS = [
-    {
-      firstname: "Super",
-      lastname: "Admin",
-      email: "superadmin@myd17.pl",
-      password:
-        process.env.STRAPI_SUPERADMIN_PASSWORD ?? "SuperAdmin123!",
-      role: superAdminRole,
-    },
     {
       firstname: "Admin",
       lastname: "MYD17",
       email: "admin@myd17.pl",
-      password:
-        process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
-      role: adminRole,
+      password: process.env.STRAPI_SUPERADMIN_PASSWORD ?? "SuperAdmin123!",
+      role: superAdminRole,
     },
     {
-      firstname: "Editor",
+      firstname: "Employee",
       lastname: "MYD17",
-      email: "editor@myd17.pl",
-      password:
-        process.env.STRAPI_EDITOR_PASSWORD ?? "Editor123!",
-      role: editorRole,
+      email: "employee@myd17.pl",
+      password: process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
+      role: employeeRole,
     },
   ];
 

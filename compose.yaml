@@ -45,7 +45,6 @@ services:
       APP_KEYS: ${APP_KEYS}
       STRAPI_SUPERADMIN_PASSWORD: ${STRAPI_SUPERADMIN_PASSWORD}
       STRAPI_ADMIN_PASSWORD: ${STRAPI_ADMIN_PASSWORD}
-      STRAPI_EDITOR_PASSWORD: ${STRAPI_EDITOR_PASSWORD}
       NODE_ENV: production
     volumes:
       - strapi_uploads:/opt/app/apps/strapi/public/uploads
