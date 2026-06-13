@@ -13,7 +13,10 @@ COPY apps/strapi apps/strapi
 
 WORKDIR /opt/app/apps/strapi
 ENV NODE_ENV=production
-RUN pnpm build
+ARG NODE_OPTIONS=--max-old-space-size=4096
+ARG STRAPI_BUILD_ARGS=
+ENV NODE_OPTIONS=${NODE_OPTIONS}
+RUN sh -c 'set -eu; if [ -n "$STRAPI_BUILD_ARGS" ]; then pnpm build -- $STRAPI_BUILD_ARGS; else pnpm build; fi'
 
 FROM node:24-alpine AS runner
 
