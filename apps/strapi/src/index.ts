@@ -319,7 +319,7 @@ async function seedAdminUsers(strapi: Core.Strapi) {
   }
   const adminRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { code: "strapi-admin" } })) as RoleRecord | null;
+    .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
 
   const employeeRole = (await strapi.db
     .query("admin::role")
