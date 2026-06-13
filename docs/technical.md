@@ -93,11 +93,10 @@ http://ADRES_SERWERA:1337/admin
 
 Startowe konta administracyjne są tworzone przy pierwszym starcie, jeżeli jeszcze nie istnieją:
 
-- `superadmin@myd17.pl`
 - `admin@myd17.pl`
-- `editor@myd17.pl`
+- `employee@myd17.pl`
 
-Hasła znajdują się w `.env` pod zmiennymi `STRAPI_SUPERADMIN_PASSWORD`, `STRAPI_ADMIN_PASSWORD` i `STRAPI_EDITOR_PASSWORD`.
+Hasła znajdują się w `.env` pod zmiennymi `STRAPI_ADMIN_PASSWORD` i `STRAPI_EMPLOYEE_PASSWORD`.
 
 ## Aktualizacja systemu
 

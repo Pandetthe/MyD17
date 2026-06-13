@@ -127,8 +127,8 @@ check_admin_login() {
     fi
 }
 
-check_admin_login "admin@myd17.pl"      "SuperAdmin123!" "admin"
-check_admin_login "employee@myd17.pl"   "Admin123!"      "employee"
+check_admin_login "admin@myd17.pl"      "Admin123!" "admin"
+check_admin_login "employee@myd17.pl"   "Employee123!"      "employee"
 
 # ── API2: Broken Authentication ───────────────────────────────────────────────
 
