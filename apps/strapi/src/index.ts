@@ -295,7 +295,7 @@ async function upsertRole(
 async function setupAdminRoles(strapi: Core.Strapi) {
   await upsertRole(
     strapi,
-    "Employee",
+    "employee",
     "Full CRUD on all collections, media and users",
     [
       ...buildContentPermissions(strapi, CONTENT_TYPES, CONTENT_ACTION_IDS),
@@ -317,27 +317,27 @@ async function seedAdminUsers(strapi: Core.Strapi) {
     strapi.log.info("Skipping default admin seeding in production");
     return;
   }
-  const superAdminRole = (await strapi.db
+  const adminRole = (await strapi.db
     .query("admin::role")
     .findOne({ where: { code: "strapi-super-admin" } })) as RoleRecord | null;
 
   const employeeRole = (await strapi.db
     .query("admin::role")
-    .findOne({ where: { name: "Employee" } })) as RoleRecord | null;
+    .findOne({ where: { name: "employee" } })) as RoleRecord | null;
 
   const DEFAULT_USERS = [
     {
       firstname: "Admin",
       lastname: "MYD17",
       email: "admin@myd17.pl",
-      password: process.env.STRAPI_SUPERADMIN_PASSWORD ?? "SuperAdmin123!",
-      role: superAdminRole,
+      password: process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
+      role: adminRole,
     },
     {
       firstname: "Employee",
       lastname: "MYD17",
       email: "employee@myd17.pl",
-      password: process.env.STRAPI_ADMIN_PASSWORD ?? "Admin123!",
+      password: process.env.STRAPI_EMPLOYEE_PASSWORD ?? "Employee123!",
       role: employeeRole,
     },
   ];
