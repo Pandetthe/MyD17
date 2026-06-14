@@ -1,5 +1,6 @@
 import React from "react";
-import { View } from "react-native";
+import { Linking, View } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
@@ -14,7 +15,7 @@ import type {
   LocationValue,
   PostContentBlock,
 } from "@repo/types";
-import { CalendarPlus, Clock, Info, MapPin } from "lucide-react-native";
+import { ArrowUpRight, CalendarPlus, Clock, Copy, Info, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -42,6 +43,25 @@ function formatDateTimeRange(startStr: string, endStr?: string | null): string {
   return `${formatDate(start)}, ${formatTime(start)} – ${formatDate(end)}, ${formatTime(end)}`;
 }
 
+function buildChipHandler(
+  variant: string | undefined,
+  content: string | undefined,
+): (() => void) | undefined {
+  if (!content) return undefined;
+  switch (variant) {
+    case "phone":
+      return () => Linking.openURL(`tel:${content}`);
+    case "email":
+      return () => Linking.openURL(`mailto:${content}`);
+    case "link":
+      return () => Linking.openURL(content);
+    case "copy":
+      return () => Clipboard.setStringAsync(content);
+    default:
+      return undefined;
+  }
+}
+
 function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
   if (!dt.startDateTime) return null;
   const startDate = new Date(dt.startDateTime);
@@ -60,9 +80,14 @@ type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
   onAddToCalendar?: (event: CalendarEvent) => void;
+  onLocationPress?: (room: string) => void;
 };
 
-export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
+function mapRoomFromLocation(location?: string | null): string | null {
+  return location?.match(/^s1\.\d+$/) ? location.slice(1) : null;
+}
+
+export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPress }: Props) {
   const { theme } = useUnistyles();
   const safeBlocks = blocks ?? [];
 
@@ -79,6 +104,8 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
   const gradient = dark
     ? ([colors.core.extraDark, colors.core.dark] as const)
     : theme.colors.gradients.posts;
+  const mapRoom = mapRoomFromLocation(locationBlock?.content);
+  const openLocation = mapRoom && onLocationPress ? () => onLocationPress(mapRoom) : undefined;
 
   return (
     <Card
@@ -94,6 +121,9 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
           label="Lokalizacja"
           value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
           dark={dark}
+          onPress={openLocation}
+          testID={openLocation ? "info-card-location-link" : undefined}
+          valueStyle={openLocation ? styles.linkText : undefined}
         />
       )}
 
@@ -126,14 +156,31 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar }: Props) {
 
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
+        const onPress = buildChipHandler(chip.variant, chip.content);
+        const ActionIcon =
+          chip.variant === "copy" ? Copy : chip.variant !== "normal" && onPress ? ArrowUpRight : undefined;
+
         return (
-          <InfoRow
-            key={chip.id}
-            icon={(c) => <ChipIcon size={18} color={c} />}
-            label={chip.title ?? ""}
-            value={chip.content ?? ""}
-            dark={dark}
-          />
+          <View key={chip.id} style={ActionIcon ? styles.dateRow : undefined}>
+            <View style={ActionIcon ? styles.dateInfo : undefined}>
+              <InfoRow
+                icon={(c) => <ChipIcon size={18} color={c} />}
+                label={chip.title ?? ""}
+                value={chip.content ?? ""}
+                dark={dark}
+              />
+            </View>
+            {ActionIcon && onPress && (
+              <Button
+                icon={ActionIcon}
+                color="dark"
+                size="lg"
+                style={styles.calendarButton}
+                onPress={onPress}
+                testID="chip-action-button"
+              />
+            )}
+          </View>
         );
       })}
     </Card>
@@ -160,5 +207,8 @@ const styles = StyleSheet.create((theme: Theme) => ({
   calendarButton: {
     flexShrink: 0,
     marginTop: 2,
+  },
+  linkText: {
+    textDecorationLine: "underline",
   },
 }));

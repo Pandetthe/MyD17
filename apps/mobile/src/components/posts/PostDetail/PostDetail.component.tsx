@@ -47,6 +47,13 @@ export function PostDetail({ post }: Props) {
     [post],
   );
 
+  const handleLocationPress = useCallback(
+    (room: string) => {
+      router.push({ pathname: "/d17map", params: { room } });
+    },
+    [router],
+  );
+
   const goBack = useCallback(() => router.back(), [router]);
 
   const swipeBack = Gesture.Pan()
@@ -65,6 +72,7 @@ export function PostDetail({ post }: Props) {
     <View style={styles.screen}>
       <StatusBar barStyle={statusBarStyle} />
       <ScrollView
+        testID="post-detail-scroll"
         style={styles.scroll}
         contentContainerStyle={[
           styles.content,
@@ -89,7 +97,7 @@ export function PostDetail({ post }: Props) {
             </View>
           )}
 
-          <TextCore variant="h1" style={styles.title}>
+          <TextCore testID="post-detail-title" variant="h1" style={styles.title}>
             {post.title}
           </TextCore>
 
@@ -101,10 +109,20 @@ export function PostDetail({ post }: Props) {
             )}
 
             <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
-              <Pressable style={styles.iconButton} hitSlop={8} onPress={handleShare}>
+              <Pressable
+                testID="post-detail-share-btn"
+                style={styles.iconButton}
+                hitSlop={8}
+                onPress={handleShare}
+              >
                 <Share2 size={theme.size.md} color={colors.core.main} />
               </Pressable>
-              <Pressable style={styles.iconButton} hitSlop={8} onPress={likePost}>
+              <Pressable
+                testID="post-detail-like-btn"
+                style={styles.iconButton}
+                hitSlop={8}
+                onPress={likePost}
+              >
                 <Heart
                   size={theme.size.md}
                   color={colors.core.main}
@@ -116,7 +134,11 @@ export function PostDetail({ post }: Props) {
               </TextCore>
             </View>
 
-            <ContentRenderer blocks={content} onAddToCalendar={handleAddToCalendar} />
+            <ContentRenderer
+              blocks={content}
+              onAddToCalendar={handleAddToCalendar}
+              onLocationPress={handleLocationPress}
+            />
           </View>
         </View>
       </ScrollView>
@@ -126,6 +148,7 @@ export function PostDetail({ post }: Props) {
       </GestureDetector>
 
       <Button
+        testID="post-detail-back-btn"
         icon={ArrowLeft}
         color="dark"
         size="lg"

@@ -1,0 +1,23 @@
+appId: io.github.stawex.myd17
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "posts-feed-list"
+    timeout: 30000
+# Coordinate tap — first card Pressable covers the whole card
+- tapOn:
+    point: "50%, 40%"
+- extendedWaitUntil:
+    visible:
+      id: "post-detail-back-btn"
+    timeout: 15000
+- tapOn:
+    id: "post-detail-back-btn"
+- extendedWaitUntil:
+    visible:
+      id: "posts-screen"
+    timeout: 10000
+- assertVisible:
+    id: "posts-feed-list"

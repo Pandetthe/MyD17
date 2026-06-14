@@ -14,6 +14,7 @@ type Props = {
   textColor?: ColorValue;
   dark?: boolean;
   onAddToCalendar?: (event: CalendarEvent) => void;
+  onLocationPress?: (room: string) => void;
 };
 
 const INFO_COMPONENTS = new Set(["content.chip", "content.location", "content.event-date-time"]);
@@ -43,12 +44,19 @@ function groupBlocks(blocks: PostContentBlock[]): RenderedBlock[] {
   return result;
 }
 
-export function ContentRenderer({ blocks, textColor, dark, onAddToCalendar }: Props) {
+export function ContentRenderer({
+  blocks,
+  textColor,
+  dark,
+  onAddToCalendar,
+  onLocationPress,
+}: Props) {
   const grouped = groupBlocks(blocks);
 
   return (
     <View style={styles.container}>
-      {grouped.map((item) => {
+      {grouped.map((item, index) => {
+        const isFirst = index === 0;
         if (item.type === "info") {
           return (
             <InfoCard
@@ -56,6 +64,7 @@ export function ContentRenderer({ blocks, textColor, dark, onAddToCalendar }: Pr
               blocks={item.blocks}
               dark={dark}
               onAddToCalendar={onAddToCalendar}
+              onLocationPress={onLocationPress}
             />
           );
         }
@@ -71,6 +80,7 @@ export function ContentRenderer({ blocks, textColor, dark, onAddToCalendar }: Pr
                 key={`${block.__component}-${block.id}`}
                 block={block}
                 color={textColor}
+                isFirst={isFirst}
               />
             );
           case "content.calendar":

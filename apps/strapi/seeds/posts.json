@@ -47,7 +47,9 @@
     "likesCount": 132,
     "tags": [3, 13, 19],
     "author": 2,
-    "_imageUrls": ["https://www.informatyka.agh.edu.pl/media/uploads/kolaz_crimi.png"],
+    "_imageUrls": [
+      "https://www.informatyka.agh.edu.pl/media/uploads/kolaz_crimi.png"
+    ],
     "content": [
       {
         "__component": "content.text",
@@ -73,7 +75,9 @@
     "likesCount": 93,
     "tags": [1, 2, 4, 11, 12, 17],
     "author": 1,
-    "_imageUrls": ["https://www.informatyka.agh.edu.pl/media/uploads/dsc05534_1.jpg"],
+    "_imageUrls": [
+      "https://www.informatyka.agh.edu.pl/media/uploads/dsc05534_1.jpg"
+    ],
     "content": [
       {
         "__component": "content.text",
@@ -101,7 +105,9 @@
     "likeCount": 356,
     "tags": [17, 20],
     "author": 1,
-    "_imageUrls": ["https://cowkrakowie.pl/wp-content/uploads/2026/05/juwenalia-Krakowskie-1209x827.jpg"],
+    "_imageUrls": [
+      "https://cowkrakowie.pl/wp-content/uploads/2026/05/juwenalia-Krakowskie-1209x827.jpg"
+    ],
     "content": [
       {
         "__component": "content.event-date-time",
@@ -129,12 +135,31 @@
     "likeCount": 132,
     "tags": [1, 10, 17, 20],
     "author": 1,
-    "_imageUrls": ["https://www.agh.edu.pl/home/__processed__/5/2/csm_inauguracja_2024_efc0901044.webp"],
+    "_imageUrls": [
+      "https://www.agh.edu.pl/home/__processed__/5/2/csm_inauguracja_2024_efc0901044.webp"
+    ],
     "content": [
       {
         "__component": "content.event-date-time",
         "startDateTime": "2025-10-04T11:00:00+02:00",
         "endDateTime": "2025-10-04T13:00:00+02:00"
+      }
+    ]
+  },
+  {
+    "title": "Spotkanie informacyjne w sali 1.38",
+    "description": "Przykładowy post z lokalizacją.",
+    "likesCount": 24,
+    "tags": [1, 17],
+    "author": 1,
+    "content": [
+      {
+        "__component": "content.location",
+        "content": "s1.38"
+      },
+      {
+        "__component": "content.text",
+        "content": "Kliknięcie lokalizacji powinno otworzyć mapę."
       }
     ]
   }

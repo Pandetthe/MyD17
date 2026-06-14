@@ -27,6 +27,12 @@
       "relation": "manyToMany",
       "target": "api::post.post",
       "inversedBy": "tags"
+    },
+    "push_subscribers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::push-subscriber.push-subscriber",
+      "mappedBy": "tags"
     }
   }
 }

@@ -14,9 +14,14 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 function ClearPill({ onPress }: { onPress: () => void }) {
   const { animStyle, onPressIn, onPressOut } = usePressAnimation(0.95);
   return (
-    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+    <Pressable
+      testID="tag-filter-clear"
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+    >
       <Animated.View style={[styles.clearPill, animStyle]}>
-        <TextCore variant="label" color={colors.white} numberOfLines={1}>
+        <TextCore variant="label" color={colors.white} numberOfLines={1} style={styles.clearPillText}>
           Wyczyść
         </TextCore>
       </Animated.View>
@@ -37,7 +42,7 @@ export function TagFilterBar({ tags, selectedTagIds, onSelect, onClear }: Props)
   const surface = theme.colors.surface;
 
   return (
-    <View style={styles.wrapper}>
+    <View testID="tag-filter-bar" style={styles.wrapper}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -102,12 +107,18 @@ const styles = StyleSheet.create((theme: Theme) => ({
     borderRadius: theme.borderRadius.full,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xxs,
+    borderWidth: 1,
+    borderColor: "transparent",
     justifyContent: "center",
     shadowColor: theme.colors.dark.main,
     shadowOffset: { width: 5, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
     elevation: 4,
+  },
+  clearPillText: {
+    fontSize: 14,
+    lineHeight: 18,
   },
   dimmed: {
     opacity: 0.4,

@@ -1,0 +1,11 @@
+appId: io.github.stawex.myd17
+# Only 6 posts are seeded — all fit in one page (pageSize = 10), no infinite scroll.
+# This test just verifies no footer spinner appears when all posts are already loaded.
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "posts-feed-list"
+    timeout: 30000
+- assertNotVisible:
+    id: "posts-footer-loader"

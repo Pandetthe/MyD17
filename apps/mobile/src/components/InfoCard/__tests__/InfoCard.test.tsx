@@ -1,7 +1,9 @@
 import React from "react";
+import { Linking } from "react-native";
 import { InfoCard } from "../index";
 import type { PostContentBlock } from "@repo/types";
-import { render, screen } from "@testing-library/react-native";
+import { render, screen, fireEvent } from "@testing-library/react-native";
+import * as Clipboard from "expo-clipboard";
 
 const locationBlock = (content: string): PostContentBlock =>
   ({ __component: "content.location", id: 1, content }) as PostContentBlock;
@@ -14,8 +16,20 @@ const dateTimeBlock = (startDateTime: string, endDateTime?: string): PostContent
     endDateTime,
   }) as PostContentBlock;
 
-const chipBlock = (id: number, title: string, content: string): PostContentBlock =>
-  ({ __component: "content.chip", id, title, content, icon: null }) as unknown as PostContentBlock;
+const chipBlock = (
+  id: number,
+  title: string,
+  content: string,
+  variant: "normal" | "phone" | "email" | "link" | "copy" = "normal",
+): PostContentBlock =>
+  ({
+    __component: "content.chip",
+    id,
+    title,
+    content,
+    icon: null,
+    variant,
+  }) as unknown as PostContentBlock;
 
 describe("InfoCard", () => {
   it("returns null when blocks array is empty", () => {
@@ -33,6 +47,15 @@ describe("InfoCard", () => {
     render(<InfoCard blocks={[locationBlock("s1.38")]} />);
     expect(screen.getByText("Budynek D-17, Sala 1.38")).toBeTruthy();
     expect(screen.getByText("Lokalizacja")).toBeTruthy();
+  });
+
+  it("opens map for first-floor location", () => {
+    const onLocationPress = jest.fn();
+    render(<InfoCard blocks={[locationBlock("s1.38")]} onLocationPress={onLocationPress} />);
+
+    fireEvent.press(screen.getByTestId("info-card-location-link"));
+
+    expect(onLocationPress).toHaveBeenCalledWith("1.38");
   });
 
   it("renders all four known locations correctly", () => {
@@ -97,5 +120,42 @@ describe("InfoCard", () => {
     expect(screen.getByText("Kiedy")).toBeTruthy();
     expect(screen.getByText("Typ")).toBeTruthy();
     expect(screen.getByText("Lab")).toBeTruthy();
+  });
+
+  it("phone chip opens tel: URL on press", () => {
+    const spy = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+    render(<InfoCard blocks={[chipBlock(1, "Telefon", "+48123456789", "phone")]} />);
+    fireEvent.press(screen.getByTestId("chip-action-button"));
+    expect(spy).toHaveBeenCalledWith("tel:+48123456789");
+    spy.mockRestore();
+  });
+
+  it("email chip opens mailto: URL on press", () => {
+    const spy = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+    render(<InfoCard blocks={[chipBlock(1, "Email", "test@example.com", "email")]} />);
+    fireEvent.press(screen.getByTestId("chip-action-button"));
+    expect(spy).toHaveBeenCalledWith("mailto:test@example.com");
+    spy.mockRestore();
+  });
+
+  it("link chip opens URL on press", () => {
+    const spy = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+    render(<InfoCard blocks={[chipBlock(1, "Strona", "https://example.com", "link")]} />);
+    fireEvent.press(screen.getByTestId("chip-action-button"));
+    expect(spy).toHaveBeenCalledWith("https://example.com");
+    spy.mockRestore();
+  });
+
+  it("copy chip copies content to clipboard on press", () => {
+    const spy = jest.spyOn(Clipboard, "setStringAsync").mockResolvedValue(true);
+    render(<InfoCard blocks={[chipBlock(1, "IBAN", "PL61109010140000071219812874", "copy")]} />);
+    fireEvent.press(screen.getByTestId("chip-action-button"));
+    expect(spy).toHaveBeenCalledWith("PL61109010140000071219812874");
+    spy.mockRestore();
+  });
+
+  it("normal chip has no action button", () => {
+    render(<InfoCard blocks={[chipBlock(1, "Info", "some value", "normal")]} />);
+    expect(screen.queryByTestId("chip-action-button")).toBeNull();
   });
 });

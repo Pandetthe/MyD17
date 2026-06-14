@@ -3,10 +3,17 @@
 import "@testing-library/jest-native/extend-expect";
 
 jest.mock("react-native-reanimated", () => require("react-native-reanimated/mock"));
+jest.mock("@react-native-masked-view/masked-view", () => {
+  return { default: ({ children }) => children };
+});
 jest.mock("react-native-worklets", () => require("react-native-worklets/lib/module/mock"));
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
+
+jest.mock("expo-clipboard", () => ({
+  setStringAsync: jest.fn().mockResolvedValue(undefined),
+}));
 
 const mockTheme = {
   colors: {
@@ -74,11 +81,14 @@ jest.mock("react-native-unistyles", () => ({
 
 const mockIcon = () => null;
 jest.mock("lucide-react-native", () => ({
+  ArrowUpRight: mockIcon,
   Bell: mockIcon,
   BookOpen: mockIcon,
   Building: mockIcon,
   Calendar: mockIcon,
   CalendarPlus: mockIcon,
+  ChevronRight: mockIcon,
+  Copy: mockIcon,
   Clock: mockIcon,
   Coffee: mockIcon,
   FileText: mockIcon,

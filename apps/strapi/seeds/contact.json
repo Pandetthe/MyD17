@@ -1,0 +1,57 @@
+[
+  {
+    "content": [
+      {
+        "__component": "content.section-title",
+        "content": "Dział promocji Wydziału Informatyki"
+      },
+      {
+        "__component": "content.text",
+        "content": "Masz pytania? Skontaktuj się z nami!"
+      },
+      {
+        "__component": "content.section-title",
+        "content": "Dane kontaktowe"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Adres email",
+        "icon": "mail",
+        "content": "promocja@wi.agh.edu.pl",
+        "variant": "email"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Telefon",
+        "icon": "phone",
+        "content": "+48 617 284 500",
+        "variant": "phone"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Strona internetowa",
+        "icon": "globe",
+        "content": "https://www.wi.agh.edu.pl",
+        "variant": "link"
+      },
+      {
+        "__component": "content.chip",
+        "title": "NIP wydziału",
+        "icon": "hash",
+        "content": "675-000-09-89",
+        "variant": "copy"
+      },
+      {
+        "__component": "content.section-title",
+        "content": "Adres"
+      },
+      {
+        "__component": "content.chip",
+        "title": "Budynek D17",
+        "icon": "map-pin",
+        "content": "al. Mickiewicza 30, 30-059 Kraków",
+        "variant": "normal"
+      }
+    ]
+  }
+]

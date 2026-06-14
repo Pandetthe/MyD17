@@ -1,0 +1,32 @@
+appId: io.github.stawex.myd17
+# Uses "Dziekanat" — first seeded static information card.
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "app-header"
+    timeout: 30000
+- tapOn:
+    id: "header-menu-button"
+- extendedWaitUntil:
+    visible:
+      id: "drawer-content"
+    timeout: 5000
+- tapOn:
+    id: "drawer-nav-information"
+- extendedWaitUntil:
+    visible:
+      id: "information-scroll"
+    timeout: 20000
+- tapOn: "Dziekanat"
+- extendedWaitUntil:
+    visible:
+      id: "info-bottom-drawer"
+    timeout: 10000
+# Close via backdrop tap (top of screen, above the sheet)
+- tapOn:
+    point: "50%, 10%"
+- extendedWaitUntil:
+    visible:
+      id: "information-scroll"
+    timeout: 8000

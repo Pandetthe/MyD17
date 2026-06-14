@@ -34,7 +34,7 @@ export default function PostDetailScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <View testID="post-detail-screen" style={styles.screen}>
       <PostDetail post={data.data} />
     </View>
   );
