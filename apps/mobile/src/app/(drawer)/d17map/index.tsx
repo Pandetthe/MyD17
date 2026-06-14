@@ -18,10 +18,14 @@ import D17MapView, { FloorPayload } from "@/components/D17MapView";
 import { Card } from "@/components/core/Card.component";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
+import {
+  MAP_CROSS_FLOOR_TEXTURES,
+  MAP_GLB,
+  MAP_SPECIAL_TEXTURES,
+  MAP_TEXTURES,
+} from "@/lib/mapAssets";
 import { colors, palette } from "@/styles/colors";
 import type { PaletteColor } from "@/styles/themes/theme";
-import { Asset } from "expo-asset";
-import * as FileSystem from "expo-file-system/legacy";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -52,202 +56,21 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScopedTheme, StyleSheet, useUnistyles } from "react-native-unistyles";
 
-/* eslint-disable @typescript-eslint/no-require-imports */
-const TEXTURE_MODULES: Record<string, number> = {
-  // ── Floor 1 ──────────────────────────────────
-  none1: require("@/assets/map/floor1/none.webp"),
-  "1.4": require("@/assets/map/floor1/1_4.webp"),
-  "1.5": require("@/assets/map/floor1/1_5.webp"),
-  "1.6": require("@/assets/map/floor1/1_6.webp"),
-  "1.10": require("@/assets/map/floor1/1_10.webp"),
-  "1.11": require("@/assets/map/floor1/1_11.webp"),
-  "1.12": require("@/assets/map/floor1/1_12.webp"),
-  "1.16": require("@/assets/map/floor1/1_16.webp"),
-  "1.17": require("@/assets/map/floor1/1_17.webp"),
-  "1.18": require("@/assets/map/floor1/1_18.webp"),
-  "1.19": require("@/assets/map/floor1/1_19.webp"),
-  "1.20": require("@/assets/map/floor1/1_20.webp"),
-  "1.21": require("@/assets/map/floor1/1_21.webp"),
-  "1.22": require("@/assets/map/floor1/1_22.webp"),
-  "1.23": require("@/assets/map/floor1/1_23.webp"),
-  "1.26": require("@/assets/map/floor1/1_26.webp"),
-  "1.27": require("@/assets/map/floor1/1_27.webp"),
-  "1.28": require("@/assets/map/floor1/1_28.webp"),
-  "1.33": require("@/assets/map/floor1/1_33.webp"),
-  "1.35": require("@/assets/map/floor1/1_35.webp"),
-  "1.36": require("@/assets/map/floor1/1_36.webp"),
-  "1.38": require("@/assets/map/floor1/1_38.webp"),
-  "1.39": require("@/assets/map/floor1/1_39.webp"),
-  // ── Floor 2 ──────────────────────────────────
-  none2: require("@/assets/map/floor2/none.webp"),
-  "2.2": require("@/assets/map/floor2/2_2.webp"),
-  "2.6": require("@/assets/map/floor2/2_6.webp"),
-  "2.7": require("@/assets/map/floor2/2_7.webp"),
-  "2.9": require("@/assets/map/floor2/2_9.webp"),
-  "2.10": require("@/assets/map/floor2/2_10.webp"),
-  "2.11": require("@/assets/map/floor2/2_11.webp"),
-  "2.12": require("@/assets/map/floor2/2_12.webp"),
-  "2.13": require("@/assets/map/floor2/2_13.webp"),
-  "2.14": require("@/assets/map/floor2/2_14.webp"),
-  "2.17": require("@/assets/map/floor2/2_17.webp"),
-  "2.18": require("@/assets/map/floor2/2_18.webp"),
-  "2.19": require("@/assets/map/floor2/2_19.webp"),
-  "2.20": require("@/assets/map/floor2/2_20.webp"),
-  "2.21": require("@/assets/map/floor2/2_21.webp"),
-  "2.22": require("@/assets/map/floor2/2_22.webp"),
-  "2.24": require("@/assets/map/floor2/2_24.webp"),
-  "2.25": require("@/assets/map/floor2/2_25.webp"),
-  "2.26": require("@/assets/map/floor2/2_26.webp"),
-  "2.27": require("@/assets/map/floor2/2_27.webp"),
-  "2.28": require("@/assets/map/floor2/2_28.webp"),
-  "2.29": require("@/assets/map/floor2/2_29.webp"),
-  "2.30": require("@/assets/map/floor2/2_30.webp"),
-  "2.31": require("@/assets/map/floor2/2_31.webp"),
-  "2.32": require("@/assets/map/floor2/2_32.webp"),
-  "2.33": require("@/assets/map/floor2/2_33.webp"),
-  "2.34": require("@/assets/map/floor2/2_34.webp"),
-  "2.35": require("@/assets/map/floor2/2_35.webp"),
-  "2.36": require("@/assets/map/floor2/2_36.webp"),
-  "2.40": require("@/assets/map/floor2/2_40.webp"),
-  "2.41": require("@/assets/map/floor2/2_41.webp"),
-  "2.42": require("@/assets/map/floor2/2_42.webp"),
-  "2.47": require("@/assets/map/floor2/2_47.webp"),
-  "2.48": require("@/assets/map/floor2/2_48.webp"),
-  // ── Floor 3 ──────────────────────────────────
-  none3: require("@/assets/map/floor3/none.webp"),
-  "3.2": require("@/assets/map/floor3/3_2.webp"),
-  "3.7": require("@/assets/map/floor3/3_7.webp"),
-  "3.8": require("@/assets/map/floor3/3_8.webp"),
-  "3.9": require("@/assets/map/floor3/3_9.webp"),
-  "3.10": require("@/assets/map/floor3/3_10.webp"),
-  "3.11": require("@/assets/map/floor3/3_11.webp"),
-  "3.12": require("@/assets/map/floor3/3_12.webp"),
-  "3.13": require("@/assets/map/floor3/3_13.webp"),
-  "3.19": require("@/assets/map/floor3/3_19.webp"),
-  "3.22": require("@/assets/map/floor3/3_22.webp"),
-  "3.23": require("@/assets/map/floor3/3_23.webp"),
-  "3.24": require("@/assets/map/floor3/3_24.webp"),
-  "3.26": require("@/assets/map/floor3/3_26.webp"),
-  "3.27a": require("@/assets/map/floor3/3_27a.webp"),
-  "3.27b": require("@/assets/map/floor3/3_27b.webp"),
-  "3.27c": require("@/assets/map/floor3/3_27c.webp"),
-  "3.27d": require("@/assets/map/floor3/3_27d.webp"),
-  "3.27e": require("@/assets/map/floor3/3_27e.webp"),
-  "3.30": require("@/assets/map/floor3/3_30.webp"),
-  "3.31": require("@/assets/map/floor3/3_31.webp"),
-  "3.32": require("@/assets/map/floor3/3_32.webp"),
-  "3.33": require("@/assets/map/floor3/3_33.webp"),
-  "3.34": require("@/assets/map/floor3/3_34.webp"),
-  "3.35": require("@/assets/map/floor3/3_35.webp"),
-  "3.36": require("@/assets/map/floor3/3_36.webp"),
-  "3.37": require("@/assets/map/floor3/3_37.webp"),
-  "3.38": require("@/assets/map/floor3/3_38.webp"),
-  "3.39": require("@/assets/map/floor3/3_39.webp"),
-  "3.40": require("@/assets/map/floor3/3_40.webp"),
-  "3.41": require("@/assets/map/floor3/3_41.webp"),
-  "3.42": require("@/assets/map/floor3/3_42.webp"),
-  "3.43": require("@/assets/map/floor3/3_43.webp"),
-  "3.44": require("@/assets/map/floor3/3_44.webp"),
-  "3.45": require("@/assets/map/floor3/3_45.webp"),
-  "3.46": require("@/assets/map/floor3/3_46.webp"),
-  "3.47": require("@/assets/map/floor3/3_47.webp"),
-  "3.48": require("@/assets/map/floor3/3_48.webp"),
-  "3.49": require("@/assets/map/floor3/3_49.webp"),
-  "3.51": require("@/assets/map/floor3/3_51.webp"),
-  "3.50": require("@/assets/map/floor3/3_50.webp"),
-  "3.53": require("@/assets/map/floor3/3_53.webp"),
-  "3.54": require("@/assets/map/floor3/3_54.webp"),
-  "3.55": require("@/assets/map/floor3/3_55.webp"),
-  "3.56": require("@/assets/map/floor3/3_56.webp"),
-  "3.57": require("@/assets/map/floor3/3_57.webp"),
-  "3.58": require("@/assets/map/floor3/3_58.webp"),
-  // ── Floor 4 ──────────────────────────────────
-  none4: require("@/assets/map/floor4/none.webp"),
-  "4.2": require("@/assets/map/floor4/4_2.webp"),
-  "4.7": require("@/assets/map/floor4/4_7.webp"),
-  "4.8": require("@/assets/map/floor4/4_8.webp"),
-  "4.9": require("@/assets/map/floor4/4_9.webp"),
-  "4.10": require("@/assets/map/floor4/4_10.webp"),
-  "4.11": require("@/assets/map/floor4/4_11.webp"),
-  "4.12": require("@/assets/map/floor4/4_12.webp"),
-  "4.13": require("@/assets/map/floor4/4_13.webp"),
-  "4.14": require("@/assets/map/floor4/4_14.webp"),
-  "4.19": require("@/assets/map/floor4/4_19.webp"),
-  "4.22": require("@/assets/map/floor4/4_22.webp"),
-  "4.23": require("@/assets/map/floor4/4_23.webp"),
-  "4.25": require("@/assets/map/floor4/4_25.webp"),
-  "4.26": require("@/assets/map/floor4/4_26.webp"),
-  "4.27": require("@/assets/map/floor4/4_27.webp"),
-  "4.28": require("@/assets/map/floor4/4_28.webp"),
-  "4.29": require("@/assets/map/floor4/4_29.webp"),
-  "4.30": require("@/assets/map/floor4/4_30.webp"),
-  "4.31": require("@/assets/map/floor4/4_31.webp"),
-  "4.34": require("@/assets/map/floor4/4_34.webp"),
-  "4.35": require("@/assets/map/floor4/4_35.webp"),
-  "4.36": require("@/assets/map/floor4/4_36.webp"),
-  "4.37": require("@/assets/map/floor4/4_37.webp"),
-  "4.38": require("@/assets/map/floor4/4_38.webp"),
-  "4.39": require("@/assets/map/floor4/4_39.webp"),
-  "4.40": require("@/assets/map/floor4/4_40.webp"),
-  "4.41": require("@/assets/map/floor4/4_41.webp"),
-  "4.42": require("@/assets/map/floor4/4_42.webp"),
-  "4.43": require("@/assets/map/floor4/4_43.webp"),
-  "4.44": require("@/assets/map/floor4/4_44.webp"),
-  "4.45": require("@/assets/map/floor4/4_45.webp"),
-  "4.46": require("@/assets/map/floor4/4_46.webp"),
-  "4.47": require("@/assets/map/floor4/4_47.webp"),
-  "4.48": require("@/assets/map/floor4/4_48.webp"),
-  "4.49": require("@/assets/map/floor4/4_49.webp"),
-  "4.50": require("@/assets/map/floor4/4_50.webp"),
-  "4.51": require("@/assets/map/floor4/4_51.webp"),
-  "4.52": require("@/assets/map/floor4/4_52.webp"),
-  "4.53": require("@/assets/map/floor4/4_53.webp"),
-  "4.54": require("@/assets/map/floor4/4_54.webp"),
-  "4.55": require("@/assets/map/floor4/4_55.webp"),
-  "4.57": require("@/assets/map/floor4/4_57.webp"),
-  "4.58": require("@/assets/map/floor4/4_58.webp"),
-  // Rooms whose number prefix is 3 but only exist on floor 4
-  "3.59": require("@/assets/map/floor4/3_59.webp"),
-  "3.61": require("@/assets/map/floor4/3_61.webp"),
-  "3.62": require("@/assets/map/floor4/3_62.webp"),
+// All map assets are pre-bundled as base64 string literals by
+// scripts/bundle-map-assets.mjs into @/lib/mapAssets. This avoids the
+// expo-asset + FileSystem.readAsStringAsync runtime path, which has been
+// unreliable in release builds.
+const TEXTURE_MODULES = MAP_TEXTURES;
+
+const NONE_MODULES: Record<string, string> = {
+  "1": MAP_TEXTURES.none1,
+  "2": MAP_TEXTURES.none2,
+  "3": MAP_TEXTURES.none3,
+  "4": MAP_TEXTURES.none4,
 };
 
-const NONE_MODULES: Record<string, number> = {
-  "1": TEXTURE_MODULES.none1,
-  "2": TEXTURE_MODULES.none2,
-  "3": TEXTURE_MODULES.none3,
-  "4": TEXTURE_MODULES.none4,
-};
-
-const SPECIAL_MODULES: Record<string, Record<string, number>> = {
-  "1": {
-    bathrooms: require("@/assets/map/floor1/bathrooms.webp"),
-    lifts: require("@/assets/map/floor1/lifts.webp"),
-    stairs: require("@/assets/map/floor1/stairs.webp"),
-  },
-  "2": {
-    bathrooms: require("@/assets/map/floor2/bathrooms.webp"),
-    lifts: require("@/assets/map/floor2/lifts.webp"),
-    stairs: require("@/assets/map/floor2/stairs.webp"),
-  },
-  "3": {
-    bathrooms: require("@/assets/map/floor3/bathrooms.webp"),
-    lifts: require("@/assets/map/floor3/lifts.webp"),
-    stairs: require("@/assets/map/floor3/stairs.webp"),
-  },
-  "4": {
-    bathrooms: require("@/assets/map/floor4/bathrooms.webp"),
-    lifts: require("@/assets/map/floor4/lifts.webp"),
-    stairs: require("@/assets/map/floor4/stairs.webp"),
-  },
-};
-
-const GLB_MODULES: Record<string, number> = {
-  "1": require("@/assets/map/floor1/model.glb"),
-  "2": require("@/assets/map/floor2/model.glb"),
-  "3": require("@/assets/map/floor3/model.glb"),
-  "4": require("@/assets/map/floor4/model.glb"),
-};
+const SPECIAL_MODULES = MAP_SPECIAL_TEXTURES;
+const GLB_MODULES = MAP_GLB;
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 
@@ -259,10 +82,7 @@ const ROOM_COORDS_BY_FLOOR: Record<string, RoomCoords> = {
 };
 
 // Textures for rooms that appear on a non-canonical floor (e.g. 1.38 on floor 2).
-const CROSS_FLOOR_TEXTURES: Record<string, Record<string, number>> = {
-  "2": { "1.38": require("@/assets/map/floor2/1_38.webp") },
-  "4": { "3.56": require("@/assets/map/floor4/3_56.webp") },
-};
+const CROSS_FLOOR_TEXTURES = MAP_CROSS_FLOOR_TEXTURES;
 
 // Rooms whose key prefix does not match their primary/lowest floor.
 const ROOM_CANONICAL_FLOOR: Record<string, string> = {
@@ -297,7 +117,7 @@ function getRoomKey(floor: string, suffix: string): string {
   return override ?? candidate;
 }
 
-function getRoomTextureModule(key: string, floor: string): number {
+function getRoomTextureModule(key: string, floor: string): string {
   return (
     CROSS_FLOOR_TEXTURES[floor]?.[key] ??
     TEXTURE_MODULES[key] ??
@@ -305,6 +125,11 @@ function getRoomTextureModule(key: string, floor: string): number {
     NONE_MODULES["1"]
   );
 }
+
+// The underlying values are already base64 string literals (see @/lib/mapAssets),
+// so this is a no-op. Kept as a function to preserve call-site shape from the
+// older Asset.fromModule + FileSystem.readAsStringAsync pipeline.
+const assetToBase64 = (s: string): string => s;
 
 function parseFloorRooms(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
@@ -337,21 +162,6 @@ const FLOOR_LABEL: Record<string, { short: string; full: string }> = {
 // Display strings for the SlotPicker floor column
 const FLOOR_PICKER_ITEMS = FLOORS.map((f) => FLOOR_LABEL[f]?.full ?? `Piętro ${f}`);
 
-// Resolves a map asset to a string the WebView can consume.
-// Production builds embed the bytes as base64 because inline-HTML WebViews
-// can't reliably load file:// URIs across platforms; dev builds skip the
-// base64 round-trip and hand the WebView the Metro URL directly.
-async function assetToBase64(module: number): Promise<string> {
-  const asset = Asset.fromModule(module);
-  if (__DEV__) {
-    return asset.uri;
-  }
-  await asset.downloadAsync();
-  if (!asset.localUri) return "";
-  return FileSystem.readAsStringAsync(asset.localUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-}
 
 const ITEM_H = 52;
 const VISIBLE = 5;
@@ -1007,7 +817,7 @@ export default function D17MapScreen() {
       setSearchTarget(undefined);
       setSearchKey(undefined);
       setSpecialType(null);
-      void assetToBase64(NONE_MODULES["1"]).then(setTextureBase64);
+      setTextureBase64(NONE_MODULES["1"]);
       return;
     }
 
