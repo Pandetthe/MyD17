@@ -337,8 +337,15 @@ const FLOOR_LABEL: Record<string, { short: string; full: string }> = {
 // Display strings for the SlotPicker floor column
 const FLOOR_PICKER_ITEMS = FLOORS.map((f) => FLOOR_LABEL[f]?.full ?? `Piętro ${f}`);
 
+// Resolves a map asset to a string the WebView can consume.
+// Production builds embed the bytes as base64 because inline-HTML WebViews
+// can't reliably load file:// URIs across platforms; dev builds skip the
+// base64 round-trip and hand the WebView the Metro URL directly.
 async function assetToBase64(module: number): Promise<string> {
   const asset = Asset.fromModule(module);
+  if (__DEV__) {
+    return asset.uri;
+  }
   await asset.downloadAsync();
   if (!asset.localUri) return "";
   return FileSystem.readAsStringAsync(asset.localUri, {

@@ -144,7 +144,12 @@ function setModelTransparency(model, opacity) {
   });
 }
 
-function applyTexture(base64, mime) {
+// Dev builds pass an http(s):// or file:// URL; prod builds pass a raw base64 string.
+function isUrlSource(s) {
+  return typeof s === 'string' && /^(https?|file|blob|data):/i.test(s);
+}
+
+function applyTexture(src, mime) {
   if (!currentModel) return;
   const img = new Image();
   img.onload = () => {
@@ -166,7 +171,7 @@ function applyTexture(base64, mime) {
     });
     markDirty();
   };
-  img.src = 'data:' + mime + ';base64,' + base64;
+  img.src = isUrlSource(src) ? src : 'data:' + mime + ';base64,' + src;
 }
 
 function b64ToBuffer(b64) {
@@ -175,6 +180,15 @@ function b64ToBuffer(b64) {
   const view = new Uint8Array(buf);
   for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
   return buf;
+}
+
+function parseGlb(src, onLoad, onError) {
+  const loader = new GLTFLoader();
+  if (isUrlSource(src)) {
+    loader.load(src, onLoad, undefined, onError);
+  } else {
+    loader.parse(b64ToBuffer(src), '', onLoad, onError);
+  }
 }
 
 function clearLabels() {
@@ -217,15 +231,15 @@ function normalizeAndCenter(model) {
   return box;
 }
 
-function loadGlb(glbB64, texB64, texMime) {
-  new GLTFLoader().parse(b64ToBuffer(glbB64), '', gltf => {
+function loadGlb(glbSrc, texSrc, texMime) {
+  parseGlb(glbSrc, gltf => {
     if (currentModel) scene.remove(currentModel);
     currentModel = gltf.scene;
 
     const box = normalizeAndCenter(currentModel);
     scene.add(currentModel);
-    applyTexture(texB64, texMime);
-    lastTextureB64 = texB64;
+    applyTexture(texSrc, texMime);
+    lastTextureB64 = texSrc;
     lastTextureMime = texMime;
     try { createLabels(box.min.y); } catch(e) { console.error('createLabels:', e); }
     markDirty();
@@ -298,7 +312,7 @@ function transitionToFloor(newGlbB64, direction, newRoomCoords, texB64, texMime)
     if (outgoing) scene.remove(outgoing);
     if (myGen !== transitionGen) return; // superseded — discard
 
-    new GLTFLoader().parse(b64ToBuffer(newGlbB64), '', gltf => {
+    parseGlb(newGlbB64, gltf => {
       if (myGen !== transitionGen) return; // superseded while parsing — discard
       currentModel = gltf.scene;
       const box = normalizeAndCenter(currentModel);
