@@ -34,7 +34,7 @@ docker compose version
 ### Wygenerowanie konfiguracji
 
 ```bash
-pnpm onprem init
+bash scripts/onprem.sh init
 ```
 
 Skrypt utworzy plik `.env` z losowymi sekretami, hasłem bazy i hasłami startowymi do kont admina.
@@ -76,13 +76,13 @@ STRAPI_IMAGE=strapi:local
 ### Uruchomienie
 
 ```bash
-pnpm onprem up
+bash scripts/onprem.sh up
 ```
 
 Sprawdzenie statusu:
 
 ```bash
-pnpm onprem status
+bash scripts/onprem.sh status
 ```
 
 Panel administracyjny Strapi jest dostępny pod:
@@ -117,7 +117,7 @@ STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
 - Wykonać aktualizację:
 
 ```bash
-pnpm onprem migrate
+bash scripts/onprem.sh migrate
 ```
 
 Skrypt przed aktualizacją tworzy zweryfikowany backup bazy w katalogu `backups/`.
@@ -125,8 +125,8 @@ Skrypt przed aktualizacją tworzy zweryfikowany backup bazy w katalogu `backups/
 - Sprawdzić środowisko:
 
 ```bash
-pnpm onprem status
-pnpm onprem verify
+bash scripts/onprem.sh status
+bash scripts/onprem.sh verify
 ```
 
 ## Wycofanie zmian (rollback)
@@ -140,13 +140,13 @@ STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 - Odtworzyć bazę z backupu utworzonego przed aktualizacją:
 
 ```bash
-pnpm onprem restore backups/myd17-YYYYMMDD-HHMMSS.dump
+bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
 - Sprawdzić system:
 
 ```bash
-pnpm onprem verify
+bash scripts/onprem.sh verify
 ```
 
 Uwaga: komenda `restore` zatrzymuje Strapi, uruchamia bazę, tworzy dodatkowy backup aktualnego stanu bazy, odtwarza wskazany dump i ponownie uruchamia Strapi.
@@ -156,7 +156,7 @@ Uwaga: komenda `restore` zatrzymuje Strapi, uruchamia bazę, tworzy dodatkowy ba
 Ręczny backup bazy:
 
 ```bash
-pnpm onprem backup
+bash scripts/onprem.sh backup
 ```
 
 Backup trafia do katalogu `backups/` jako plik `.dump`.
@@ -164,7 +164,7 @@ Backup trafia do katalogu `backups/` jako plik `.dump`.
 Odtworzenie backupu:
 
 ```bash
-pnpm onprem restore backups/myd17-YYYYMMDD-HHMMSS.dump
+bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
 Backup bazy nie zastępuje backupu uploadów. Pliki uploadowane w Strapi są w wolumenie Docker `strapi_uploads` i powinny być zabezpieczane osobno.
@@ -174,7 +174,7 @@ Backup bazy nie zastępuje backupu uploadów. Pliki uploadowane w Strapi są w w
 ### Status usług
 
 ```bash
-pnpm onprem status
+bash scripts/onprem.sh status
 docker compose --project-name myd17 --env-file .env -f compose.yaml --profile prod ps
 ```
 
@@ -188,19 +188,19 @@ Oczekiwane usługi:
 Wszystkie usługi:
 
 ```bash
-pnpm onprem logs
+bash scripts/onprem.sh logs
 ```
 
 Tylko Strapi:
 
 ```bash
-pnpm onprem logs strapi
+bash scripts/onprem.sh logs strapi
 ```
 
 Tylko baza:
 
 ```bash
-pnpm onprem logs database
+bash scripts/onprem.sh logs database
 ```
 
 ### Healthcheck aplikacji
@@ -211,11 +211,11 @@ curl http://localhost:1337/_health
 
 Jeżeli endpoint nie odpowiada:
 
-- Sprawdzić `pnpm onprem status`.
-- Sprawdzić `pnpm onprem logs strapi`.
+- Sprawdzić `bash scripts/onprem.sh status`.
+- Sprawdzić `bash scripts/onprem.sh logs strapi`.
 - Sprawdzić, czy port `1337/tcp` nie jest blokowany przez firewall lub reverse proxy.
 - Sprawdzić, czy `.env` ma komplet wymaganych zmiennych:
 
 ```bash
-pnpm onprem verify
+bash scripts/onprem.sh verify
 ```
