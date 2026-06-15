@@ -5,6 +5,13 @@ import type { PostContentBlock } from "@repo/types";
 import { render, screen, fireEvent } from "@testing-library/react-native";
 import * as Clipboard from "expo-clipboard";
 
+const mockPush = jest.fn();
+jest.mock("@/hooks/useGuardedRouter", () => ({
+  useGuardedRouter: () => ({ push: mockPush, back: jest.fn() }),
+}));
+
+beforeEach(() => mockPush.mockClear());
+
 const locationBlock = (content: string): PostContentBlock =>
   ({ __component: "content.location", id: 1, content }) as PostContentBlock;
 
@@ -49,21 +56,28 @@ describe("InfoCard", () => {
     expect(screen.getByText("Lokalizacja")).toBeTruthy();
   });
 
-  it("opens map for first-floor location", () => {
-    const onLocationPress = jest.fn();
-    render(<InfoCard blocks={[locationBlock("s1.38")]} onLocationPress={onLocationPress} />);
+  it("navigates to the map for the location's room on button press", () => {
+    render(<InfoCard blocks={[locationBlock("s1.38")]} />);
 
-    fireEvent.press(screen.getByTestId("info-card-location-link"));
+    fireEvent.press(screen.getByTestId("info-card-location-button"));
 
-    expect(onLocationPress).toHaveBeenCalledWith("1.38");
+    expect(mockPush).toHaveBeenCalledWith({ pathname: "/d17map", params: { room: "1.38" } });
   });
 
-  it("renders all four known locations correctly", () => {
+  it("navigates to the correct room for non-first-floor locations", () => {
+    render(<InfoCard blocks={[locationBlock("s3.27a")]} />);
+
+    fireEvent.press(screen.getByTestId("info-card-location-button"));
+
+    expect(mockPush).toHaveBeenCalledWith({ pathname: "/d17map", params: { room: "3.27a" } });
+  });
+
+  it("renders mapped location labels across floors", () => {
     const expected: Record<string, string> = {
       "s1.38": "Budynek D-17, Sala 1.38",
       "s2.41": "Budynek D-17, Sala 2.41",
-      "s3.20": "Budynek D-17, Sala 3.20",
-      "s4.21": "Budynek D-17, Sala 4.21",
+      "s3.27a": "Budynek D-17, Sala 3.27a",
+      "s4.58": "Budynek D-17, Sala 4.58",
     };
     Object.entries(expected).forEach(([code, label]) => {
       const { unmount } = render(<InfoCard blocks={[locationBlock(code)]} />);

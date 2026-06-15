@@ -4,10 +4,19 @@ import Logo from "@/components/core/Logo.component";
 import { usePressAnimation } from "@/hooks/usePressAnimation";
 import { colors } from "@/styles/colors";
 import { usePathname, useRouter, Href } from "expo-router";
-import { HomeIcon, InfoIcon, LucideIcon, MapIcon, PhoneIcon, SettingsIcon } from "lucide-react-native";
+import {
+  HomeIcon,
+  InfoIcon,
+  LucideIcon,
+  MapIcon,
+  PhoneIcon,
+  SettingsIcon,
+} from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 
 type NavItemProps = {
   icon: LucideIcon;
@@ -32,10 +41,14 @@ function NavItem({ icon: Icon, label, active, onPress, testID }: NavItemProps) {
 
 export default function DrawerContent() {
   const router = useRouter();
+  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
 
-  const navigate = (href: Href) => router.push(href);
+  const navigate = (href: Href) => {
+    navigation.closeDrawer();
+    router.push(href);
+  };
 
   const topItems: { icon: LucideIcon; label: string; href: Href }[] = [
     { icon: HomeIcon, label: "STRONA GŁÓWNA", href: "/" },

@@ -6,14 +6,13 @@ import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { useLikePost } from "@/features/posts/api/useLikePost";
-import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
-import { useRouter } from "expo-router";
 import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -26,7 +25,7 @@ type Props = {
 };
 
 export function PostDetail({ post }: Props) {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
   const insets = useSafeAreaInsets();
@@ -39,20 +38,6 @@ export function PostDetail({ post }: Props) {
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   const statusBarStyle = hasHero || isDark ? "light-content" : "dark-content";
-
-  const handleAddToCalendar = useCallback(
-    (event: CalendarEvent) => {
-      void addEventToCalendar(post, event);
-    },
-    [post],
-  );
-
-  const handleLocationPress = useCallback(
-    (room: string) => {
-      router.push({ pathname: "/d17map", params: { room } });
-    },
-    [router],
-  );
 
   const goBack = useCallback(() => router.back(), [router]);
 
@@ -136,8 +121,8 @@ export function PostDetail({ post }: Props) {
 
             <ContentRenderer
               blocks={content}
-              onAddToCalendar={handleAddToCalendar}
-              onLocationPress={handleLocationPress}
+              eventTitle={post.title}
+              eventNotes={post.description}
             />
           </View>
         </View>

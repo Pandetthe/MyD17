@@ -17,9 +17,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/icon.png",
-        "monochromeImage": "./assets/images/icon-monochrome.png"
+        "backgroundColor": "#EFF6FF",
+        "foregroundImage": "./assets/images/icon-foreground.png",
+        "monochromeImage": "./assets/images/icon-monochrome-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "io.github.stawex.myd17",

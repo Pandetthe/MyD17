@@ -101,25 +101,45 @@ describe("useLikePost", () => {
     await waitFor(() => expect(result.current.likesCount).toBe(11));
   });
 
-  it("reverts liked state and delta on API error", async () => {
-    mockApiPost.mockRejectedValue(new Error("network error"));
-    const { Wrapper } = makeWrapper();
-    const { result } = renderHook(() => useLikePost(makePost({ likesCount: 10 })), {
-      wrapper: Wrapper,
-    });
-    await waitFor(() => expect(result.current.liked).toBe(false));
+  it("keeps the heart loaded when the request does not succeed, reverting only after the 10s fallback", async () => {
+    jest.useFakeTimers();
+    try {
+      // Never resolves — simulates a request that never confirms (slow/failed).
+      mockApiPost.mockReturnValue(new Promise(() => {}));
+      const { Wrapper } = makeWrapper();
+      const { result } = renderHook(() => useLikePost(makePost({ likesCount: 10 })), {
+        wrapper: Wrapper,
+      });
+      const flush = () => act(async () => undefined);
+      await flush();
+      expect(result.current.liked).toBe(false);
 
-    act(() => {
-      result.current.likePost();
-    });
+      await act(async () => {
+        result.current.likePost();
+      });
 
-    await waitFor(() => {
+      // Heart loads immediately and stays loaded right up to the fallback window.
+      expect(result.current.liked).toBe(true);
+      expect(result.current.likesCount).toBe(11);
+
+      await act(async () => {
+        jest.advanceTimersByTime(9_000);
+      });
+      expect(result.current.liked).toBe(true);
+      expect(result.current.likesCount).toBe(11);
+
+      // After the full 10s with no success, it falls back to the previous state.
+      await act(async () => {
+        jest.advanceTimersByTime(1_000);
+      });
       expect(result.current.liked).toBe(false);
       expect(result.current.likesCount).toBe(10);
-    });
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
-  it("resets delta to 0 on API success (server count applies)", async () => {
+  it("shows server count on API success (no flicker back to prop value)", async () => {
     mockApiPost.mockResolvedValue({ data: { likesCount: 15 } });
     const { Wrapper } = makeWrapper();
     const { result } = renderHook(() => useLikePost(makePost({ likesCount: 10 })), {
@@ -131,8 +151,8 @@ describe("useLikePost", () => {
       result.current.likePost();
     });
 
-    // After success delta resets — likesCount falls back to post.likesCount + 0 = 10
-    // (server cache update only affects cached query data, not the prop)
-    await waitFor(() => expect(result.current.likesCount).toBe(10));
+    // After success the server count is shown immediately — no intermediate drop back
+    // to post.likesCount (the old delta-reset flicker).
+    await waitFor(() => expect(result.current.likesCount).toBe(15));
   });
 });
