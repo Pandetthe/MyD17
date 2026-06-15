@@ -22,9 +22,10 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   post: Post;
+  preview?: boolean;
 };
 
-export function PostDetail({ post }: Props) {
+export function PostDetail({ post, preview = false }: Props) {
   const router = useGuardedRouter();
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
@@ -93,7 +94,7 @@ export function PostDetail({ post }: Props) {
               </TextCore>
             )}
 
-            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
+            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]} pointerEvents={preview ? "none" : "box-none"}>
               <Pressable
                 testID="post-detail-share-btn"
                 style={styles.iconButton}
@@ -123,6 +124,7 @@ export function PostDetail({ post }: Props) {
               blocks={content}
               eventTitle={post.title}
               eventNotes={post.description}
+              preview={preview}
             />
           </View>
         </View>
@@ -132,14 +134,16 @@ export function PostDetail({ post }: Props) {
         <View style={styles.edgeTrigger} />
       </GestureDetector>
 
-      <Button
-        testID="post-detail-back-btn"
-        icon={ArrowLeft}
-        color="dark"
-        size="lg"
-        style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
-        onPress={goBack}
-      />
+      {!preview && (
+        <Button
+          testID="post-detail-back-btn"
+          icon={ArrowLeft}
+          color="dark"
+          size="lg"
+          style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
+          onPress={goBack}
+        />
+      )}
     </View>
   );
 }

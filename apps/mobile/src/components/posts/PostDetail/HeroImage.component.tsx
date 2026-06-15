@@ -75,6 +75,7 @@ const styles = StyleSheet.create((theme: Theme) => ({
   container: {
     height: 444,
     position: "relative",
+    overflow: "hidden",
   },
   image: {
     width: "100%",

@@ -86,6 +86,7 @@ function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
 type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
+  preview?: boolean;
   /** Title used for calendar events created from this card (post / page title). */
   eventTitle?: string;
   /** Optional notes attached to created calendar events. */
@@ -105,7 +106,7 @@ type SuccessInfo = {
   icon: LucideIcon;
 } | null;
 
-export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props) {
+export function InfoCard({ blocks, dark = false, preview = false, eventTitle, eventNotes }: Props) {
   const { theme } = useUnistyles();
   const router = useGuardedRouter();
   const safeBlocks = blocks ?? [];
@@ -148,15 +149,17 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
             />
           </View>
           {openLocation && (
-            <DarkButton
-              forceDark={dark}
-              icon={Map}
-              color="dark"
-              size="lg"
-              style={styles.calendarButton}
-              onPress={openLocation}
-              testID="info-card-location-button"
-            />
+            <View pointerEvents={preview ? "none" : "box-none"}>
+              <DarkButton
+                forceDark={dark}
+                icon={Map}
+                color="dark"
+                size="lg"
+                style={styles.calendarButton}
+                onPress={openLocation}
+                testID="info-card-location-button"
+              />
+            </View>
           )}
         </View>
       )}
@@ -175,25 +178,27 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
                 />
               </View>
               {calEvent && (
-                <DarkButton
-                  forceDark={dark}
-                  icon={CalendarPlus}
-                  color="dark"
-                  size="lg"
-                  style={styles.calendarButton}
-                  testID="info-card-calendar-button"
-                  onPress={async () => {
-                    await addEventToCalendar(calEvent, {
-                      title: eventTitle ?? "Wydarzenie",
-                      notes: eventNotes,
-                    });
-                    setSuccessInfo({
-                      title: "Dodano do kalendarza",
-                      body: calEvent.label,
-                      icon: CalendarPlus,
-                    });
-                  }}
-                />
+                <View pointerEvents={preview ? "none" : "box-none"}>
+                  <DarkButton
+                    forceDark={dark}
+                    icon={CalendarPlus}
+                    color="dark"
+                    size="lg"
+                    style={styles.calendarButton}
+                    testID="info-card-calendar-button"
+                    onPress={async () => {
+                      await addEventToCalendar(calEvent, {
+                        title: eventTitle ?? "Wydarzenie",
+                        notes: eventNotes,
+                      });
+                      setSuccessInfo({
+                        title: "Dodano do kalendarza",
+                        body: calEvent.label,
+                        icon: CalendarPlus,
+                      });
+                    }}
+                  />
+                </View>
               )}
             </View>
           </View>
@@ -230,15 +235,17 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
               />
             </View>
             {ActionIcon && onPress && (
-              <DarkButton
-                forceDark={dark}
-                icon={ActionIcon}
-                color="dark"
-                size="lg"
-                style={styles.calendarButton}
-                onPress={onPress}
-                testID="chip-action-button"
-              />
+              <View pointerEvents={preview ? "none" : "box-none"}>
+                <DarkButton
+                  forceDark={dark}
+                  icon={ActionIcon}
+                  color="dark"
+                  size="lg"
+                  style={styles.calendarButton}
+                  onPress={onPress}
+                  testID="chip-action-button"
+                />
+              </View>
             )}
           </View>
         );

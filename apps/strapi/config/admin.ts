@@ -32,6 +32,13 @@ const config = ({
     enabled: true,
     config: {
       async handler(uid: string, { documentId, status }: { documentId?: string; status?: string }) {
+        const PREVIEW_UIDS = new Set([
+          "api::post.post",
+          "api::static-information.static-information",
+          "api::contact.contact",
+        ]);
+        if (!PREVIEW_UIDS.has(uid)) return null;
+
         const secret = env("PREVIEW_SECRET", "change-me-in-production");
         const strapiUrl = env("STRAPI_URL", "http://localhost:1337");
         const expoWebUrl = env("EXPO_WEB_URL", "");

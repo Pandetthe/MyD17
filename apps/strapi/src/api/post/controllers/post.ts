@@ -233,20 +233,20 @@ export default factories.createCoreController(
       const docStatus = status === "published" ? "published" : "draft";
 
       const isPost = uid === "api::post.post";
-      const populate: Record<string, unknown> = {
-        content: {
-          on: {
-            "content.text": true,
-            "content.section-title": true,
-            "content.location": true,
-            "content.event-date-time": true,
-            "content.chip": true,
-            "content.calendar": { populate: { entries: true } },
-          },
+      const contentPopulate = {
+        on: {
+          "content.text": true,
+          "content.section-title": true,
+          "content.location": true,
+          "content.event-date-time": true,
+          "content.chip": true,
+          "content.calendar": { populate: { entries: true } },
         },
       };
+      const populate: Record<string, unknown> = { content: contentPopulate };
       if (isPost) {
-        populate.images = { fields: ["url", "alternativeText", "width", "height"] };
+        populate.images = true;
+        populate.tags = { fields: ["title", "color"] };
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,18 +262,22 @@ export default factories.createCoreController(
         return;
       }
 
-      const strapiBaseUrl = process.env.STRAPI_URL ?? strapi.config.get<string>("server.url", "");
-      const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
-      const description = (document["description"] as string | undefined) ?? null;
-      const firstImage = (document["images"] as Array<{ url?: string }> | undefined)?.[0];
-      const imageUrl = firstImage?.url
-        ? firstImage.url.startsWith("http")
-          ? firstImage.url
-          : `${strapiBaseUrl}${firstImage.url}`
-        : null;
-      const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+      if (isPost) {
+        const strapiBaseUrl = process.env.STRAPI_URL ?? "http://localhost:1337";
+        const resolveUrl = (url: string | undefined): string | null =>
+          url ? (url.startsWith("http") ? url : `${strapiBaseUrl}${url}`) : null;
 
-      ctx.body = { title, description, imageUrl, blocks, status: docStatus };
+        type ImgShape = { url?: string; formats?: Record<string, { url?: string }> };
+        const img = document.images as ImgShape | ImgShape[] | null | undefined;
+        const firstImg = Array.isArray(img) ? img[0] : img;
+        const heroImageUrl = resolveUrl(firstImg?.formats?.large?.url ?? firstImg?.url);
+
+        ctx.body = { type: "post", post: document, heroImageUrl, status: docStatus };
+      } else {
+        const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
+        const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+        ctx.body = { type: "drawer", title, blocks, status: docStatus };
+      }
     },
 
     async preview(ctx) {

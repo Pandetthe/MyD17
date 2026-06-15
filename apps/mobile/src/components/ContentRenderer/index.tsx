@@ -12,6 +12,7 @@ type Props = {
   blocks: PostContentBlock[];
   textColor?: ColorValue;
   dark?: boolean;
+  preview?: boolean;
   /** Title used for calendar events created from location/event cards. */
   eventTitle?: string;
   /** Optional notes attached to created calendar events. */
@@ -45,7 +46,7 @@ function groupBlocks(blocks: PostContentBlock[]): RenderedBlock[] {
   return result;
 }
 
-export function ContentRenderer({ blocks, textColor, dark, eventTitle, eventNotes }: Props) {
+export function ContentRenderer({ blocks, textColor, dark, preview, eventTitle, eventNotes }: Props) {
   const grouped = groupBlocks(blocks);
 
   return (
@@ -58,6 +59,7 @@ export function ContentRenderer({ blocks, textColor, dark, eventTitle, eventNote
               key={item.key}
               blocks={item.blocks}
               dark={dark}
+              preview={preview}
               eventTitle={eventTitle}
               eventNotes={eventNotes}
             />
