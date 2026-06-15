@@ -15,8 +15,7 @@ import {
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 
 type NavItemProps = {
   icon: LucideIcon;
@@ -41,12 +40,12 @@ function NavItem({ icon: Icon, label, active, onPress, testID }: NavItemProps) {
 
 export default function DrawerContent() {
   const router = useRouter();
-  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
+  const navigation = useNavigation();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
 
   const navigate = (href: Href) => {
-    navigation.closeDrawer();
+    navigation.dispatch(DrawerActions.closeDrawer());
     router.push(href);
   };
 
