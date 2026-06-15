@@ -1,5 +1,12 @@
 import { factories } from "@strapi/strapi";
 import { isMobileUA, isIosUA, escape, ogMeta } from "../utils/postUtils";
+import { renderPreviewHtml } from "../utils/renderPreview";
+
+const PREVIEW_ALLOWED_UIDS = new Set([
+  "api::post.post",
+  "api::static-information.static-information",
+  "api::contact.contact",
+]);
 
 const IOS_STORE_URL =
   process.env.IOS_APP_STORE_URL ?? "https://apps.apple.com/app/myd17";
@@ -206,6 +213,54 @@ export default factories.createCoreController(
         pageUrl,
         isIosUA(ua),
       );
+    },
+
+    async preview(ctx) {
+      const { uid, documentId, status, secret } = ctx.query as Record<string, string>;
+
+      if (secret !== (process.env.PREVIEW_SECRET ?? "change-me-in-production")) {
+        ctx.status = 403;
+        ctx.body = "Forbidden";
+        return;
+      }
+
+      if (!uid || !PREVIEW_ALLOWED_UIDS.has(uid)) {
+        ctx.status = 400;
+        ctx.body = "Invalid content type";
+        return;
+      }
+
+      const docStatus = status === "published" ? "published" : "draft";
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const document: Record<string, any> | null = await (strapi.documents as any)(uid).findOne({
+        documentId,
+        populate: {
+          content: {
+            on: {
+              "content.text": true,
+              "content.section-title": true,
+              "content.location": true,
+              "content.event-date-time": true,
+              "content.chip": true,
+              "content.calendar": { populate: { entries: true } },
+            },
+          },
+        },
+        status: docStatus,
+      });
+
+      if (!document) {
+        ctx.status = 404;
+        ctx.body = "Not found";
+        return;
+      }
+
+      const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
+      const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+
+      ctx.type = "text/html; charset=utf-8";
+      ctx.body = renderPreviewHtml(title, blocks, docStatus);
     },
 
     async like(ctx) {

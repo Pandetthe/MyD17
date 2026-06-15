@@ -28,6 +28,22 @@ const config = ({
     nps: env.bool("FLAG_NPS", true),
     promoteEE: env.bool("FLAG_PROMOTE_EE", false),
   },
+  preview: {
+    enabled: true,
+    config: {
+      async handler(uid: string, { documentId, status }: { documentId?: string; status?: string }) {
+        const secret = env("PREVIEW_SECRET", "change-me-in-production");
+        const strapiUrl = env("STRAPI_URL", "http://localhost:1337");
+        const params = new URLSearchParams({
+          uid,
+          documentId: documentId ?? "",
+          status: status ?? "draft",
+          secret,
+        });
+        return `${strapiUrl}/api/preview?${params.toString()}`;
+      },
+    },
+  },
 });
 
 export default config;

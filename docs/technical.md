@@ -98,6 +98,22 @@ Startowe konta administracyjne są tworzone przy pierwszym starcie, jeżeli jesz
 
 Hasła znajdują się w `.env` pod zmiennymi `STRAPI_ADMIN_PASSWORD` i `STRAPI_EMPLOYEE_PASSWORD`.
 
+## Opcjonalna konfiguracja
+
+Poniższe zmienne można dopisać ręcznie do `.env` po wygenerowaniu pliku przez `init`.
+
+### Podgląd treści w panelu admina
+
+Strapi udostępnia przycisk **„Open Preview"** na stronach edycji postów, kart informacyjnych i strony kontaktowej. Kliknięcie otwiera wyrenderowany podgląd bloków treści w nowej karcie.
+
+Aby włączyć podgląd, ustaw losowy sekret:
+
+```dotenv
+PREVIEW_SECRET=twój-losowy-sekret
+```
+
+Bez tej zmiennej podgląd działa z domyślną wartością `change-me-in-production`, co jest akceptowalne tylko lokalnie. Na środowisku produkcyjnym **wymagane** jest ustawienie własnej wartości.
+
 ## Aktualizacja systemu
 
 Aktualizacja polega na zmianie obrazu Strapi i restarcie aplikacji. Strapi wykonuje zmiany schematu podczas startu.
