@@ -136,7 +136,7 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
                 style={styles.scroll}
                 contentContainerStyle={[
                   styles.content,
-                  { paddingBottom: Math.max(32, insets.bottom + 16) },
+                  { paddingBottom: Math.max(48, insets.bottom + 32) },
                 ]}
                 showsVerticalScrollIndicator={false}
                 onScroll={(e) => {

@@ -136,14 +136,17 @@ export default function Notifications() {
 
   const goBack = useCallback(() => router.back(), [router]);
 
-  const swipeBack = Gesture.Pan()
-    .activeOffsetX([30, 9999])
-    .failOffsetY([-15, 15])
-    .onEnd((e) => {
-      if (e.translationX > 80 || e.velocityX > 800) {
-        runOnJS(goBack)();
-      }
-    });
+  const swipeBack = Gesture.Simultaneous(
+    Gesture.Pan()
+      .activeOffsetX([30, 9999])
+      .failOffsetY([-15, 15])
+      .onEnd((e) => {
+        if (e.translationX > 80 || e.velocityX > 800) {
+          runOnJS(goBack)();
+        }
+      }),
+    Gesture.Native(),
+  );
 
   return (
     <GestureDetector gesture={swipeBack}>

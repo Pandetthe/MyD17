@@ -78,6 +78,4 @@ export async function addEventToCalendar(
     endDate: event.endDate,
     notes: meta.notes ?? undefined,
   });
-
-  Alert.alert("Dodano do kalendarza", `"${meta.title}" zostało dodane do Twojego kalendarza.`);
 }

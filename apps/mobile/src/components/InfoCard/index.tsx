@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Linking, View } from "react-native";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
+import ConfirmModal from "@/components/core/ConfirmModal.component";
 import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { getIcon } from "@/lib/iconMap";
@@ -98,10 +99,17 @@ function DarkButton({ forceDark, ...props }: React.ComponentProps<typeof Button>
   return <Button {...props} />;
 }
 
+type SuccessInfo = {
+  title: string;
+  body?: string;
+  icon: LucideIcon;
+} | null;
+
 export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props) {
   const { theme } = useUnistyles();
   const router = useGuardedRouter();
   const safeBlocks = blocks ?? [];
+  const [successInfo, setSuccessInfo] = useState<SuccessInfo>(null);
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -174,12 +182,17 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
                   size="lg"
                   style={styles.calendarButton}
                   testID="info-card-calendar-button"
-                  onPress={() =>
-                    void addEventToCalendar(calEvent, {
+                  onPress={async () => {
+                    await addEventToCalendar(calEvent, {
                       title: eventTitle ?? "Wydarzenie",
                       notes: eventNotes,
-                    })
-                  }
+                    });
+                    setSuccessInfo({
+                      title: "Dodano do kalendarza",
+                      body: calEvent.label,
+                      icon: CalendarPlus,
+                    });
+                  }}
                 />
               )}
             </View>
@@ -189,10 +202,22 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
 
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
-        const onPress = buildChipHandler(chip.variant, chip.content);
+        const rawHandler = buildChipHandler(chip.variant, chip.content);
         let ActionIcon: LucideIcon | undefined;
         if (chip.variant === "copy") ActionIcon = Copy;
-        else if (chip.variant !== "normal" && onPress) ActionIcon = ArrowUpRight;
+        else if (chip.variant !== "normal" && rawHandler) ActionIcon = ArrowUpRight;
+
+        const onPress =
+          chip.variant === "copy" && rawHandler
+            ? async () => {
+                await rawHandler();
+                setSuccessInfo({
+                  title: "Skopiowano!",
+                  body: chip.content ?? undefined,
+                  icon: Copy,
+                });
+              }
+            : rawHandler;
 
         return (
           <View key={chip.id} style={ActionIcon ? styles.dateRow : undefined}>
@@ -218,6 +243,13 @@ export function InfoCard({ blocks, dark = false, eventTitle, eventNotes }: Props
           </View>
         );
       })}
+      <ConfirmModal
+        visible={successInfo !== null}
+        icon={successInfo?.icon ?? Copy}
+        title={successInfo?.title ?? ""}
+        body={successInfo?.body}
+        onDismiss={() => setSuccessInfo(null)}
+      />
     </Card>
   );
 }
