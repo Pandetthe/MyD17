@@ -8,14 +8,26 @@ const config: Core.Config.Middlewares = [
     config: {
       frameguard: { action: "sameorigin" },
       hidePoweredBy: true,
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "frame-src": [
+            "'self'",
+            ...(process.env.EXPO_WEB_URL ? [process.env.EXPO_WEB_URL] : []),
+          ],
+        },
+      },
     },
   },
   {
     name: "strapi::cors",
     config: {
-      origin: (process.env.CORS_ALLOWED_ORIGINS ?? "http://localhost:1337")
-        .split(",")
-        .map((o) => o.trim()),
+      origin: [
+        ...(process.env.CORS_ALLOWED_ORIGINS ?? "http://localhost:1337")
+          .split(",")
+          .map((o) => o.trim()),
+        ...(process.env.EXPO_WEB_URL ? [process.env.EXPO_WEB_URL.trim()] : []),
+      ],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
       headers: ["Content-Type", "Authorization", "Origin", "Accept"],
       keepHeaderOnError: true,

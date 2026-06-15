@@ -114,6 +114,22 @@ PREVIEW_SECRET=twój-losowy-sekret
 
 Bez tej zmiennej podgląd działa z domyślną wartością `change-me-in-production`, co jest akceptowalne tylko lokalnie. Na środowisku produkcyjnym **wymagane** jest ustawienie własnej wartości.
 
+### Podgląd z aplikacją webową
+
+Domyślnie podgląd renderuje uproszczoną wersję HTML. Aby zamiast tego używać skompilowanej aplikacji mobilnej (React Native Web), ustaw adres, pod którym jest ona dostępna:
+
+```dotenv
+EXPO_WEB_URL=http://localhost:8081
+```
+
+Wartość powinna wskazywać na serwer deweloperski Expo (`npx expo start --web`) lub na zbudowaną i hostowaną wersję statyczną (`npx expo export --platform web`). Adres jest przekazywany do strony podglądu jako parametr, więc musi być dostępny zarówno dla przeglądarki otwierającej podgląd, jak i dla serwera Strapi.
+
+Pamiętaj, żeby dodać adres aplikacji webowej do zmiennej `CORS_ALLOWED_ORIGINS` w `.env`, np.:
+
+```dotenv
+CORS_ALLOWED_ORIGINS=http://localhost:1337,http://localhost:8081
+```
+
 ## Aktualizacja systemu
 
 Aktualizacja polega na zmianie obrazu Strapi i restarcie aplikacji. Strapi wykonuje zmiany schematu podczas startu.

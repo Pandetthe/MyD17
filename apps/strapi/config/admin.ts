@@ -34,12 +34,16 @@ const config = ({
       async handler(uid: string, { documentId, status }: { documentId?: string; status?: string }) {
         const secret = env("PREVIEW_SECRET", "change-me-in-production");
         const strapiUrl = env("STRAPI_URL", "http://localhost:1337");
-        const params = new URLSearchParams({
-          uid,
-          documentId: documentId ?? "",
-          status: status ?? "draft",
-          secret,
-        });
+        const expoWebUrl = env("EXPO_WEB_URL", "");
+        const docId = documentId ?? "";
+        const docStatus = status ?? "draft";
+
+        if (expoWebUrl) {
+          const params = new URLSearchParams({ uid, documentId: docId, status: docStatus, secret, strapiUrl });
+          return `${expoWebUrl}/preview?${params.toString()}`;
+        }
+
+        const params = new URLSearchParams({ uid, documentId: docId, status: docStatus, secret });
         return `${strapiUrl}/api/preview?${params.toString()}`;
       },
     },

@@ -215,6 +215,67 @@ export default factories.createCoreController(
       );
     },
 
+    async previewContent(ctx) {
+      const { uid, documentId, status, secret } = ctx.query as Record<string, string>;
+
+      if (secret !== (process.env.PREVIEW_SECRET ?? "change-me-in-production")) {
+        ctx.status = 403;
+        ctx.body = { error: "Forbidden" };
+        return;
+      }
+
+      if (!uid || !PREVIEW_ALLOWED_UIDS.has(uid)) {
+        ctx.status = 400;
+        ctx.body = { error: "Invalid content type" };
+        return;
+      }
+
+      const docStatus = status === "published" ? "published" : "draft";
+
+      const isPost = uid === "api::post.post";
+      const populate: Record<string, unknown> = {
+        content: {
+          on: {
+            "content.text": true,
+            "content.section-title": true,
+            "content.location": true,
+            "content.event-date-time": true,
+            "content.chip": true,
+            "content.calendar": { populate: { entries: true } },
+          },
+        },
+      };
+      if (isPost) {
+        populate.images = { fields: ["url", "alternativeText", "width", "height"] };
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const document: Record<string, any> | null = await (strapi.documents as any)(uid).findOne({
+        documentId,
+        populate,
+        status: docStatus,
+      });
+
+      if (!document) {
+        ctx.status = 404;
+        ctx.body = { error: "Not found" };
+        return;
+      }
+
+      const strapiBaseUrl = process.env.STRAPI_URL ?? strapi.config.get<string>("server.url", "");
+      const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
+      const description = (document["description"] as string | undefined) ?? null;
+      const firstImage = (document["images"] as Array<{ url?: string }> | undefined)?.[0];
+      const imageUrl = firstImage?.url
+        ? firstImage.url.startsWith("http")
+          ? firstImage.url
+          : `${strapiBaseUrl}${firstImage.url}`
+        : null;
+      const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+
+      ctx.body = { title, description, imageUrl, blocks, status: docStatus };
+    },
+
     async preview(ctx) {
       const { uid, documentId, status, secret } = ctx.query as Record<string, string>;
 
