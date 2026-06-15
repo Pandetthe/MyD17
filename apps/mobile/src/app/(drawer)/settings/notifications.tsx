@@ -136,21 +136,20 @@ export default function Notifications() {
 
   const goBack = useCallback(() => router.back(), [router]);
 
-  const swipeBack = Gesture.Simultaneous(
-    Gesture.Pan()
-      .activeOffsetX([30, 9999])
-      .failOffsetY([-15, 15])
-      .onEnd((e) => {
-        if (e.translationX > 80 || e.velocityX > 800) {
-          runOnJS(goBack)();
-        }
-      }),
-    Gesture.Native(),
-  );
+  const swipeBack = Gesture.Pan()
+    .activeOffsetX([30, 9999])
+    .failOffsetY([-15, 15])
+    .onEnd((e) => {
+      if (e.translationX > 80 || e.velocityX > 800) {
+        runOnJS(goBack)();
+      }
+    });
 
   return (
-    <GestureDetector gesture={swipeBack}>
       <View testID="notifications-screen" style={styles.wrapper}>
+        <GestureDetector gesture={swipeBack}>
+          <View style={styles.edgeZone} pointerEvents="box-only" />
+        </GestureDetector>
         <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
           <Button icon={ArrowLeft} color="dark" size="lg" onPress={() => router.back()} />
           <TextCore variant="h2" style={styles.title}>
@@ -208,7 +207,6 @@ export default function Notifications() {
           onDiscard={handleDiscard}
         />
       </View>
-    </GestureDetector>
   );
 }
 
@@ -258,5 +256,13 @@ const styles = StyleSheet.create((theme: Theme) => ({
     left: 0,
     right: 0,
     alignItems: "center",
+  },
+  edgeZone: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: 30,
+    zIndex: 1,
   },
 }));
