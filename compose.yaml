@@ -45,6 +45,7 @@ services:
       APP_KEYS: ${APP_KEYS}
       STRAPI_ADMIN_PASSWORD: ${STRAPI_ADMIN_PASSWORD}
       STRAPI_EMPLOYEE_PASSWORD: ${STRAPI_EMPLOYEE_PASSWORD}
+      FIREBASE_SERVICE_ACCOUNT: ${FIREBASE_SERVICE_ACCOUNT:-}
       NODE_ENV: production
     volumes:
       - strapi_uploads:/opt/app/apps/strapi/public/uploads

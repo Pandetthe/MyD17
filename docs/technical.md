@@ -73,6 +73,31 @@ Następnie w `.env`:
 STRAPI_IMAGE=strapi:local
 ```
 
+### Konfiguracja powiadomień push
+
+Powiadomienia push wymagają projektu Firebase z włączoną usługą FCM.
+
+#### Klucz prywatny Firebase (Strapi)
+
+1. Otworzyć [Firebase Console](https://console.firebase.google.com) i stworzyć nowy projekt (dowolna nazwa, reszta opcji domyślna).
+2. Z głównego widoku projektu przejść do **Settings → Service accounts**.
+3. Kliknąć **Generate new private key** — pobierze się plik JSON.
+4. Wkleić zawartość pliku do `.env` jako wartość `FIREBASE_SERVICE_ACCOUNT` **w postaci jednej linii, bez białych znaków** (można do tego użyć dowolnego minifikatora JSON):
+
+```dotenv
+FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"...","private_key":"-----BEGIN RSA PRIVATE KEY-----\n..."}
+```
+
+Jeśli zmienna jest pusta lub nieprawidłowa, Strapi uruchomi się normalnie, ale powiadomienia push będą wyłączone (odpowiedni komunikat pojawi się w logach).
+
+#### Plik google-services.json (dotyczy buildu aplikacji mobilnej)
+
+Plik `google-services.json` jest wymagany i musi trafić do katalogu `apps/mobile`.
+
+1. Z głównego widoku projektu Firebase Console przejść do **Settings → General**.
+2. Stworzyć nową aplikację Android (Android package name: io.github.stawex.myd17 (lub z wartością znajdującą się pod android/package w pliku app.json w folderze apps/mobile, jeżeli nie jest używana domyślna wartość), reszta domyślnie).
+3. Pobrać `google-services.json` i umieścić go w folderze `apps/mobile`.
+
 ### Uruchomienie
 
 ```bash

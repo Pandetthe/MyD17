@@ -1,0 +1,14 @@
+{
+  "push-notifications-widget.widget.push.title": "Push Notifications",
+  "push-notifications-widget.widget.push.tags": "Tags",
+  "push-notifications-widget.widget.push.selectAll": "Select all",
+  "push-notifications-widget.widget.push.deselectAll": "Deselect all",
+  "push-notifications-widget.widget.push.noTags": "No tags found",
+  "push-notifications-widget.widget.push.titlePlaceholder": "Notification title",
+  "push-notifications-widget.widget.push.bodyPlaceholder": "Notification body",
+  "push-notifications-widget.widget.push.send": "Send notifications",
+  "push-notifications-widget.widget.push.sending": "Sending…",
+  "push-notifications-widget.widget.push.success": "Notifications sent",
+  "push-notifications-widget.widget.push.errorLoadTags": "Failed to load tags",
+  "push-notifications-widget.widget.push.errorSend": "Failed to send notifications"
+}
