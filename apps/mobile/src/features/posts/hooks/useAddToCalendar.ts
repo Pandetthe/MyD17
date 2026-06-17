@@ -53,7 +53,10 @@ async function getDefaultCalendarId(): Promise<string | null> {
   return local?.id ?? calendars[0]?.id ?? null;
 }
 
-export async function addEventToCalendar(post: Post, event: CalendarEvent): Promise<void> {
+export async function addEventToCalendar(
+  event: CalendarEvent,
+  meta: { title: string; notes?: string | null },
+): Promise<void> {
   const { status } = await Calendar.requestCalendarPermissionsAsync();
   if (status !== Calendar.PermissionStatus.GRANTED) {
     Alert.alert("Brak uprawnień", "Przyznaj dostęp do kalendarza w ustawieniach telefonu.", [
@@ -70,11 +73,9 @@ export async function addEventToCalendar(post: Post, event: CalendarEvent): Prom
   }
 
   await Calendar.createEventAsync(calendarId, {
-    title: post.title,
+    title: meta.title,
     startDate: event.startDate,
     endDate: event.endDate,
-    notes: post.description ?? undefined,
+    notes: meta.notes ?? undefined,
   });
-
-  Alert.alert("Dodano do kalendarza", `"${post.title}" zostało dodane do Twojego kalendarza.`);
 }

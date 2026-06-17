@@ -971,20 +971,6 @@ export default function D17MapScreen() {
 
   const menuContentPan = makeSheetPan();
 
-  // Rooms header/actions: same tracking gesture (no FlatList in these areas).
-  const roomsHeaderPan = makeSheetPan();
-
-  // Pickers: only activate on upward swipes so FlatList scroll works normally.
-  // RNGH yields to this gesture when the picker is scrolled to the top.
-  const roomsPickerPan = Gesture.Pan()
-    .activeOffsetY(-10)
-    .failOffsetY(5)
-    .onEnd((e) => {
-      if (e.translationY < -CLOSE_THRESHOLD || e.velocityY < -CLOSE_VELOCITY * 1000) {
-        runOnJS(closeDrawer)();
-      }
-    });
-
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
@@ -1345,63 +1331,58 @@ export default function D17MapScreen() {
                 </GestureDetector>
               ) : (
                 <View style={{ flex: 1 }}>
-                  <GestureDetector gesture={roomsHeaderPan}>
-                    <View style={styles.sheetHeader}>
-                      <TouchableOpacity
-                        onPress={() => setDrawerView("menu")}
-                        hitSlop={8}
-                        style={styles.backBtn}
-                      >
-                        <ChevronLeft color="rgba(255,255,255,0.7)" size={26} strokeWidth={2.2} />
-                        <Text style={styles.backText}>Wyszukaj</Text>
-                      </TouchableOpacity>
+                  {/* Room selection: body swipes are ignored — only the handle grabs the drawer. */}
+                  <View style={styles.sheetHeader}>
+                    <TouchableOpacity
+                      onPress={() => setDrawerView("menu")}
+                      hitSlop={8}
+                      style={styles.backBtn}
+                    >
+                      <ChevronLeft color="rgba(255,255,255,0.7)" size={26} strokeWidth={2.2} />
+                      <Text style={styles.backText}>Wyszukaj</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.pickersRow}>
+                    <View style={styles.pickerCol}>
+                      <Text style={styles.pickerLabel}>Piętro</Text>
+                      <SlotPicker
+                        key={`floor-${openSeq}`}
+                        items={FLOORS}
+                        initialIndex={pendingFloor}
+                        onIndexChange={handlePendingFloorChange}
+                      />
                     </View>
-                  </GestureDetector>
 
-                  <GestureDetector gesture={roomsPickerPan}>
-                    <View style={styles.pickersRow}>
-                      <View style={styles.pickerCol}>
-                        <Text style={styles.pickerLabel}>Piętro</Text>
-                        <SlotPicker
-                          key={`floor-${openSeq}`}
-                          items={FLOORS}
-                          initialIndex={pendingFloor}
-                          onIndexChange={handlePendingFloorChange}
-                        />
-                      </View>
+                    <View style={styles.pickerDivider} />
 
-                      <View style={styles.pickerDivider} />
-
-                      <View style={styles.pickerCol}>
-                        <Text style={styles.pickerLabel}>Sala</Text>
-                        <SlotPicker
-                          key={`room-${openSeq}-${pendingFloor}`}
-                          items={currentPendingRooms}
-                          initialIndex={pendingRoom}
-                          onIndexChange={handlePendingRoomChange}
-                        />
-                      </View>
+                    <View style={styles.pickerCol}>
+                      <Text style={styles.pickerLabel}>Sala</Text>
+                      <SlotPicker
+                        key={`room-${openSeq}-${pendingFloor}`}
+                        items={currentPendingRooms}
+                        initialIndex={pendingRoom}
+                        onIndexChange={handlePendingRoomChange}
+                      />
                     </View>
-                  </GestureDetector>
+                  </View>
 
-                  <GestureDetector gesture={roomsHeaderPan}>
-                    <View style={styles.actions}>
-                      <TouchableOpacity
-                        style={styles.btnDiscard}
-                        onPress={closeDrawer}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.btnDiscardText}>Odrzuć</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.btnSelect}
-                        onPress={handleConfirm}
-                        activeOpacity={0.85}
-                      >
-                        <Text style={styles.btnSelectText}>Wybierz</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </GestureDetector>
+                  <View style={styles.actions}>
+                    <TouchableOpacity
+                      style={styles.btnDiscard}
+                      onPress={closeDrawer}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.btnDiscardText}>Odrzuć</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.btnSelect}
+                      onPress={handleConfirm}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.btnSelectText}>Wybierz</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             </Animated.View>

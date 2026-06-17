@@ -5,14 +5,14 @@ import TextCore from "@/components/core/Text.component";
 import { PostCard } from "@/components/posts/PostCard.component";
 import { TagFilterBar } from "@/components/posts/TagFilterBar.component";
 import { usePosts } from "@/features/posts/api/usePosts";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag } from "@repo/types";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 export default function PostsScreen() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const { theme } = useUnistyles();
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);

@@ -6,14 +6,13 @@ import TagComponent from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
 import { HeroImage } from "@/components/posts/PostDetail/HeroImage.component";
 import { useLikePost } from "@/features/posts/api/useLikePost";
-import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
 import { useSharePost } from "@/features/posts/hooks/useSharePost";
 import { getPostDescription, getPostHeroImage } from "@/features/posts/utils/postHelpers";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, Tag } from "@repo/types";
-import { useRouter } from "expo-router";
 import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -23,10 +22,11 @@ import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   post: Post;
+  preview?: boolean;
 };
 
-export function PostDetail({ post }: Props) {
-  const router = useRouter();
+export function PostDetail({ post, preview = false }: Props) {
+  const router = useGuardedRouter();
   const { theme } = useUnistyles();
   const isDark = theme.mode === "dark";
   const insets = useSafeAreaInsets();
@@ -39,20 +39,6 @@ export function PostDetail({ post }: Props) {
   const subtextColor = isDark ? colors.core.extraLight : colors.core.muted;
 
   const statusBarStyle = hasHero || isDark ? "light-content" : "dark-content";
-
-  const handleAddToCalendar = useCallback(
-    (event: CalendarEvent) => {
-      void addEventToCalendar(post, event);
-    },
-    [post],
-  );
-
-  const handleLocationPress = useCallback(
-    (room: string) => {
-      router.push({ pathname: "/d17map", params: { room } });
-    },
-    [router],
-  );
 
   const goBack = useCallback(() => router.back(), [router]);
 
@@ -108,7 +94,7 @@ export function PostDetail({ post }: Props) {
               </TextCore>
             )}
 
-            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]}>
+            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]} pointerEvents={preview ? "none" : "box-none"}>
               <Pressable
                 testID="post-detail-share-btn"
                 style={styles.iconButton}
@@ -136,8 +122,9 @@ export function PostDetail({ post }: Props) {
 
             <ContentRenderer
               blocks={content}
-              onAddToCalendar={handleAddToCalendar}
-              onLocationPress={handleLocationPress}
+              eventTitle={post.title}
+              eventNotes={post.description}
+              preview={preview}
             />
           </View>
         </View>
@@ -147,14 +134,16 @@ export function PostDetail({ post }: Props) {
         <View style={styles.edgeTrigger} />
       </GestureDetector>
 
-      <Button
-        testID="post-detail-back-btn"
-        icon={ArrowLeft}
-        color="dark"
-        size="lg"
-        style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
-        onPress={goBack}
-      />
+      {!preview && (
+        <Button
+          testID="post-detail-back-btn"
+          icon={ArrowLeft}
+          color="dark"
+          size="lg"
+          style={[styles.backButton, { top: insets.top + theme.spacing.md }]}
+          onPress={goBack}
+        />
+      )}
     </View>
   );
 }

@@ -6,7 +6,7 @@ import { colors } from "@/styles/colors";
 import { Theme } from "@/styles/themes/theme";
 import { DrawerNavigationProp, useDrawerStatus } from "@react-navigation/drawer";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { BellIcon, MenuIcon } from "lucide-react-native";
+import { MenuIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -19,7 +19,6 @@ export default function Header() {
   const iconColor = isDark ? colors.core.extraLight : colors.core.dark;
   const insets = useSafeAreaInsets();
   const menu = usePressAnimation(0.93);
-  const bell = usePressAnimation(0.93);
 
   const drawerStatus = useDrawerStatus();
   const barStyle = drawerStatus === "open" || isDark ? "light-content" : "dark-content";
@@ -44,16 +43,10 @@ export default function Header() {
 
       <Logo height={45} variant={logoVariant} />
 
-      <Pressable
-        testID="header-bell-button"
-        onPressIn={bell.onPressIn}
-        onPressOut={bell.onPressOut}
-        style={styles.iconButton}
-      >
-        <Animated.View style={bell.animStyle}>
-          <BellIcon color={iconColor} size={24} />
-        </Animated.View>
-      </Pressable>
+      {/* Spacer mirrors the menu button's footprint to keep the logo centered */}
+      <View style={styles.iconButton}>
+        <View style={{ width: 24, height: 24 }} />
+      </View>
     </View>
   );
 }

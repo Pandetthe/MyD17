@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
@@ -55,6 +56,10 @@ export default function Information() {
   const { data, isLoading, isError, refetch } = useInformationPage();
   const [selectedItem, setSelectedItem] = useState<StaticInformation | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useFocusEffect(useCallback(() => {
+    return () => setSelectedItem(null);
+  }, []));
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

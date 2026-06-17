@@ -15,6 +15,18 @@ jest.mock("expo-clipboard", () => ({
   setStringAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock("expo-router", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    navigate: jest.fn(),
+    back: jest.fn(),
+  }),
+  useNavigation: () => ({ isFocused: () => true }),
+  usePathname: () => "/",
+  useLocalSearchParams: () => ({}),
+}));
+
 const mockTheme = {
   colors: {
     surface: "#F8FAFC",

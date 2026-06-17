@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Linking, View } from "react-native";
-import * as Clipboard from "expo-clipboard";
 import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
-import type { CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
+import ConfirmModal from "@/components/core/ConfirmModal.component";
+import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
@@ -12,19 +13,25 @@ import type {
   ContentChip,
   ContentEventDateTime,
   ContentLocation,
-  LocationValue,
   PostContentBlock,
 } from "@repo/types";
-import { ArrowUpRight, CalendarPlus, Clock, Copy, Info, MapPin } from "lucide-react-native";
+import * as Clipboard from "expo-clipboard";
+import { ArrowUpRight, CalendarPlus, Clock, Copy, Info, Map, MapPin } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { ScopedTheme, StyleSheet, useUnistyles } from "react-native-unistyles";
 
-const LOCATION_LABELS: Record<LocationValue, string> = {
-  "s1.38": "Budynek D-17, Sala 1.38",
-  "s2.41": "Budynek D-17, Sala 2.41",
-  "s3.20": "Budynek D-17, Sala 3.20",
-  "s4.21": "Budynek D-17, Sala 4.21",
-};
+// Location values are "s" + the map room key (e.g. "s3.27a" → room "3.27a").
+const ROOM_VALUE_RE = /^s(\d+\.\d+[a-z]?)$/;
+
+function roomKeyFromLocation(location?: string | null): string | null {
+  const match = location?.match(ROOM_VALUE_RE);
+  return match ? match[1] : null;
+}
+
+function locationLabel(location: string): string {
+  const room = roomKeyFromLocation(location);
+  return room ? `Budynek D-17, Sala ${room}` : location;
+}
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("pl-PL", { day: "numeric", month: "short", year: "numeric" });
@@ -79,17 +86,31 @@ function blockToCalendarEvent(dt: ContentEventDateTime): CalendarEvent | null {
 type Props = {
   blocks: PostContentBlock[];
   dark?: boolean;
-  onAddToCalendar?: (event: CalendarEvent) => void;
-  onLocationPress?: (room: string) => void;
+  preview?: boolean;
+  /** Title used for calendar events created from this card (post / page title). */
+  eventTitle?: string;
+  /** Optional notes attached to created calendar events. */
+  eventNotes?: string | null;
 };
 
-function mapRoomFromLocation(location?: string | null): string | null {
-  return location?.match(/^s1\.\d+$/) ? location.slice(1) : null;
+function DarkButton({ forceDark, ...props }: React.ComponentProps<typeof Button> & { forceDark?: boolean }) {
+  if (forceDark) {
+    return <ScopedTheme name="dark"><Button {...props} /></ScopedTheme>;
+  }
+  return <Button {...props} />;
 }
 
-export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPress }: Props) {
+type SuccessInfo = {
+  title: string;
+  body?: string;
+  icon: LucideIcon;
+} | null;
+
+export function InfoCard({ blocks, dark = false, preview = false, eventTitle, eventNotes }: Props) {
   const { theme } = useUnistyles();
+  const router = useGuardedRouter();
   const safeBlocks = blocks ?? [];
+  const [successInfo, setSuccessInfo] = useState<SuccessInfo>(null);
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -104,8 +125,10 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPres
   const gradient = dark
     ? ([colors.core.extraDark, colors.core.dark] as const)
     : theme.colors.gradients.posts;
-  const mapRoom = mapRoomFromLocation(locationBlock?.content);
-  const openLocation = mapRoom && onLocationPress ? () => onLocationPress(mapRoom) : undefined;
+  const mapRoom = roomKeyFromLocation(locationBlock?.content);
+  const openLocation = mapRoom
+    ? () => router.push({ pathname: "/d17map", params: { room: mapRoom } })
+    : undefined;
 
   return (
     <Card
@@ -116,15 +139,29 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPres
       contentStyle={styles.inner}
     >
       {locationBlock && locationBlock.content && (
-        <InfoRow
-          icon={(c) => <MapPin size={18} color={c} />}
-          label="Lokalizacja"
-          value={LOCATION_LABELS[locationBlock.content] ?? locationBlock.content}
-          dark={dark}
-          onPress={openLocation}
-          testID={openLocation ? "info-card-location-link" : undefined}
-          valueStyle={openLocation ? styles.linkText : undefined}
-        />
+        <View style={openLocation ? styles.dateRow : undefined}>
+          <View style={openLocation ? styles.dateInfo : undefined}>
+            <InfoRow
+              icon={(c) => <MapPin size={18} color={c} />}
+              label="Lokalizacja"
+              value={locationLabel(locationBlock.content)}
+              dark={dark}
+            />
+          </View>
+          {openLocation && (
+            <View pointerEvents={preview ? "none" : "box-none"}>
+              <DarkButton
+                forceDark={dark}
+                icon={Map}
+                color="dark"
+                size="lg"
+                style={styles.calendarButton}
+                onPress={openLocation}
+                testID="info-card-location-button"
+              />
+            </View>
+          )}
+        </View>
       )}
 
       {dateTimeBlocks.map((dtBlock, idx) => {
@@ -140,14 +177,28 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPres
                   dark={dark}
                 />
               </View>
-              {onAddToCalendar && calEvent && (
-                <Button
-                  icon={CalendarPlus}
-                  color="dark"
-                  size="lg"
-                  style={styles.calendarButton}
-                  onPress={() => onAddToCalendar(calEvent)}
-                />
+              {calEvent && (
+                <View pointerEvents={preview ? "none" : "box-none"}>
+                  <DarkButton
+                    forceDark={dark}
+                    icon={CalendarPlus}
+                    color="dark"
+                    size="lg"
+                    style={styles.calendarButton}
+                    testID="info-card-calendar-button"
+                    onPress={async () => {
+                      await addEventToCalendar(calEvent, {
+                        title: eventTitle ?? "Wydarzenie",
+                        notes: eventNotes,
+                      });
+                      setSuccessInfo({
+                        title: "Dodano do kalendarza",
+                        body: calEvent.label,
+                        icon: CalendarPlus,
+                      });
+                    }}
+                  />
+                </View>
               )}
             </View>
           </View>
@@ -156,9 +207,22 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPres
 
       {chipBlocks.map((chip) => {
         const ChipIcon: LucideIcon = getIcon(chip.icon, Info);
-        const onPress = buildChipHandler(chip.variant, chip.content);
-        const ActionIcon =
-          chip.variant === "copy" ? Copy : chip.variant !== "normal" && onPress ? ArrowUpRight : undefined;
+        const rawHandler = buildChipHandler(chip.variant, chip.content);
+        let ActionIcon: LucideIcon | undefined;
+        if (chip.variant === "copy") ActionIcon = Copy;
+        else if (chip.variant !== "normal" && rawHandler) ActionIcon = ArrowUpRight;
+
+        const onPress =
+          chip.variant === "copy" && rawHandler
+            ? async () => {
+                await rawHandler();
+                setSuccessInfo({
+                  title: "Skopiowano!",
+                  body: chip.content ?? undefined,
+                  icon: Copy,
+                });
+              }
+            : rawHandler;
 
         return (
           <View key={chip.id} style={ActionIcon ? styles.dateRow : undefined}>
@@ -171,18 +235,28 @@ export function InfoCard({ blocks, dark = false, onAddToCalendar, onLocationPres
               />
             </View>
             {ActionIcon && onPress && (
-              <Button
-                icon={ActionIcon}
-                color="dark"
-                size="lg"
-                style={styles.calendarButton}
-                onPress={onPress}
-                testID="chip-action-button"
-              />
+              <View pointerEvents={preview ? "none" : "box-none"}>
+                <DarkButton
+                  forceDark={dark}
+                  icon={ActionIcon}
+                  color="dark"
+                  size="lg"
+                  style={styles.calendarButton}
+                  onPress={onPress}
+                  testID="chip-action-button"
+                />
+              </View>
             )}
           </View>
         );
       })}
+      <ConfirmModal
+        visible={successInfo !== null}
+        icon={successInfo?.icon ?? Copy}
+        title={successInfo?.title ?? ""}
+        body={successInfo?.body}
+        onDismiss={() => setSuccessInfo(null)}
+      />
     </Card>
   );
 }
@@ -207,8 +281,5 @@ const styles = StyleSheet.create((theme: Theme) => ({
   calendarButton: {
     flexShrink: 0,
     marginTop: 2,
-  },
-  linkText: {
-    textDecorationLine: "underline",
   },
 }));

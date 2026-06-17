@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { View } from "react-native";
 import Setting from "@/components/Setting";
+import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { Theme } from "@/styles/themes/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import { BellRingIcon, MoonIcon } from "lucide-react-native";
 import { StyleSheet, UnistylesRuntime } from "react-native-unistyles";
 
 export default function Settings() {
-  const router = useRouter();
+  const router = useGuardedRouter();
   const [darkMode, setDarkMode] = useState(UnistylesRuntime.themeName === "dark");
 
   const darkModeClick = () => {

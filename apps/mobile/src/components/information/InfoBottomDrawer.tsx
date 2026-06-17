@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { Modal, Pressable, useWindowDimensions, View } from "react-native";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { PostContentBlock, StaticInformation } from "@repo/types";
+import { LinearGradient } from "expo-linear-gradient";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Easing,
@@ -88,7 +88,10 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
       }
     })
     .onEnd((e) => {
-      if (translateY.value > CLOSE_THRESHOLD || (scrollY.value <= 0 && e.velocityY > CLOSE_VELOCITY * 1000)) {
+      if (
+        translateY.value > CLOSE_THRESHOLD ||
+        (scrollY.value <= 0 && e.velocityY > CLOSE_VELOCITY * 1000)
+      ) {
         runOnJS(handleClose)();
       } else {
         translateY.value = withSpring(0, SPRING);
@@ -133,14 +136,23 @@ export function InfoBottomDrawer({ visible, item, onClose }: Props) {
                 style={styles.scroll}
                 contentContainerStyle={[
                   styles.content,
-                  { paddingBottom: Math.max(32, insets.bottom + 16) },
+                  { paddingBottom: Math.max(48, insets.bottom + 32) },
                 ]}
                 showsVerticalScrollIndicator={false}
-                onScroll={(e) => { scrollY.value = e.nativeEvent.contentOffset.y; }}
+                onScroll={(e) => {
+                  scrollY.value = e.nativeEvent.contentOffset.y;
+                }}
                 scrollEventThrottle={16}
                 animatedProps={scrollAnimatedProps}
               >
-                {blocks.length > 0 && <ContentRenderer blocks={blocks} textColor={colors.white} dark />}
+                {blocks.length > 0 && (
+                  <ContentRenderer
+                    blocks={blocks}
+                    textColor={colors.white}
+                    dark
+                    eventTitle={item?.title}
+                  />
+                )}
               </Animated.ScrollView>
             </GestureDetector>
             <LinearGradient
