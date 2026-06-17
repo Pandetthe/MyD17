@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFetchClient } from "@strapi/strapi/admin";
+import { useIntl } from "react-intl";
 import {
   Box,
   Button,
@@ -18,6 +19,7 @@ type Tag = {
 
 export default function PushWidget() {
   const { get, post } = useFetchClient();
+  const { formatMessage } = useIntl();
   const [tags, setTags] = useState<Tag[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [title, setTitle] = useState("");
@@ -27,10 +29,12 @@ export default function PushWidget() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const t = (id: string) => formatMessage({ id, defaultMessage: id });
+
   useEffect(() => {
     get(`/${PLUGIN_ID}/tags`)
       .then((res: any) => setTags(res.data))
-      .catch(() => setError("Failed to load tags"))
+      .catch(() => setError(t("push-notifications-widget.widget.push.errorLoadTags")))
       .finally(() => setFetchLoading(false));
   }, []);
 
@@ -58,7 +62,7 @@ export default function PushWidget() {
         title,
         body,
       });
-      setSuccess("Notifications sent");
+      setSuccess(t("push-notifications-widget.widget.push.success"));
       setTitle("");
       setBody("");
       setSelected(new Set());
@@ -66,7 +70,7 @@ export default function PushWidget() {
       setError(
         err?.response?.data?.error?.message ??
           err?.message ??
-          "Failed to send notifications",
+          t("push-notifications-widget.widget.push.errorSend"),
       );
     } finally {
       setSending(false);
@@ -89,10 +93,12 @@ export default function PushWidget() {
     <Box padding={4}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
         <Typography variant="sigma" textColor="neutral600">
-          Tags
+          {t("push-notifications-widget.widget.push.tags")}
         </Typography>
         <Button variant="tertiary" size="S" onClick={toggleAll}>
-          {allSelected ? "Deselect all" : "Select all"}
+          {allSelected
+            ? t("push-notifications-widget.widget.push.deselectAll")
+            : t("push-notifications-widget.widget.push.selectAll")}
         </Button>
       </Flex>
 
@@ -107,7 +113,7 @@ export default function PushWidget() {
       >
         {tags.length === 0 ? (
           <Box padding={3}>
-            <Typography textColor="neutral500">No tags found</Typography>
+            <Typography textColor="neutral500">{t("push-notifications-widget.widget.push.noTags")}</Typography>
           </Box>
         ) : (
           tags.map((tag) => (
@@ -136,7 +142,7 @@ export default function PushWidget() {
           name="title"
           value={title}
           onChange={(e: any) => setTitle(e.target.value)}
-          placeholder="Notification title"
+          placeholder={t("push-notifications-widget.widget.push.titlePlaceholder")}
         />
       </Box>
 
@@ -145,7 +151,7 @@ export default function PushWidget() {
           name="body"
           value={body}
           onChange={(e: any) => setBody(e.target.value)}
-          placeholder="Notification body"
+          placeholder={t("push-notifications-widget.widget.push.bodyPlaceholder")}
         />
       </Box>
 
@@ -162,7 +168,9 @@ export default function PushWidget() {
       )}
 
       <Button onClick={handleSend} disabled={!canSend || sending} fullWidth>
-        {sending ? "Sending…" : "Send notifications"}
+        {sending
+          ? t("push-notifications-widget.widget.push.sending")
+          : t("push-notifications-widget.widget.push.send")}
       </Button>
     </Box>
   );
