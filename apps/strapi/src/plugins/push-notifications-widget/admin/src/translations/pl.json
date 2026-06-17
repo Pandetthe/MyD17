@@ -1,0 +1,14 @@
+{
+  "push-notifications-widget.widget.push.title": "Powiadomienia push",
+  "push-notifications-widget.widget.push.tags": "Tagi",
+  "push-notifications-widget.widget.push.selectAll": "Zaznacz wszystkie",
+  "push-notifications-widget.widget.push.deselectAll": "Odznacz wszystkie",
+  "push-notifications-widget.widget.push.noTags": "Brak tagów",
+  "push-notifications-widget.widget.push.titlePlaceholder": "Tytuł powiadomienia",
+  "push-notifications-widget.widget.push.bodyPlaceholder": "Treść powiadomienia",
+  "push-notifications-widget.widget.push.send": "Wyślij powiadomienia",
+  "push-notifications-widget.widget.push.sending": "Wysyłanie…",
+  "push-notifications-widget.widget.push.success": "Powiadomienia wysłane",
+  "push-notifications-widget.widget.push.errorLoadTags": "Nie udało się załadować tagów",
+  "push-notifications-widget.widget.push.errorSend": "Nie udało się wysłać powiadomień"
+}

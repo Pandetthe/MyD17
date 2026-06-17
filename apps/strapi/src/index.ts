@@ -477,7 +477,7 @@ async function sendPushNotificationsForPost(
     .sendEachForMulticast({
       tokens: subscribers.map((s) => s.pushToken),
       notification: {
-        title: "New post on main page",
+        title: "Nowy post na stronie głównej",
         body: title ?? "Check out the post",
       },
       data: { postId: documentId },
