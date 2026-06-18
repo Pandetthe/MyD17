@@ -8,7 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const STORAGE_KEY = "@liked_posts";
 const LIKED_QUERY_KEY = ["likedPosts"] as const;
 // If the request hasn't confirmed within this window, revert the optimistic heart.
-const FALLBACK_MS = process.env.NODE_ENV === "test" ? 10 : 10_000;
+const FALLBACK_MS = 10_000;
 
 type InfinitePosts = { pages: StrapiListResponse<Post>[]; pageParams: unknown[] };
 
