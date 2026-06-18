@@ -62,6 +62,23 @@ services:
       database:
         condition: service_healthy
 
+  nginx:
+    container_name: myd17-nginx
+    image: nginx:alpine
+    profiles: ["nginx"]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      strapi:
+        condition: service_healthy
+    networks:
+      - myd17-network
+
 volumes:
   pgdata:
     driver: local

@@ -109,14 +109,14 @@ See [docs/release.md](docs/release.md) for the full release and deployment proce
 
 ### Strapi backend and PostgreSQL database in production environment
 
-Generate a production `.env` with unique secrets and start the stack:
+Run the interactive installer to generate secrets and configure optional modules (nginx, SSL):
 
 ```bash
-pnpm onprem init
-pnpm onprem up
+./myd17.sh install
+./myd17.sh start
 ```
 
-For updates, backups and restores see [docs/on-premise.md](docs/on-premise.md).
+For updates, backups, restores and full configuration see [docs/on-premise.md](docs/on-premise.md).
 
 If you prefer manual setup, create a `.env` file in the root directory and configure it based on `.env.example.prod`.
 Replace all placeholder secrets before running production:

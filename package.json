@@ -14,7 +14,7 @@
     "release:validate": "node scripts/validate-release.mjs",
     "android:configure-signing": "node scripts/configure-android-signing.mjs",
     "mobile:setup": "node scripts/setup-mobile-env.mjs",
-    "onprem": "bash scripts/onprem.sh",
+    "onprem": "bash myd17.sh",
     "load:stress": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=stress",
     "load:staging:smoke": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=smoke",
     "load:staging:test": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=load",
