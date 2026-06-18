@@ -815,6 +815,7 @@ export default function D17MapScreen() {
   // Pre-loaded GLB base64 strings for all floors
   const [glbBase64s, setGlbBase64s] = useState<Record<string, string>>({});
   const [textureBase64, setTextureBase64] = useState("");
+  const [loadError, setLoadError] = useState(false);
   const [floorPayload, setFloorPayload] = useState<FloorPayload | null>(null);
   const [searchTarget, setSearchTarget] = useState<{ x: number; z: number } | undefined>();
 
@@ -838,9 +839,9 @@ export default function D17MapScreen() {
   const loading = !glbBase64s["1"] || !textureBase64;
   const translateY = useSharedValue(800);
 
-  // Pre-load all floor models + initial texture in parallel
-  useEffect(() => {
-    (async () => {
+  const loadAssets = useCallback(async () => {
+    setLoadError(false);
+    try {
       const [glb1, glb2, glb3, glb4, tex] = await Promise.all([
         assetToBase64(GLB_MODULES["1"]),
         assetToBase64(GLB_MODULES["2"]),
@@ -850,8 +851,16 @@ export default function D17MapScreen() {
       ]);
       setGlbBase64s({ "1": glb1, "2": glb2, "3": glb3, "4": glb4 });
       setTextureBase64(tex);
-    })();
+    } catch (e) {
+      console.error("Map asset load failed:", e);
+      setLoadError(true);
+    }
   }, []);
+
+  // Pre-load all floor models + initial texture in parallel
+  useEffect(() => {
+    void loadAssets();
+  }, [loadAssets]);
 
   const loadedFloors = useMemo(
     () => Object.fromEntries(FLOORS.map((f) => [f, !!glbBase64s[f]])),
@@ -1199,10 +1208,21 @@ export default function D17MapScreen() {
         ) : null}
       </View>
 
-      {loading && (
+      {loading && !loadError && (
         <View style={[styles.loadingOverlay, { backgroundColor: theme.colors.surface + "CC" }]}>
           <ActivityIndicator color={colors.core.light} size="large" />
           <Text style={[styles.loadingText, { color: colors.core.light }]}>Ładowanie planu…</Text>
+        </View>
+      )}
+
+      {loadError && (
+        <View style={[styles.loadingOverlay, { backgroundColor: theme.colors.surface + "CC" }]}>
+          <Text style={[styles.loadingText, { color: colors.core.light }]}>
+            Nie udało się załadować planu.
+          </Text>
+          <TouchableOpacity onPress={loadAssets} style={styles.retryBtn}>
+            <Text style={styles.retryText}>Spróbuj ponownie</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -1403,6 +1423,18 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.spacing.sm,
   },
   loadingText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  retryBtn: {
+    marginTop: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.primary.main,
+  },
+  retryText: {
+    color: colors.white,
     fontSize: 15,
     fontWeight: "600",
   },

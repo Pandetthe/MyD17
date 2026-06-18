@@ -1,5 +1,5 @@
 import "@/styles/unistyles";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNativeSetup } from "@/hooks/useNativeSetup";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -27,6 +27,7 @@ export default function Layout() {
     Montserrat_600SemiBold,
     Montserrat_700Bold,
   });
+  const [themeReady, setThemeReady] = useState(false);
 
   useNativeSetup(loaded || !!error);
 
@@ -36,14 +37,15 @@ export default function Layout() {
         UnistylesRuntime.setAdaptiveThemes(false);
         UnistylesRuntime.setTheme(saved);
       }
+      setThemeReady(true);
     });
   }, []);
 
   useEffect(() => {
-    if (loaded || error) {
+    if ((loaded || error) && themeReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [loaded, error, themeReady]);
 
   if (!loaded && !error) {
     return null;

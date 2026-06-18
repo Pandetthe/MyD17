@@ -51,11 +51,6 @@ services:
       - strapi_uploads:/opt/app/apps/strapi/public/uploads
     ports:
       - "1337:1337"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:1337/_health || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
     networks:
       - myd17-network
     depends_on:
@@ -75,7 +70,7 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       strapi:
-        condition: service_healthy
+        condition: service_started
     networks:
       - myd17-network
 

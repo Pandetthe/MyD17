@@ -16,7 +16,7 @@ The Compose plugin is automatically included when you install Docker Engine.
 ## Overview
 
 1. [**Install Docker**](#install-docker) on your server.
-2. [**Clone the repository**](#clone-the-repository) to your server.
+2. [**Copy deployment files**](#copy-deployment-files) to your server.
 3. [**Run the installer**](#run-the-installer) — `./myd17.sh install` — to generate secrets and configure modules.
 4. [**Access the Strapi image**](#accessing-the-strapi-image) from GHCR or build it locally.
 5. [**Configure optional features**](#optional-configuration) (Firebase push notifications, content preview).
@@ -37,12 +37,21 @@ docker --version
 docker compose version
 ```
 
-### Clone the repository
+### Copy deployment files
+
+Only two files are needed on the server:
+
+- `myd17.sh`
+- `compose.yaml`
+
+Copy them manually:
 
 ```bash
-git clone https://github.com/stawex-team/myd17.git /opt/myd17
-cd /opt/myd17
+scp myd17.sh compose.yaml user@SERVER:/opt/myd17/
+ssh user@SERVER "chmod +x /opt/myd17/myd17.sh"
 ```
+
+All subsequent commands are run on the server from `/opt/myd17`.
 
 ### Run the installer
 
@@ -53,13 +62,13 @@ cd /opt/myd17
 The installer prompts for:
 
 - **Domain name** — the hostname operators and the mobile app use to reach this server (e.g. `api.example.com`). Leave empty for IP-only access.
+- **Managed PostgreSQL database** — whether to run the bundled PostgreSQL container. Choose **no** to connect to an existing external database; you will be prompted for the connection details.
 - **nginx reverse proxy** — whether to run a managed nginx container in front of Strapi.
   - **Self-signed certificate** — generates a certificate valid for testing. Replace it with a trusted certificate before exposing the server to the internet.
 
 The installer creates:
 
 - `.env` with generated secrets and initial admin passwords (mode `600`).
-- `apps/strapi/.env` as a symlink to the root `.env`.
 - `nginx/conf.d/myd17.conf` — the nginx configuration (if nginx was enabled).
 - `nginx/ssl/` — directory for SSL certificates.
 
@@ -108,7 +117,7 @@ FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"...","private_k
 
 Paste the contents of your Firebase service account JSON as a single minified line. If empty, Strapi starts normally but push notifications are disabled.
 
-See [docs/technical.md](technical.md#configuring-push-notifications) for the full Firebase setup walkthrough.
+See [technical.md](technical.md#push-notifications) for the full Firebase setup walkthrough.
 
 #### Content preview
 
@@ -168,6 +177,30 @@ STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
 ./myd17.sh verify
 ```
 
+## Rollback
+
+If an update causes issues, restore the previous state:
+
+1. Set the previous image tag in `.env`:
+
+```dotenv
+STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+```
+
+2. Restore the database backup created automatically before the update:
+
+```bash
+./myd17.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
+```
+
+`restore` stops Strapi, backs up the current database state, restores the specified dump, then restarts the stack.
+
+3. Verify:
+
+```bash
+./myd17.sh verify
+```
+
 ## Backups and restore
 
 Create a database backup:
@@ -186,6 +219,38 @@ Restore from backup:
 
 > **Note:** File uploads stored in the `strapi_uploads` Docker volume are not included in the database dump. Back up the volume separately if needed.
 
+## Diagnostics
+
+### Service status
+
+```bash
+./myd17.sh status
+```
+
+Expected output: `database` with status `healthy`, `strapi` with status `running` or `healthy`.
+
+### Logs
+
+```bash
+./myd17.sh logs           # all services
+./myd17.sh logs strapi
+./myd17.sh logs database
+./myd17.sh logs nginx
+```
+
+### Application healthcheck
+
+```bash
+curl http://localhost:1337/_health
+```
+
+If the endpoint does not respond:
+
+- Check `./myd17.sh status` — confirm containers are running.
+- Check `./myd17.sh logs strapi` — look for startup errors.
+- Verify port `1337/tcp` is not blocked by a firewall or reverse proxy.
+- Run `./myd17.sh verify` to validate secrets and database connectivity.
+
 ## Script commands reference
 
 | Command | Description |
@@ -202,19 +267,7 @@ Restore from backup:
 | `status` | Show service status |
 | `help` | List all commands |
 
-## Operations
-
-```bash
-./myd17.sh status
-./myd17.sh logs
-./myd17.sh logs strapi
-./myd17.sh logs database
-./myd17.sh logs nginx
-./myd17.sh restart
-./myd17.sh stop
-```
-
 ## Next steps
 
-- Review [docs/technical.md](technical.md) for detailed configuration, rollback procedures, and diagnostics.
-- See [docs/release.md](release.md) for the release and deployment workflow.
+- See [technical.md](technical.md) for push notifications setup and Strapi framework upgrades.
+- See [release.md](release.md) for the release and image publishing workflow.

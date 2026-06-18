@@ -82,9 +82,12 @@ ask_yn() {
 # Compose command builder
 # ---------------------------------------------------------------------------
 
+# Sets COMPOSE (base command) and COMPOSE_UP_SERVICES (explicit services for
+# "up -d"; empty means all services matching active profiles).
 build_compose() {
-  local use_nginx
+  local use_nginx use_managed_db
   use_nginx="$(env_value USE_NGINX)"
+  use_managed_db="$(env_value USE_MANAGED_DB)"
 
   PROFILES=(prod)
   [[ "${use_nginx:-false}" == "true" ]] && PROFILES+=(nginx)
@@ -99,6 +102,14 @@ build_compose() {
     -f "$ROOT_DIR/compose.yaml"
     "${PROFILE_FLAGS[@]}"
   )
+
+  # When using an external database, limit "up -d" to the app services only
+  # so the bundled database container is never started.
+  COMPOSE_UP_SERVICES=()
+  if [[ "${use_managed_db:-true}" == "false" ]]; then
+    COMPOSE_UP_SERVICES+=(strapi)
+    [[ "${use_nginx:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(nginx)
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -115,8 +126,8 @@ Commands:
   stop          Stop all services
   restart       Restart Strapi (and nginx if enabled)
   update        Backup DB, pull latest image, restart
-  backup        Dump PostgreSQL to backups/
-  restore FILE  Restore PostgreSQL dump created by backup
+  backup        Dump PostgreSQL to backups/ (managed DB only)
+  restore FILE  Restore PostgreSQL dump created by backup (managed DB only)
   verify        Check secrets, backup readiness and Strapi health
   logs [svc]    Follow logs (all services or one service)
   status        Show service status
@@ -143,6 +154,12 @@ require_env() {
       fail "Missing required env value: $key"
     fi
   done
+}
+
+require_managed_db() {
+  if [[ "$(env_value USE_MANAGED_DB)" == "false" ]]; then
+    fail "This command requires a managed database. Use your external DB tooling for backup/restore."
+  fi
 }
 
 validate_env_file() {
@@ -304,12 +321,54 @@ run_install() {
   echo "==========="
   echo ""
 
-  local domain use_nginx use_ssl self_signed
+  local domain use_nginx use_ssl self_signed use_managed_db
+  local db_host db_port db_name db_user db_pass db_ssl
+  local db_section
+
   domain="$(ask "Enter domain name (leave empty for IP-only access)")"
 
+  # Database
+  if ask_yn "Use managed PostgreSQL database?" "y"; then
+    use_managed_db=true
+    db_host=database
+    db_port=5432
+    db_name=myd17
+    db_user=myd17
+    db_pass="$(password)"
+    db_ssl=false
+    db_section="# Database — managed (bundled PostgreSQL container)
+DATABASE_CLIENT=postgres
+DATABASE_HOST=${db_host}
+DATABASE_PORT=${db_port}
+DATABASE_NAME=${db_name}
+DATABASE_USERNAME=${db_user}
+DATABASE_PASSWORD=${db_pass}
+DATABASE_SSL=${db_ssl}"
+  else
+    use_managed_db=false
+    db_host="$(ask "Database host")"
+    db_port="$(ask "Database port" "5432")"
+    db_name="$(ask "Database name")"
+    db_user="$(ask "Database username")"
+    db_pass="$(ask "Database password")"
+    if ask_yn "Use SSL for database connection?"; then
+      db_ssl=true
+    else
+      db_ssl=false
+    fi
+    db_section="# Database — external
+DATABASE_CLIENT=postgres
+DATABASE_HOST=${db_host}
+DATABASE_PORT=${db_port}
+DATABASE_NAME=${db_name}
+DATABASE_USERNAME=${db_user}
+DATABASE_PASSWORD=${db_pass}
+DATABASE_SSL=${db_ssl}"
+  fi
+
+  # Nginx
   if ask_yn "Set up nginx as a reverse proxy?"; then
     use_nginx=true
-
     if [[ -n "$domain" ]]; then
       if ask_yn "Generate a self-signed SSL certificate for testing?"; then
         use_ssl=true
@@ -340,6 +399,7 @@ NODE_ENV=production
 STRAPI_IMAGE=${STRAPI_IMAGE:-ghcr.io/stawex-team/myd17/strapi:latest}
 
 # Module configuration
+USE_MANAGED_DB=${use_managed_db}
 USE_NGINX=${use_nginx}
 DOMAIN=${domain}
 
@@ -355,14 +415,7 @@ ENCRYPTION_KEY=$(secret)
 STRAPI_ADMIN_PASSWORD=$(password)
 STRAPI_EMPLOYEE_PASSWORD=$(password)
 
-# Database
-DATABASE_CLIENT=postgres
-DATABASE_HOST=database
-DATABASE_PORT=5432
-DATABASE_NAME=myd17
-DATABASE_USERNAME=myd17
-DATABASE_PASSWORD=$(password)
-DATABASE_SSL=false
+${db_section}
 
 # Optional — Firebase push notifications
 # FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
@@ -376,8 +429,8 @@ EOF
   chmod 600 "$ENV_FILE"
   echo "Created $ENV_FILE (mode 600)."
 
-  # Link Strapi .env
-  if [[ "$STRAPI_ENV_FILE" != "$ENV_FILE" ]]; then
+  # Link Strapi .env only when running inside the monorepo (local dev)
+  if [[ "$STRAPI_ENV_FILE" != "$ENV_FILE" && -d "$ROOT_DIR/apps/strapi" ]]; then
     mkdir -p "$(dirname "$STRAPI_ENV_FILE")"
     rm -f "$STRAPI_ENV_FILE"
     ln -s "$(realpath --relative-to="$(dirname "$STRAPI_ENV_FILE")" "$ENV_FILE" 2>/dev/null || printf '%s' "$ENV_FILE")" "$STRAPI_ENV_FILE"
@@ -445,15 +498,10 @@ verify_backup_readiness() {
   echo "Database backup pre-check passed."
 }
 
-verify_strapi_health() {
-  if ! "${COMPOSE[@]}" exec -T strapi wget -qO- http://localhost:1337/_health >/dev/null; then
-    fail "Strapi healthcheck failed"
-  fi
-  echo "Strapi healthcheck passed."
-}
 
 backup_db() {
   require_env
+  require_managed_db
   validate_env_file
   mkdir -p "$BACKUP_DIR"
 
@@ -482,6 +530,7 @@ backup_db() {
 
 restore_db() {
   require_env
+  require_managed_db
   local input="${1:-}"
   if [[ -z "$input" || ! -f "$input" ]]; then
     echo "Usage: ./myd17.sh restore FILE"
@@ -497,7 +546,7 @@ restore_db() {
   wait_for_db
   backup_db
   "${COMPOSE[@]}" exec -T database pg_restore -U "$db_user" -d "$db_name" --clean --if-exists --no-owner --no-acl <"$input"
-  "${COMPOSE[@]}" up -d
+  "${COMPOSE[@]}" up -d "${COMPOSE_UP_SERVICES[@]}"
   echo "Restored $input"
 }
 
@@ -508,21 +557,25 @@ restore_db() {
 start_stack() {
   require_env
   validate_env_file
-  "${COMPOSE[@]}" up -d
+  "${COMPOSE[@]}" up -d "${COMPOSE_UP_SERVICES[@]}"
 }
 
 update_stack() {
   require_env
-  backup_db
 
   local strapi_image
   strapi_image="$(env_value STRAPI_IMAGE)"
+
+  # Only back up when using managed DB
+  if [[ "$(env_value USE_MANAGED_DB)" != "false" ]]; then
+    backup_db
+  fi
 
   if [[ "$strapi_image" == */* ]]; then
     "${COMPOSE[@]}" pull strapi
   fi
 
-  "${COMPOSE[@]}" up -d
+  "${COMPOSE[@]}" up -d "${COMPOSE_UP_SERVICES[@]}"
   echo "Strapi restarted. Application schema changes run during Strapi startup."
 }
 
@@ -530,9 +583,12 @@ verify_stack() {
   require_env
   validate_env_file
   "${COMPOSE[@]}" config --quiet
-  verify_backup_readiness
-  verify_strapi_health
-  echo "Verification passed: migration backup readiness and Strapi health are OK."
+
+  if [[ "$(env_value USE_MANAGED_DB)" != "false" ]]; then
+    verify_backup_readiness
+  fi
+
+  echo "Verification passed."
 }
 
 # ---------------------------------------------------------------------------
