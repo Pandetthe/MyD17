@@ -337,8 +337,9 @@ const FLOOR_LABEL: Record<string, { short: string; full: string }> = {
 async function assetToBase64(module: number): Promise<string> {
   const asset = Asset.fromModule(module);
   await asset.downloadAsync();
-  if (!asset.localUri) return "";
-  return FileSystem.readAsStringAsync(asset.localUri, {
+  const uri = asset.localUri ?? asset.uri;
+  if (!uri) throw new Error(`Asset URI unavailable`);
+  return FileSystem.readAsStringAsync(uri, {
     encoding: FileSystem.EncodingType.Base64,
   });
 }
@@ -842,15 +843,23 @@ export default function D17MapScreen() {
   const loadAssets = useCallback(async () => {
     setLoadError(false);
     try {
-      const [glb1, glb2, glb3, glb4, tex] = await Promise.all([
+      const [glb1, tex] = await Promise.all([
         assetToBase64(GLB_MODULES["1"]),
+        assetToBase64(NONE_MODULES["1"]),
+      ]);
+      setGlbBase64s({ "1": glb1 });
+      setTextureBase64(tex);
+
+      // Remaining floors preload in background — failure here is non-critical
+      Promise.all([
         assetToBase64(GLB_MODULES["2"]),
         assetToBase64(GLB_MODULES["3"]),
         assetToBase64(GLB_MODULES["4"]),
-        assetToBase64(NONE_MODULES["1"]),
-      ]);
-      setGlbBase64s({ "1": glb1, "2": glb2, "3": glb3, "4": glb4 });
-      setTextureBase64(tex);
+      ])
+        .then(([glb2, glb3, glb4]) => {
+          setGlbBase64s((prev) => ({ ...prev, "2": glb2, "3": glb3, "4": glb4 }));
+        })
+        .catch((e) => console.error("Background floor preload failed:", e));
     } catch (e) {
       console.error("Map asset load failed:", e);
       setLoadError(true);

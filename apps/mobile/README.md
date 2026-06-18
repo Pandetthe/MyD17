@@ -7,7 +7,7 @@ Expo + React Native app with Expo Router for iOS, Android, and Web.
 See the root [README.md](../../README.md) for the full quick-start guide. The short version:
 
 ```bash
-# From the repository root — generate apps/mobile/.env.local
+# From the repository root - generate apps/mobile/.env.local
 pnpm mobile:setup            # physical phone (auto-detects LAN IP)
 pnpm mobile:setup emulator   # Android emulator
 ```
@@ -38,7 +38,7 @@ pnpm web          # browser (used by Strapi content preview)
 
 ## Web output
 
-The app is configured with `"output": "static"` for web. The web build is used by the Strapi admin panel's content preview feature — it renders the preview at `/preview?uid=...&documentId=...&status=...&secret=...`.
+The app is configured with `"output": "static"` for web. The web build is used by the Strapi admin panel's content preview feature - it renders the preview at `/preview?uid=...&documentId=...&status=...&secret=...`.
 
 To serve the web app locally for preview:
 
