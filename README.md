@@ -1,126 +1,76 @@
 # MyD17
 
-A monorepo project for a React Native mobile application with Strapi CMS backend, using Turborepo for build orchestration and Docker Compose for local development environment.
+MyD17 is a mobile application for the Faculty of Computer Science, designed to support the faculty's promotion and communication efforts. It provides students and visitors with access to news and events, a 3D interactive map of the D17 building, dean's office hours, contact information, and first-year student resources. Content is managed through a dedicated CMS application. The project was developed as part of the Inżynieria Oprogramowania (Software Engineering) course.
 
-## Project Structure
+Built as a monorepo with a React Native (Expo) mobile frontend and a Strapi CMS backend, using Turborepo for build orchestration and Docker Compose for local development.
 
-- **apps/mobile** - React Native app (Expo-based)
-- **apps/strapi** - Strapi CMS backend
-- **packages/eslint-config** - Shared ESLint configuration
-- **packages/typescript-config** - Shared TypeScript configuration
-- **packages/ui** - Shared UI components library
+The Android APK is available for download from the [Releases](../../releases) page.
 
-## Quick Start
-
-### 1. Setup Environment
-
-Copy the development environment templates:
-
-```bash
-cp .env.example.dev .env
-cp apps/strapi/.env.example apps/strapi/.env
-```
-
-Edit `.env` and `apps/strapi/.env` if needed (default values should work for local development).
-
-**Mobile app — Strapi URL:**
-
-```bash
-pnpm mobile:setup            # physical phone over WiFi (auto-detects your LAN IP)
-pnpm mobile:setup emulator   # Android emulator
-```
-
-This generates `apps/mobile/.env.local` with `EXPO_PUBLIC_STRAPI_URL` pointing at your running Strapi instance. The file is gitignored — each developer runs this once.
-
-Alternatively, copy a template manually:
-
-```bash
-cp apps/mobile/.env.example.phone apps/mobile/.env.local
-# then edit .env.local and replace YOUR_LAN_IP with your actual IP
-```
-
-### 2. Start Database
-
-Start PostgreSQL database in Docker:
-
-```bash
-docker compose up -d
-```
-
-> **Note:** This starts **only the database**. Backend and mobile app are started via `pnpm run dev`.
-
-### 3. Start Development Servers
-
-From the root directory, run:
-
-```bash
-pnpm run dev
-```
-
-In a separate terminal, start the Expo web server (used by the Strapi content preview):
-
-```bash
-cd apps/mobile && pnpm web
-```
-
-## Development
-
-### Mobile App
-
-Navigate to the mobile directory:
-
-```bash
-cd apps/mobile
-```
-
-**First time setup** (or after native code changes):
-
-```bash
-pnpm mobile:setup            # generate .env.local (see Quick Start above)
-pnpm android -d              # Android Emulator
-pnpm ios -d                  # iOS Simulator
-```
-
-The `-d` flag allows you to select your device/emulator.
-
-**Regular development**:
-
-```bash
-pnpm start       # Start the bundler
-```
-
-Or from root: `pnpm run dev`
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/screen-home-light.png" width="160"/><br/><sub>Home — light mode</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-home-dark.png" width="160"/><br/><sub>Home — dark mode</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-navigation.png" width="160"/><br/><sub>Navigation drawer</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-news-feed.png" width="160"/><br/><sub>News & events feed</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/screen-map-ground-floor.png" width="160"/><br/><sub>3D map — ground floor</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-map-floor-4.png" width="160"/><br/><sub>3D map — 4th floor (dark)</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-deans-office.png" width="160"/><br/><sub>Dean's office hours & contact</sub></td>
+    <td></td>
+  </tr>
+</table>
 
 ---
 
-## Releases
+## Self-Hosted Deployment
+### System requirements
 
-Releases are tag-based. Prepare a release commit with:
+|  | Minimum | Recommended |
+|---|---|---|
+| Processor | x64, 1.4 GHz | x64, 2 GHz dual core |
+| Memory | 2 GB RAM | 4 GB RAM |
+| Storage | 12 GB | 25 GB |
+| Docker | Engine 26+ with Compose plugin | Engine 26+ with Compose plugin |
 
-```bash
-pnpm release:prepare 1.2.0 --changelog
-```
+### Installation
 
-Then create and push a tag named `v1.2.0`. The release workflow publishes the Strapi image to GHCR and attaches Android `.apk` and `.aab` files to the GitHub Release.
+**1. Install Docker Engine** following the [official guide](https://docs.docker.com/engine/install/#supported-platforms).
 
-See [docs/release.md](docs/release.md) for the full release and deployment process.
+**2. Copy deployment files** to the server — `myd17.sh` and `compose.yaml`.
 
----
-
-### Strapi backend and PostgreSQL database in production environment
-
-Run the interactive installer to generate secrets and configure optional modules (nginx, SSL):
+**3. Run the installer** — prompts for domain name, optional managed PostgreSQL, nginx reverse proxy, and SSL:
 
 ```bash
 ./myd17.sh install
-./myd17.sh start
 ```
 
-For updates, backups, restores and full configuration see [docs/on-premise.md](docs/on-premise.md).
+This generates `.env` with all secrets. Store a secure copy before proceeding.
 
-If you prefer manual setup, create a `.env` file in the root directory and configure it based on `.env.example.prod`.
-Replace all placeholder secrets before running production:
+**4. Pull the Strapi image** from GHCR (requires a GitHub personal access token with `read:packages`):
 
 ```bash
-docker compose up --profile prod -d
+echo YOUR_GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 ```
+
+Then set the image tag in `.env`:
+
+```dotenv
+STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+```
+
+**5. Start the stack:**
+
+```bash
+./myd17.sh start
+./myd17.sh status
+```
+
+The admin panel is available at `http://YOUR_SERVER:1337/admin`. Initial accounts (`admin@myd17.pl`, `employee@myd17.pl`) use passwords from `.env`.
+
+For updates, rollbacks, backups, diagnostics, and the full script reference see [docs/on-premise.md](docs/on-premise.md).
+
+---
+
+For local development setup see [docs/development.md](docs/development.md).
+For the full documentation index see [docs/README.md](docs/README.md).
