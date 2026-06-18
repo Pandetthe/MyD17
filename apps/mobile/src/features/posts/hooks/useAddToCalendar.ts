@@ -1,6 +1,18 @@
-import { Alert, Linking, Platform } from "react-native";
+import { Platform } from "react-native";
 import type { ContentEventDateTime, Post } from "@repo/types";
 import * as Calendar from "expo-calendar";
+
+export class CalendarPermissionError extends Error {
+  constructor() {
+    super("Calendar permission denied");
+  }
+}
+
+export class CalendarNotFoundError extends Error {
+  constructor() {
+    super("No calendar found on device");
+  }
+}
 
 export type CalendarEvent = {
   label: string;
@@ -56,20 +68,15 @@ async function getDefaultCalendarId(): Promise<string | null> {
 export async function addEventToCalendar(
   event: CalendarEvent,
   meta: { title: string; notes?: string | null },
-): Promise<void> {
+): Promise<boolean> {
   const { status } = await Calendar.requestCalendarPermissionsAsync();
   if (status !== Calendar.PermissionStatus.GRANTED) {
-    Alert.alert("Brak uprawnień", "Przyznaj dostęp do kalendarza w ustawieniach telefonu.", [
-      { text: "Anuluj", style: "cancel" },
-      { text: "Otwórz ustawienia", onPress: () => void Linking.openSettings() },
-    ]);
-    return;
+    throw new CalendarPermissionError();
   }
 
   const calendarId = await getDefaultCalendarId();
   if (!calendarId) {
-    Alert.alert("Błąd", "Nie znaleziono kalendarza na urządzeniu.");
-    return;
+    throw new CalendarNotFoundError();
   }
 
   await Calendar.createEventAsync(calendarId, {
@@ -78,4 +85,5 @@ export async function addEventToCalendar(
     endDate: event.endDate,
     notes: meta.notes ?? undefined,
   });
+  return true;
 }

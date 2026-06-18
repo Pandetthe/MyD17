@@ -32,7 +32,6 @@ import {
   Footprints,
   GraduationCap,
   MoveVertical,
-  RotateCcw,
   SearchIcon,
   Toilet,
   XIcon,
@@ -334,8 +333,6 @@ const FLOOR_LABEL: Record<string, { short: string; full: string }> = {
   "3": { short: "Piętro 3", full: "Piętro 3" },
   "4": { short: "Piętro 4", full: "Piętro 4" },
 };
-// Display strings for the SlotPicker floor column
-const FLOOR_PICKER_ITEMS = FLOORS.map((f) => FLOOR_LABEL[f]?.full ?? `Piętro ${f}`);
 
 async function assetToBase64(module: number): Promise<string> {
   const asset = Asset.fromModule(module);
@@ -826,7 +823,6 @@ export default function D17MapScreen() {
   const [appliedRoom, setAppliedRoom] = useState<number | null>(null);
   const [searchKey, setSearchKey] = useState<string | undefined>(undefined);
 
-  const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerModalVisible, setDrawerModalVisible] = useState(false);
   const [drawerView, setDrawerView] = useState<"menu" | "rooms">("menu");
   const [openSeq, setOpenSeq] = useState(0);
@@ -912,7 +908,6 @@ export default function D17MapScreen() {
 
   const finishClose = useCallback(() => {
     setDrawerModalVisible(false);
-    setDrawerVisible(false);
   }, []);
 
   const closeDrawer = useCallback(() => {
@@ -931,7 +926,6 @@ export default function D17MapScreen() {
     setDrawerView("menu");
     setOpenSeq((s) => s + 1);
     setDrawerModalVisible(true);
-    setDrawerVisible(true);
     translateY.value = withSpring(0, SPRING);
   }, [appliedFloor, appliedRoom, activeFloor, translateY]);
 
@@ -1182,8 +1176,6 @@ export default function D17MapScreen() {
 
   const currentPendingRooms = FLOOR_ROOMS[FLOORS[pendingFloor]] ?? [];
   const activeRoomCoords = ROOM_COORDS_BY_FLOOR[activeFloor] ?? {};
-
-  const fabBottom = 28 + insets.bottom;
 
   return (
     <View testID="d17map-screen" style={styles.root}>

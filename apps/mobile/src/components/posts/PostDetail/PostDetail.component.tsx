@@ -94,7 +94,10 @@ export function PostDetail({ post, preview = false }: Props) {
               </TextCore>
             )}
 
-            <View style={[styles.footer, description.length > 0 && styles.footerWithDescription]} pointerEvents={preview ? "none" : "box-none"}>
+            <View
+              style={[styles.footer, description.length > 0 && styles.footerWithDescription]}
+              pointerEvents={preview ? "none" : "box-none"}
+            >
               <Pressable
                 testID="post-detail-share-btn"
                 style={styles.iconButton}

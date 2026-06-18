@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useFocusEffect } from "expo-router";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
@@ -10,6 +9,7 @@ import { getIcon } from "@/lib/iconMap";
 import { tagColor } from "@/lib/tagColor";
 import type { Theme } from "@/styles/themes/theme";
 import type { StaticInformation } from "@repo/types";
+import { useFocusEffect } from "expo-router";
 import { GraduationCap, BookOpen, ScrollText, Info } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -57,9 +57,11 @@ export default function Information() {
   const [selectedItem, setSelectedItem] = useState<StaticInformation | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useFocusEffect(useCallback(() => {
-    return () => setSelectedItem(null);
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      return () => setSelectedItem(null);
+    }, []),
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

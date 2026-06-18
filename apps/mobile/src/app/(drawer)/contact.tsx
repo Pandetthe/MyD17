@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
+import { ContentRenderer } from "@/components/ContentRenderer";
 import Button from "@/components/core/Button.component";
 import TextCore from "@/components/core/Text.component";
-import { ContentRenderer } from "@/components/ContentRenderer";
 import { useContactPage } from "@/features/contact/api/useContactPage";
 import type { Theme } from "@/styles/themes/theme";
 import type { PostContentBlock } from "@repo/types";

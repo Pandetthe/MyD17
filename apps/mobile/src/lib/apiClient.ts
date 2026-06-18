@@ -4,7 +4,10 @@ import * as Device from "expo-device";
 
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_STRAPI_URL) {
-    return process.env.EXPO_PUBLIC_STRAPI_URL;
+    const url = process.env.EXPO_PUBLIC_STRAPI_URL;
+    // 10.0.2.2 is the Android emulator loopback — not reachable from a browser
+    if (Platform.OS === "web") return url.replace("10.0.2.2", "localhost");
+    return url;
   }
   if (Platform.OS === "android" && !Device.isDevice) {
     return "http://10.0.2.2:1337";

@@ -46,7 +46,14 @@ function groupBlocks(blocks: PostContentBlock[]): RenderedBlock[] {
   return result;
 }
 
-export function ContentRenderer({ blocks, textColor, dark, preview, eventTitle, eventNotes }: Props) {
+export function ContentRenderer({
+  blocks,
+  textColor,
+  dark,
+  preview,
+  eventTitle,
+  eventNotes,
+}: Props) {
   const grouped = groupBlocks(blocks);
 
   return (

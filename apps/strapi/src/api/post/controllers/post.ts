@@ -1,12 +1,18 @@
+import { timingSafeEqual } from "crypto";
 import { factories } from "@strapi/strapi";
 import { isMobileUA, isIosUA, escape, ogMeta } from "../utils/postUtils";
 import { renderPreviewHtml } from "../utils/renderPreview";
+import {
+  PREVIEW_ALLOWED_UIDS,
+  CONTENT_POPULATE,
+} from "../../../constants/preview";
 
-const PREVIEW_ALLOWED_UIDS = new Set([
-  "api::post.post",
-  "api::static-information.static-information",
-  "api::contact.contact",
-]);
+function safeCompareSecret(provided: string, expected: string): boolean {
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
 
 const IOS_STORE_URL =
   process.env.IOS_APP_STORE_URL ?? "https://apps.apple.com/app/myd17";
@@ -216,9 +222,18 @@ export default factories.createCoreController(
     },
 
     async previewContent(ctx) {
-      const { uid, documentId, status, secret } = ctx.query as Record<string, string>;
+      const { uid, documentId, status } = ctx.query as Record<string, string>;
+      const secret =
+        (ctx.request.headers["x-preview-secret"] as string | undefined) ??
+        (ctx.query as Record<string, string>).secret ??
+        "";
 
-      if (secret !== (process.env.PREVIEW_SECRET ?? "change-me-in-production")) {
+      if (
+        !safeCompareSecret(
+          secret,
+          process.env.PREVIEW_SECRET ?? "change-me-in-production",
+        )
+      ) {
         ctx.status = 403;
         ctx.body = { error: "Forbidden" };
         return;
@@ -233,24 +248,16 @@ export default factories.createCoreController(
       const docStatus = status === "published" ? "published" : "draft";
 
       const isPost = uid === "api::post.post";
-      const contentPopulate = {
-        on: {
-          "content.text": true,
-          "content.section-title": true,
-          "content.location": true,
-          "content.event-date-time": true,
-          "content.chip": true,
-          "content.calendar": { populate: { entries: true } },
-        },
-      };
-      const populate: Record<string, unknown> = { content: contentPopulate };
+      const populate: Record<string, unknown> = { content: CONTENT_POPULATE };
       if (isPost) {
         populate.images = true;
         populate.tags = { fields: ["title", "color"] };
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const document: Record<string, any> | null = await (strapi.documents as any)(uid).findOne({
+      const document: Record<string, any> | null = await (
+        strapi.documents as any
+      )(uid).findOne({
         documentId,
         populate,
         status: docStatus,
@@ -263,27 +270,57 @@ export default factories.createCoreController(
       }
 
       if (isPost) {
-        const strapiBaseUrl = process.env.STRAPI_URL ?? "http://localhost:1337";
+        const strapiBaseUrl =
+          process.env.STRAPI_URL ?? strapi.config.get<string>("server.url", "");
         const resolveUrl = (url: string | undefined): string | null =>
-          url ? (url.startsWith("http") ? url : `${strapiBaseUrl}${url}`) : null;
+          url
+            ? url.startsWith("http")
+              ? url
+              : `${strapiBaseUrl}${url}`
+            : null;
 
-        type ImgShape = { url?: string; formats?: Record<string, { url?: string }> };
+        type ImgShape = {
+          url?: string;
+          formats?: Record<string, { url?: string }>;
+        };
         const img = document.images as ImgShape | ImgShape[] | null | undefined;
         const firstImg = Array.isArray(img) ? img[0] : img;
-        const heroImageUrl = resolveUrl(firstImg?.formats?.large?.url ?? firstImg?.url);
+        const heroImageUrl = resolveUrl(
+          firstImg?.formats?.large?.url ?? firstImg?.url,
+        );
 
-        ctx.body = { type: "post", post: document, heroImageUrl, status: docStatus };
+        ctx.body = {
+          type: "post",
+          post: document,
+          heroImageUrl,
+          status: docStatus,
+        };
       } else {
-        const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
-        const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+        const title =
+          (document["title"] as string | undefined) ??
+          uid.split("::")[1]?.split(".")[0] ??
+          "Preview";
+        const blocks =
+          (document["content"] as Array<{
+            __component: string;
+            [key: string]: unknown;
+          }>) ?? [];
         ctx.body = { type: "drawer", title, blocks, status: docStatus };
       }
     },
 
     async preview(ctx) {
-      const { uid, documentId, status, secret } = ctx.query as Record<string, string>;
+      const { uid, documentId, status, secret } = ctx.query as Record<
+        string,
+        string
+      >;
 
-      if (secret !== (process.env.PREVIEW_SECRET ?? "change-me-in-production")) {
+      if (
+        !safeCompareSecret(
+          secret ?? "",
+          process.env.PREVIEW_SECRET ?? "change-me-in-production",
+        )
+      ) {
         ctx.status = 403;
         ctx.body = "Forbidden";
         return;
@@ -298,20 +335,11 @@ export default factories.createCoreController(
       const docStatus = status === "published" ? "published" : "draft";
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const document: Record<string, any> | null = await (strapi.documents as any)(uid).findOne({
+      const document: Record<string, any> | null = await (
+        strapi.documents as any
+      )(uid).findOne({
         documentId,
-        populate: {
-          content: {
-            on: {
-              "content.text": true,
-              "content.section-title": true,
-              "content.location": true,
-              "content.event-date-time": true,
-              "content.chip": true,
-              "content.calendar": { populate: { entries: true } },
-            },
-          },
-        },
+        populate: { content: CONTENT_POPULATE },
         status: docStatus,
       });
 
@@ -321,8 +349,15 @@ export default factories.createCoreController(
         return;
       }
 
-      const title = (document["title"] as string | undefined) ?? uid.split("::")[1]?.split(".")[0] ?? "Preview";
-      const blocks = (document["content"] as Array<{ __component: string; [key: string]: unknown }>) ?? [];
+      const title =
+        (document["title"] as string | undefined) ??
+        uid.split("::")[1]?.split(".")[0] ??
+        "Preview";
+      const blocks =
+        (document["content"] as Array<{
+          __component: string;
+          [key: string]: unknown;
+        }>) ?? [];
 
       ctx.type = "text/html; charset=utf-8";
       ctx.body = renderPreviewHtml(title, blocks, docStatus);

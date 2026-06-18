@@ -57,6 +57,12 @@ From the root directory, run:
 pnpm run dev
 ```
 
+In a separate terminal, start the Expo web server (used by the Strapi content preview):
+
+```bash
+cd apps/mobile && pnpm web
+```
+
 ## Development
 
 ### Mobile App

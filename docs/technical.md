@@ -1,278 +1,277 @@
-# Dokumentacja techniczna
+# Technical documentation
 
-Dokument opisuje najprostszy sposób uruchomienia i utrzymania środowiska produkcyjnego na jednym serwerze on-premise.
+This document describes the simplest way to deploy and maintain a production environment on a single on-premise server.
 
-## Składniki systemu
+## System components
 
-Środowisko produkcyjne uruchamia dwa kontenery:
+The production environment runs two containers:
 
-- `database` - PostgreSQL 17, dane w wolumenie Docker `pgdata`.
-- `strapi` - backend Strapi, uploady w wolumenie Docker `strapi_uploads`.
+- `database` — PostgreSQL 17, data stored in Docker volume `pgdata`.
+- `strapi` — Strapi backend, uploads stored in Docker volume `strapi_uploads`.
 
-Najważniejsze pliki:
+Key files:
 
-- `compose.yaml` - definicja kontenerów.
-- `scripts/onprem.sh` - skrypt do instalacji, aktualizacji, backupu, restore i diagnostyki.
-- `.env` - produkcyjne sekrety i konfiguracja.
+- `compose.yaml` — container definitions.
+- `scripts/onprem.sh` — script for installation, updates, backups, restores and diagnostics (invoked via `pnpm onprem`).
+- `.env` — production secrets and configuration.
 
-## Pierwsza instalacja
+## First installation
 
-Wszystkie polecenia wykonujemy z katalogu głównego repozytorium.
+All commands are run from the repository root.
 
-### Przygotowanie serwera
+### Server preparation
 
-- Zainstalować Docker Engine i Docker Compose plugin.
-- Sprawdzić instalację:
+- Install Docker Engine and the Docker Compose plugin.
+- Verify the installation:
 
 ```bash
 docker --version
 docker compose version
 ```
 
-- Sklonować repozytorium na serwer.
+- Clone the repository to the server.
 
-### Wygenerowanie konfiguracji
+### Generating configuration
 
 ```bash
-bash scripts/onprem.sh init
+pnpm onprem init
 ```
 
-Skrypt utworzy plik `.env` z losowymi sekretami, hasłem bazy i hasłami startowymi do kont admina.
+The script creates `.env` with random secrets, a database password and initial admin account passwords.
 
-Po wygenerowaniu:
+After generating:
 
 ```bash
 chmod 600 .env
 ```
 
-### Dostęp do obrazu Strapi
+### Accessing the Strapi image
 
-Opcja zalecana: pobranie obrazu z GitHub Container Registry.
+Recommended option: pull the image from GitHub Container Registry.
 
 ```bash
 echo GITHUB_TOKEN | docker login ghcr.io -u GITHUB_USER --password-stdin
 ```
 
-W pliku `.env` ustawić obraz, najlepiej na konkretny tag wersji:
+Set the image in `.env`, preferably pinned to a specific version tag:
 
 ```dotenv
 STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 ```
 
-Można też użyć `latest`, ale do produkcji zalecany jest konkretny tag.
+`latest` can also be used, but a specific tag is recommended for production.
 
-Alternatywnie: lokalne zbudowanie obrazu.
+Alternatively, build the image locally:
 
 ```bash
 docker build -t strapi:local -f apps/strapi/Dockerfile .
 ```
 
-Następnie w `.env`:
+Then in `.env`:
 
 ```dotenv
 STRAPI_IMAGE=strapi:local
 ```
 
-### Konfiguracja powiadomień push
+### Configuring push notifications
 
-Powiadomienia push wymagają projektu Firebase z włączoną usługą FCM.
+Push notifications require a Firebase project with FCM enabled.
 
-#### Klucz prywatny Firebase (Strapi)
+#### Firebase private key (Strapi)
 
-1. Otworzyć [Firebase Console](https://console.firebase.google.com) i stworzyć nowy projekt (dowolna nazwa, reszta opcji domyślna).
-2. Z głównego widoku projektu przejść do **Settings → Service accounts**.
-3. Kliknąć **Generate new private key** — pobierze się plik JSON.
-4. Wkleić zawartość pliku do `.env` jako wartość `FIREBASE_SERVICE_ACCOUNT` **w postaci jednej linii, bez białych znaków** (można do tego użyć dowolnego minifikatora JSON):
+1. Open [Firebase Console](https://console.firebase.google.com) and create a new project (any name, leave other options as default).
+2. From the project overview go to **Settings → Service accounts**.
+3. Click **Generate new private key** — a JSON file will be downloaded.
+4. Paste the file contents into `.env` as the value of `FIREBASE_SERVICE_ACCOUNT` **as a single line with no whitespace** (use any JSON minifier):
 
 ```dotenv
 FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"...","private_key":"-----BEGIN RSA PRIVATE KEY-----\n..."}
 ```
 
-Jeśli zmienna jest pusta lub nieprawidłowa, Strapi uruchomi się normalnie, ale powiadomienia push będą wyłączone (odpowiedni komunikat pojawi się w logach).
+If the variable is empty or invalid, Strapi starts normally but push notifications are disabled (a message appears in the logs).
 
-#### Plik google-services.json (dotyczy buildu aplikacji mobilnej)
+#### google-services.json (mobile app build)
 
-Plik `google-services.json` jest wymagany i musi trafić do katalogu `apps/mobile`.
+The `google-services.json` file is required and must be placed in `apps/mobile`.
 
-1. Z głównego widoku projektu Firebase Console przejść do **Settings → General**.
-2. Stworzyć nową aplikację Android (Android package name: io.github.stawex.myd17 (lub z wartością znajdującą się pod android/package w pliku app.json w folderze apps/mobile, jeżeli nie jest używana domyślna wartość), reszta domyślnie).
-3. Pobrać `google-services.json` i umieścić go w folderze `apps/mobile`.
+1. From the Firebase Console project overview go to **Settings → General**.
+2. Add an Android app (Android package name: `io.github.stawex.myd17`, or the value under `android.package` in `apps/mobile/app.json` if customised; leave other fields as default).
+3. Download `google-services.json` and place it in `apps/mobile`.
 
-### Uruchomienie
-
-```bash
-bash scripts/onprem.sh up
-```
-
-Sprawdzenie statusu:
+### Starting the stack
 
 ```bash
-bash scripts/onprem.sh status
+pnpm onprem up
 ```
 
-Panel administracyjny Strapi jest dostępny pod:
+Check status:
+
+```bash
+pnpm onprem status
+```
+
+The Strapi admin panel is available at:
 
 ```text
-http://ADRES_SERWERA:1337/admin
+http://SERVER_ADDRESS:1337/admin
 ```
 
-Startowe konta administracyjne są tworzone przy pierwszym starcie, jeżeli jeszcze nie istnieją:
+Initial admin accounts are created on first start if they do not already exist:
 
 - `admin@myd17.pl`
 - `employee@myd17.pl`
 
-Hasła znajdują się w `.env` pod zmiennymi `STRAPI_ADMIN_PASSWORD` i `STRAPI_EMPLOYEE_PASSWORD`.
+Passwords are stored in `.env` under `STRAPI_ADMIN_PASSWORD` and `STRAPI_EMPLOYEE_PASSWORD`.
 
-## Opcjonalna konfiguracja
+## Optional configuration
 
-Poniższe zmienne można dopisać ręcznie do `.env` po wygenerowaniu pliku przez `init`.
+The following variables can be added manually to `.env` after `init` generates the file.
 
-### Podgląd treści w panelu admina
+### Content preview in the admin panel
 
-Strapi udostępnia przycisk **„Open Preview"** na stronach edycji postów, kart informacyjnych i strony kontaktowej. Kliknięcie otwiera wyrenderowany podgląd bloków treści w nowej karcie.
+Strapi shows an **"Open Preview"** button on the edit pages for posts, info cards and the contact page. Clicking it opens a rendered preview of the content blocks in a new tab.
 
-Aby włączyć podgląd, ustaw losowy sekret:
+To enable preview, set a random secret:
 
 ```dotenv
-PREVIEW_SECRET=twój-losowy-sekret
+PREVIEW_SECRET=your-random-secret
 ```
 
-Bez tej zmiennej podgląd działa z domyślną wartością `change-me-in-production`, co jest akceptowalne tylko lokalnie. Na środowisku produkcyjnym **wymagane** jest ustawienie własnej wartości.
+Without this variable preview works with the default value `change-me-in-production`, which is acceptable for local development only. On a production environment setting a custom value is **required**.
 
-### Podgląd z aplikacją webową
+### Preview with the web app
 
-Domyślnie podgląd renderuje uproszczoną wersję HTML. Aby zamiast tego używać skompilowanej aplikacji mobilnej (React Native Web), ustaw adres, pod którym jest ona dostępna:
+By default preview renders a simplified HTML version. To use the compiled mobile app (React Native Web) instead, set the address where it is hosted:
 
 ```dotenv
 EXPO_WEB_URL=http://localhost:8081
 ```
 
-Wartość powinna wskazywać na serwer deweloperski Expo (`npx expo start --web`) lub na zbudowaną i hostowaną wersję statyczną (`npx expo export --platform web`). Adres jest przekazywany do strony podglądu jako parametr, więc musi być dostępny zarówno dla przeglądarki otwierającej podgląd, jak i dla serwera Strapi.
+The value should point to the Expo dev server (`pnpm start --web` inside `apps/mobile`) or a built and hosted static export (`npx expo export --platform web`). The address is passed to the preview page as a parameter, so it must be reachable both from the browser opening the preview and from the Strapi server.
 
-Pamiętaj, żeby dodać adres aplikacji webowej do zmiennej `CORS_ALLOWED_ORIGINS` w `.env`, np.:
+If additional origins beyond `EXPO_WEB_URL` need to reach the API, add them to `CORS_ALLOWED_ORIGINS`:
 
 ```dotenv
 CORS_ALLOWED_ORIGINS=http://localhost:1337,http://localhost:8081
 ```
 
-## Aktualizacja systemu
+## Updating the system
 
-Aktualizacja polega na zmianie obrazu Strapi i restarcie aplikacji. Strapi wykonuje zmiany schematu podczas startu.
+An update consists of changing the Strapi image tag and restarting the stack. Strapi applies schema changes on startup.
 
-- Sprawdzić aktualną wersję w `.env`:
+- Check the current version in `.env`:
 
 ```bash
 grep STRAPI_IMAGE .env
 ```
 
-- Ustawić nowy tag obrazu w `.env`, np.:
+- Set the new image tag in `.env`, for example:
 
 ```dotenv
 STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
 ```
 
-- Wykonać aktualizację:
+- Run the update:
 
 ```bash
-bash scripts/onprem.sh migrate
+pnpm onprem migrate
 ```
 
-Skrypt przed aktualizacją tworzy zweryfikowany backup bazy w katalogu `backups/`.
+The script creates a verified database backup in `backups/` before updating.
 
-- Sprawdzić środowisko:
+- Verify the environment:
 
 ```bash
-bash scripts/onprem.sh status
-bash scripts/onprem.sh verify
+pnpm onprem status
+pnpm onprem verify
 ```
 
-## Wycofanie zmian (rollback)
+## Rolling back (rollback)
 
-- W pliku `.env` przywrócić poprzedni tag obrazu, np.:
+- Restore the previous image tag in `.env`:
 
 ```dotenv
 STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 ```
 
-- Odtworzyć bazę z backupu utworzonego przed aktualizacją:
+- Restore the database from the backup created before the update:
 
 ```bash
-bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
+pnpm onprem restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
-- Sprawdzić system:
+- Verify the system:
 
 ```bash
-bash scripts/onprem.sh verify
+pnpm onprem verify
 ```
 
-Uwaga: komenda `restore` zatrzymuje Strapi, uruchamia bazę, tworzy dodatkowy backup aktualnego stanu bazy, odtwarza wskazany dump i ponownie uruchamia Strapi.
+Note: `restore` stops Strapi, starts the database, creates an additional backup of the current database state, restores the specified dump and restarts Strapi.
 
-## Backup i odtwarzanie
+## Backup and restore
 
-Ręczny backup bazy:
+Manual database backup:
 
 ```bash
-bash scripts/onprem.sh backup
+pnpm onprem backup
 ```
 
-Backup trafia do katalogu `backups/` jako plik `.dump`.
+The backup is saved to `backups/` as a `.dump` file.
 
-Odtworzenie backupu:
+Restore from backup:
 
 ```bash
-bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
+pnpm onprem restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
-Backup bazy nie zastępuje backupu uploadów. Pliki uploadowane w Strapi są w wolumenie Docker `strapi_uploads` i powinny być zabezpieczane osobno.
+A database backup does not replace an uploads backup. Files uploaded to Strapi are stored in the Docker volume `strapi_uploads` and should be backed up separately.
 
-## Podstawowa diagnostyka
+## Basic diagnostics
 
-### Status usług
+### Service status
 
 ```bash
-bash scripts/onprem.sh status
-docker compose --project-name myd17 --env-file .env -f compose.yaml --profile prod ps
+pnpm onprem status
 ```
 
-Oczekiwane usługi:
+Expected services:
 
-- `database` - status `healthy`.
-- `strapi` - status `running` albo `healthy`.
+- `database` — status `healthy`.
+- `strapi` — status `running` or `healthy`.
 
-### Logi
+### Logs
 
-Wszystkie usługi:
+All services:
 
 ```bash
-bash scripts/onprem.sh logs
+pnpm onprem logs
 ```
 
-Tylko Strapi:
+Strapi only:
 
 ```bash
-bash scripts/onprem.sh logs strapi
+pnpm onprem logs strapi
 ```
 
-Tylko baza:
+Database only:
 
 ```bash
-bash scripts/onprem.sh logs database
+pnpm onprem logs database
 ```
 
-### Healthcheck aplikacji
+### Application healthcheck
 
 ```bash
 curl http://localhost:1337/_health
 ```
 
-Jeżeli endpoint nie odpowiada:
+If the endpoint does not respond:
 
-- Sprawdzić `bash scripts/onprem.sh status`.
-- Sprawdzić `bash scripts/onprem.sh logs strapi`.
-- Sprawdzić, czy port `1337/tcp` nie jest blokowany przez firewall lub reverse proxy.
-- Sprawdzić, czy `.env` ma komplet wymaganych zmiennych:
+- Check `pnpm onprem status`.
+- Check `pnpm onprem logs strapi`.
+- Verify port `1337/tcp` is not blocked by a firewall or reverse proxy.
+- Verify `.env` has all required variables:
 
 ```bash
-bash scripts/onprem.sh verify
+pnpm onprem verify
 ```

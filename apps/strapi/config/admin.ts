@@ -1,4 +1,5 @@
 import type { Core } from "@strapi/strapi";
+import { PREVIEW_ALLOWED_UIDS } from "../src/constants/preview";
 
 const config = ({
   env,
@@ -31,13 +32,11 @@ const config = ({
   preview: {
     enabled: true,
     config: {
-      async handler(uid: string, { documentId, status }: { documentId?: string; status?: string }) {
-        const PREVIEW_UIDS = new Set([
-          "api::post.post",
-          "api::static-information.static-information",
-          "api::contact.contact",
-        ]);
-        if (!PREVIEW_UIDS.has(uid)) return null;
+      async handler(
+        uid: string,
+        { documentId, status }: { documentId?: string; status?: string },
+      ) {
+        if (!PREVIEW_ALLOWED_UIDS.has(uid)) return null;
 
         const secret = env("PREVIEW_SECRET", "change-me-in-production");
         const strapiUrl = env("STRAPI_URL", "http://localhost:1337");
@@ -46,11 +45,25 @@ const config = ({
         const docStatus = status ?? "draft";
 
         if (expoWebUrl) {
-          const params = new URLSearchParams({ uid, documentId: docId, status: docStatus, secret, strapiUrl });
+          // strapiUrl is kept for app versions prior to this rework that still
+          // read it from the URL. New builds use EXPO_PUBLIC_STRAPI_URL and
+          // ignore this param; they never fetch from an attacker-supplied host.
+          const params = new URLSearchParams({
+            uid,
+            documentId: docId,
+            status: docStatus,
+            secret,
+            strapiUrl,
+          });
           return `${expoWebUrl}/preview?${params.toString()}`;
         }
 
-        const params = new URLSearchParams({ uid, documentId: docId, status: docStatus, secret });
+        const params = new URLSearchParams({
+          uid,
+          documentId: docId,
+          status: docStatus,
+          secret,
+        });
         return `${strapiUrl}/api/preview?${params.toString()}`;
       },
     },

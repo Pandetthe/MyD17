@@ -55,7 +55,8 @@ export function useNativeSetup(fontsReady: boolean): void {
     getInitialNotification(getMessaging()).then((msg) => {
       if (!msg) return;
       const postId = msg.data?.postId as string | undefined;
-      if (postId) setTimeout(() => router.push({ pathname: "/post/[id]", params: { id: postId } }), 0);
+      if (postId)
+        setTimeout(() => router.push({ pathname: "/post/[id]", params: { id: postId } }), 0);
     });
   }, [fontsReady]);
 }
