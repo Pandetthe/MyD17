@@ -1,92 +1,122 @@
-# On-premise deployment
+# On-Premise Operations
 
-This project can be deployed on a single on-premise host with Docker Compose.
+For the initial server setup and installation procedure see the [Self-Hosted Deployment](../README.md#self-hosted-deployment) section in the main README.
 
-## First setup
+## Updates
 
-Install Docker with the Compose plugin, then from the repository root run:
+Strapi applies schema changes automatically on startup.
 
-```bash
-pnpm onprem init
-pnpm onprem up
+1. Set the new image tag in `.env`:
+
+```dotenv
+STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
 ```
 
-`init` creates `.env` with generated database credentials, Strapi keys and initial admin passwords. It also links `apps/strapi/.env` to that root `.env`, so Strapi sees the same values when it starts from its own package directory.
-
-### Accessing the Strapi image
-
-The Strapi image is published to GitHub Container Registry (GHCR) as `ghcr.io/stawex-team/myd17/strapi:latest` (private).
-
-**Option 1: Login to GHCR (requires GitHub token)**
-
-1. Generate a personal access token at https://github.com/settings/tokens/new with `read:packages` scope
-2. Login to GHCR:
-   ```bash
-   echo YOUR_GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
-   ```
-3. Run deployment:
-   ```bash
-   pnpm onprem up
-   ```
-
-**Option 2: Build the image locally (no credentials needed)**
-
-Build the Strapi image locally:
+2. Run the update:
 
 ```bash
-docker build -t strapi:local -f apps/strapi/Dockerfile .
+./myd17.sh update
 ```
 
-Then use it in deployment:
+`update` creates a verified database backup before pulling the new image and restarting the stack.
+
+3. Verify the environment:
 
 ```bash
-STRAPI_IMAGE=strapi:local pnpm onprem up
+./myd17.sh verify
 ```
 
-Or update `STRAPI_IMAGE` in `.env` to `strapi:local` permanently.
+## Rollback
 
-## Updates and migrations
+If an update causes issues, restore the previous state:
 
-Strapi applies application schema changes during startup. For a normal on-premise update run:
+1. Set the previous image tag in `.env`:
+
+```dotenv
+STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+```
+
+2. Restore the database backup created automatically before the update:
 
 ```bash
-pnpm onprem migrate
+./myd17.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
-The command warns about risky production secrets, creates a verified PostgreSQL backup, pulls the configured Strapi image and restarts the stack.
+`restore` stops Strapi, backs up the current database state, restores the specified dump, then restarts the stack.
 
-To verify a running on-premise environment without applying changes, run:
+3. Verify:
 
 ```bash
-pnpm onprem verify
+./myd17.sh verify
 ```
-
-The verification warns when `.env` is group/world-readable or required secrets look like placeholders. It still fails if PostgreSQL cannot produce a schema dump or Strapi does not respond on its health endpoint.
 
 ## Backups and restore
 
-Create a database dump:
+Create a database backup:
 
 ```bash
-pnpm onprem backup
+./myd17.sh backup
 ```
 
-The backup command also confirms that the generated custom dump can be read by `pg_restore`.
+The backup is saved to `backups/` as a `.dump` file and verified with `pg_restore` before being kept.
 
-Restore a dump:
+Restore from backup:
 
 ```bash
-pnpm onprem restore backups/myd17-YYYYMMDD-HHMMSS.dump
+./myd17.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
 ```
 
-Uploads are stored in the `strapi_uploads` Docker volume.
+> **Note:** File uploads stored in the `strapi_uploads` Docker volume are not included in the database dump. Back up the volume separately if needed.
 
-## Operations
+## Diagnostics
+
+### Service status
 
 ```bash
-pnpm onprem status
-pnpm onprem logs
-pnpm onprem logs strapi
-pnpm onprem restart
-pnpm onprem down
+./myd17.sh status
 ```
+
+Expected output: `database` with status `healthy`, `strapi` with status `running` or `healthy`.
+
+### Logs
+
+```bash
+./myd17.sh logs           # all services
+./myd17.sh logs strapi
+./myd17.sh logs database
+./myd17.sh logs nginx
+```
+
+### Application healthcheck
+
+```bash
+curl http://localhost:1337/_health
+```
+
+If the endpoint does not respond:
+
+- Check `./myd17.sh status` — confirm containers are running.
+- Check `./myd17.sh logs strapi` — look for startup errors.
+- Verify port `1337/tcp` is not blocked by a firewall or reverse proxy.
+- Run `./myd17.sh verify` to validate secrets and database connectivity.
+
+## Script commands reference
+
+| Command | Description |
+|---|---|
+| `install` | Interactive setup: generate `.env`, configure nginx |
+| `start` | Start all enabled services |
+| `stop` | Stop all services |
+| `restart` | Restart Strapi (and nginx if enabled) |
+| `update` | Backup DB, pull new Strapi image, restart |
+| `backup` | Dump PostgreSQL to `backups/` |
+| `restore FILE` | Restore from a dump file |
+| `verify` | Check secrets, backup readiness, Strapi health |
+| `logs [svc]` | Follow logs for all services or a specific service |
+| `status` | Show service status |
+| `help` | List all commands |
+
+## Next steps
+
+- See [technical.md](technical.md) for push notifications setup and Strapi framework upgrades.
+- See [release.md](release.md) for the release and image publishing workflow.

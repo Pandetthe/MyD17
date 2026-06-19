@@ -65,20 +65,20 @@ Dry-run workflow runs upload the same files as GitHub Actions artifacts instead 
 Create the production environment:
 
 ```bash
-pnpm onprem init
+./myd17.sh install
 ```
 
-Set secrets in `.env`, then choose the image version in `.env` or pass it when starting/migrating:
+Set the image version in `.env`:
 
-```bash
+```dotenv
 STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 ```
 
-Start or update the production stack:
+Start a new installation or update an existing one:
 
 ```bash
-pnpm onprem up
-pnpm onprem migrate
+./myd17.sh start    # first time
+./myd17.sh update   # subsequent releases (backs up DB first)
 ```
 
 The production Strapi container uses the released image and only mounts a persistent upload volume. Source code is not mounted into the container.

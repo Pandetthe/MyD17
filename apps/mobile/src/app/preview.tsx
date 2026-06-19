@@ -1,73 +1,92 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import { PostDetail } from "@/components/posts/PostDetail/PostDetail.component";
+import { apiClient } from "@/lib/apiClient";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Post, PostContentBlock } from "@repo/types";
+import axios from "axios";
+import { useLocalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
-type PostPreview = { type: "post"; post: Post; status: "draft" | "published" };
-type DrawerPreview = { type: "drawer"; title: string; blocks: PostContentBlock[]; status: "draft" | "published" };
+type PostPreview = {
+  type: "post";
+  post: Post;
+  heroImageUrl: string | null;
+  status: "draft" | "published";
+};
+type DrawerPreview = {
+  type: "drawer";
+  title: string;
+  blocks: PostContentBlock[];
+  status: "draft" | "published";
+};
 type PreviewData = PostPreview | DrawerPreview;
 
 function StatusBadge({ status }: { status: "draft" | "published" }) {
   const label = status === "published" ? "Opublikowany" : "Szkic";
   return (
-    <View style={status === "published" ? badgeStyles.published : badgeStyles.draft}>
-      <Text style={status === "published" ? badgeStyles.textPublished : badgeStyles.textDraft}>
+    <View style={status === "published" ? styles.badgePublished : styles.badgeDraft}>
+      <Text style={status === "published" ? styles.badgeTextPublished : styles.badgeTextDraft}>
         {label}
       </Text>
     </View>
   );
 }
 
-const badgeStyles = StyleSheet.create({
-  published: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    backgroundColor: "rgba(34,197,94,0.15)",
-    borderColor: "rgba(34,197,94,0.4)",
-  },
-  draft: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    backgroundColor: "rgba(245,158,11,0.15)",
-    borderColor: "rgba(245,158,11,0.4)",
-  },
-  textPublished: { fontSize: 11, fontWeight: "700", letterSpacing: 0.5, textTransform: "uppercase", color: "#22C55E" },
-  textDraft: { fontSize: 11, fontWeight: "700", letterSpacing: 0.5, textTransform: "uppercase", color: "#F59E0B" },
-});
-
 export default function PreviewPage() {
   const insets = useSafeAreaInsets();
-  const { uid, documentId, status, secret, strapiUrl } = useLocalSearchParams<{
-    uid: string; documentId: string; status: string; secret: string; strapiUrl: string;
-  }>();
+  const rawParams = useLocalSearchParams();
+  const uid = Array.isArray(rawParams.uid)
+    ? rawParams.uid[0]
+    : (rawParams.uid as string | undefined);
+  const documentId = Array.isArray(rawParams.documentId)
+    ? rawParams.documentId[0]
+    : (rawParams.documentId as string | undefined);
+  const status = Array.isArray(rawParams.status)
+    ? rawParams.status[0]
+    : (rawParams.status as string | undefined);
+  const secret = Array.isArray(rawParams.secret)
+    ? rawParams.secret[0]
+    : (rawParams.secret as string | undefined);
 
   const [data, setData] = useState<PreviewData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!uid || !documentId || !strapiUrl) {
+    if (!uid || !documentId) {
       setError("Brakujące parametry podglądu.");
       setLoading(false);
       return;
     }
-    const qs = new URLSearchParams({ uid, documentId, status: status ?? "draft", secret: secret ?? "" });
-    fetch(`${strapiUrl}/api/preview-content?${qs.toString()}`)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() as Promise<PreviewData>; })
-      .then(setData)
-      .catch((e: Error) => setError(e.message))
+    const controller = new AbortController();
+    const qs = new URLSearchParams({ uid, documentId, status: status ?? "draft" });
+    // Secret is sent as a header so it does not appear in Strapi's HTTP access logs.
+    apiClient
+      .get<PreviewData>(`/api/preview-content?${qs.toString()}`, {
+        signal: controller.signal,
+        headers: { "X-Preview-Secret": secret ?? "" },
+        timeout: 15000,
+      })
+      .then((r) => setData(r.data))
+      .catch((e: unknown) => {
+        if (axios.isCancel(e)) return;
+        let msg: string;
+        if (axios.isAxiosError(e)) {
+          msg = (e.response?.data as { error?: string } | undefined)?.error ?? e.message;
+        } else if (e instanceof Error) {
+          msg = e.message;
+        } else {
+          msg = "Nieznany błąd";
+        }
+        setError(msg);
+      })
       .finally(() => setLoading(false));
-  }, [uid, documentId, status, secret, strapiUrl]);
+    return () => controller.abort();
+  }, [uid, documentId, status, secret]);
 
   if (loading) {
     return (
@@ -105,7 +124,9 @@ export default function PreviewPage() {
       <View style={styles.phone}>
         <View style={[styles.drawerBadgeRow, { paddingTop: (insets.top || 0) + 12 }]}>
           <StatusBadge status={data.status} />
-          <Text style={styles.drawerTitle} numberOfLines={1}>{data.title}</Text>
+          <Text style={styles.drawerTitle} numberOfLines={1}>
+            {data.title}
+          </Text>
         </View>
         <ScrollView
           contentContainerStyle={[
@@ -131,7 +152,33 @@ export default function PreviewPage() {
   );
 }
 
+const badgeBase = {
+  paddingHorizontal: 12,
+  paddingVertical: 4,
+  borderRadius: 999,
+  borderWidth: 1,
+} as const;
+const badgeTextBase = {
+  fontSize: 11,
+  fontWeight: "700" as const,
+  letterSpacing: 0.5,
+  textTransform: "uppercase" as const,
+};
+
 const styles = StyleSheet.create((theme: Theme) => ({
+  badgePublished: {
+    ...badgeBase,
+    backgroundColor: "rgba(34,197,94,0.15)",
+    borderColor: "rgba(34,197,94,0.4)",
+  },
+  badgeDraft: {
+    ...badgeBase,
+    backgroundColor: "rgba(245,158,11,0.15)",
+    borderColor: "rgba(245,158,11,0.4)",
+  },
+  badgeTextPublished: { ...badgeTextBase, color: colors.green.main },
+  badgeTextDraft: { ...badgeTextBase, color: colors.amber.main },
+
   centered: {
     flex: 1,
     alignItems: "center",

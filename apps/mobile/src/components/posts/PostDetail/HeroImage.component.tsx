@@ -6,7 +6,7 @@ import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
-import { Image } from "expo-image";
+import { Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import { StyleSheet } from "react-native-unistyles";
@@ -26,7 +26,7 @@ export function HeroImage({ imageUrl, tags = [] }: Props) {
       <Image
         source={imageUrl ? { uri: imageUrl } : PostPlaceholder}
         style={styles.image}
-        contentFit="cover"
+        resizeMode="cover"
       />
 
       <LinearGradient

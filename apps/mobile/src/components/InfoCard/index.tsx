@@ -4,7 +4,12 @@ import { InfoRow } from "@/components/InfoCard/InfoRow";
 import Button from "@/components/core/Button.component";
 import { Card } from "@/components/core/Card.component";
 import ConfirmModal from "@/components/core/ConfirmModal.component";
-import { addEventToCalendar, type CalendarEvent } from "@/features/posts/hooks/useAddToCalendar";
+import {
+  addEventToCalendar,
+  CalendarPermissionError,
+  CalendarNotFoundError,
+  type CalendarEvent,
+} from "@/features/posts/hooks/useAddToCalendar";
 import { useGuardedRouter } from "@/hooks/useGuardedRouter";
 import { getIcon } from "@/lib/iconMap";
 import { colors } from "@/styles/colors";
@@ -16,7 +21,16 @@ import type {
   PostContentBlock,
 } from "@repo/types";
 import * as Clipboard from "expo-clipboard";
-import { ArrowUpRight, CalendarPlus, Clock, Copy, Info, Map, MapPin } from "lucide-react-native";
+import {
+  AlertCircle,
+  ArrowUpRight,
+  CalendarPlus,
+  Clock,
+  Copy,
+  Info,
+  Map,
+  MapPin,
+} from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
 import { ScopedTheme, StyleSheet, useUnistyles } from "react-native-unistyles";
 
@@ -93,24 +107,33 @@ type Props = {
   eventNotes?: string | null;
 };
 
-function DarkButton({ forceDark, ...props }: React.ComponentProps<typeof Button> & { forceDark?: boolean }) {
+function DarkButton({
+  forceDark,
+  ...props
+}: React.ComponentProps<typeof Button> & { forceDark?: boolean }) {
   if (forceDark) {
-    return <ScopedTheme name="dark"><Button {...props} /></ScopedTheme>;
+    return (
+      <ScopedTheme name="dark">
+        <Button {...props} />
+      </ScopedTheme>
+    );
   }
   return <Button {...props} />;
 }
 
-type SuccessInfo = {
+type FeedbackInfo = {
+  kind: "success" | "error";
   title: string;
   body?: string;
   icon: LucideIcon;
+  action?: { label: string; onPress: () => void };
 } | null;
 
 export function InfoCard({ blocks, dark = false, preview = false, eventTitle, eventNotes }: Props) {
   const { theme } = useUnistyles();
   const router = useGuardedRouter();
   const safeBlocks = blocks ?? [];
-  const [successInfo, setSuccessInfo] = useState<SuccessInfo>(null);
+  const [feedbackInfo, setFeedbackInfo] = useState<FeedbackInfo>(null);
 
   const locationBlock = safeBlocks.find(
     (b): b is ContentLocation => b.__component === "content.location",
@@ -187,15 +210,45 @@ export function InfoCard({ blocks, dark = false, preview = false, eventTitle, ev
                     style={styles.calendarButton}
                     testID="info-card-calendar-button"
                     onPress={async () => {
-                      await addEventToCalendar(calEvent, {
-                        title: eventTitle ?? "Wydarzenie",
-                        notes: eventNotes,
-                      });
-                      setSuccessInfo({
-                        title: "Dodano do kalendarza",
-                        body: calEvent.label,
-                        icon: CalendarPlus,
-                      });
+                      try {
+                        await addEventToCalendar(calEvent, {
+                          title: eventTitle ?? "Wydarzenie",
+                          notes: eventNotes,
+                        });
+                        setFeedbackInfo({
+                          kind: "success",
+                          title: "Dodano do kalendarza",
+                          body: calEvent.label,
+                          icon: CalendarPlus,
+                        });
+                      } catch (e) {
+                        if (e instanceof CalendarPermissionError) {
+                          setFeedbackInfo({
+                            kind: "error",
+                            title: "Brak uprawnień",
+                            body: "Przyznaj dostęp do kalendarza w ustawieniach telefonu.",
+                            icon: AlertCircle,
+                            action: {
+                              label: "Otwórz ustawienia",
+                              onPress: () => void Linking.openSettings(),
+                            },
+                          });
+                        } else if (e instanceof CalendarNotFoundError) {
+                          setFeedbackInfo({
+                            kind: "error",
+                            title: "Błąd",
+                            body: "Nie znaleziono kalendarza na urządzeniu.",
+                            icon: AlertCircle,
+                          });
+                        } else {
+                          setFeedbackInfo({
+                            kind: "error",
+                            title: "Błąd",
+                            body: "Nie udało się dodać wydarzenia do kalendarza.",
+                            icon: AlertCircle,
+                          });
+                        }
+                      }
                     }}
                   />
                 </View>
@@ -215,12 +268,22 @@ export function InfoCard({ blocks, dark = false, preview = false, eventTitle, ev
         const onPress =
           chip.variant === "copy" && rawHandler
             ? async () => {
-                await rawHandler();
-                setSuccessInfo({
-                  title: "Skopiowano!",
-                  body: chip.content ?? undefined,
-                  icon: Copy,
-                });
+                try {
+                  await rawHandler();
+                  setFeedbackInfo({
+                    kind: "success",
+                    title: "Skopiowano!",
+                    body: chip.content ?? undefined,
+                    icon: Copy,
+                  });
+                } catch {
+                  setFeedbackInfo({
+                    kind: "error",
+                    title: "Błąd",
+                    body: "Nie udało się skopiować.",
+                    icon: AlertCircle,
+                  });
+                }
               }
             : rawHandler;
 
@@ -251,11 +314,12 @@ export function InfoCard({ blocks, dark = false, preview = false, eventTitle, ev
         );
       })}
       <ConfirmModal
-        visible={successInfo !== null}
-        icon={successInfo?.icon ?? Copy}
-        title={successInfo?.title ?? ""}
-        body={successInfo?.body}
-        onDismiss={() => setSuccessInfo(null)}
+        visible={feedbackInfo !== null}
+        icon={feedbackInfo?.icon ?? Copy}
+        title={feedbackInfo?.title ?? ""}
+        body={feedbackInfo?.body}
+        action={feedbackInfo?.action}
+        onDismiss={() => setFeedbackInfo(null)}
       />
     </Card>
   );

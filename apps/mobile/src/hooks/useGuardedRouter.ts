@@ -18,5 +18,17 @@ export function useGuardedRouter() {
     }
   };
 
-  return { ...router, push };
+  const navigate: typeof router.navigate = (...args) => {
+    if (navigation.isFocused()) {
+      router.navigate(...args);
+    }
+  };
+
+  const replace: typeof router.replace = (...args) => {
+    if (navigation.isFocused()) {
+      router.replace(...args);
+    }
+  };
+
+  return { ...router, push, navigate, replace };
 }

@@ -1,16 +1,33 @@
 import React from "react";
 import { Linking } from "react-native";
-import { InfoCard } from "../index";
+import { InfoCard } from "@/components/InfoCard";
+import {
+  addEventToCalendar,
+  CalendarPermissionError,
+} from "@/features/posts/hooks/useAddToCalendar";
 import type { PostContentBlock } from "@repo/types";
-import { render, screen, fireEvent } from "@testing-library/react-native";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react-native";
 import * as Clipboard from "expo-clipboard";
 
 const mockPush = jest.fn();
 jest.mock("@/hooks/useGuardedRouter", () => ({
-  useGuardedRouter: () => ({ push: mockPush, back: jest.fn() }),
+  useGuardedRouter: () => ({
+    push: mockPush,
+    back: jest.fn(),
+    navigate: jest.fn(),
+    replace: jest.fn(),
+  }),
 }));
 
-beforeEach(() => mockPush.mockClear());
+jest.mock("@/features/posts/hooks/useAddToCalendar", () => ({
+  ...jest.requireActual("@/features/posts/hooks/useAddToCalendar"),
+  addEventToCalendar: jest.fn(),
+}));
+
+beforeEach(() => {
+  mockPush.mockClear();
+  (addEventToCalendar as jest.Mock).mockReset();
+});
 
 const locationBlock = (content: string): PostContentBlock =>
   ({ __component: "content.location", id: 1, content }) as PostContentBlock;
@@ -160,16 +177,50 @@ describe("InfoCard", () => {
     spy.mockRestore();
   });
 
-  it("copy chip copies content to clipboard on press", () => {
+  it("copy chip copies content to clipboard on press", async () => {
     const spy = jest.spyOn(Clipboard, "setStringAsync").mockResolvedValue(true);
     render(<InfoCard blocks={[chipBlock(1, "IBAN", "PL61109010140000071219812874", "copy")]} />);
     fireEvent.press(screen.getByTestId("chip-action-button"));
-    expect(spy).toHaveBeenCalledWith("PL61109010140000071219812874");
+    await waitFor(() => expect(spy).toHaveBeenCalledWith("PL61109010140000071219812874"));
     spy.mockRestore();
   });
 
   it("normal chip has no action button", () => {
     render(<InfoCard blocks={[chipBlock(1, "Info", "some value", "normal")]} />);
     expect(screen.queryByTestId("chip-action-button")).toBeNull();
+  });
+
+  it("shows success modal when event is added to calendar", async () => {
+    (addEventToCalendar as jest.Mock).mockResolvedValue(true);
+    render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
+    
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("info-card-calendar-button"));
+    });
+
+    expect(await screen.findByText("Dodano do kalendarza")).toBeTruthy();
+  });
+
+  it("shows permission modal when calendar permission is denied", async () => {
+    (addEventToCalendar as jest.Mock).mockRejectedValue(new CalendarPermissionError());
+    render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
+    
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("info-card-calendar-button"));
+    });
+
+    expect(await screen.findByText("Brak uprawnień")).toBeTruthy();
+    expect(screen.getByText("Otwórz ustawienia")).toBeTruthy();
+  });
+
+  it("shows error modal when addEventToCalendar throws", async () => {
+    (addEventToCalendar as jest.Mock).mockRejectedValue(new Error("calendar failure"));
+    render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
+    
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("info-card-calendar-button"));
+    });
+
+    expect(await screen.findByText("Błąd")).toBeTruthy();
   });
 });

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import Button from "@/components/core/Button.component";
+import ConfirmModal from "@/components/core/ConfirmModal.component";
 import SwitchCore from "@/components/core/Switch.component";
 import Tag from "@/components/core/Tag.component";
 import TextCore from "@/components/core/Text.component";
@@ -13,7 +14,7 @@ import { Theme } from "@/styles/themes/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationAction, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { ArrowLeft, SaveIcon } from "lucide-react-native";
+import { AlertCircle, ArrowLeft, SaveIcon } from "lucide-react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -111,6 +112,7 @@ export default function Notifications() {
   };
 
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   const save = async () => {
     setIsSaving(true);
@@ -121,7 +123,7 @@ export default function Notifications() {
       await syncSubscriptions(tagIds);
       setSaved({ ...selected });
     } catch {
-      Alert.alert("Błąd", "Nie udało się zapisać powiadomień.");
+      setSaveError(true);
     } finally {
       setIsSaving(false);
     }
@@ -146,67 +148,74 @@ export default function Notifications() {
     });
 
   return (
-      <View testID="notifications-screen" style={styles.wrapper}>
-        <GestureDetector gesture={swipeBack}>
-          <View style={styles.edgeZone} pointerEvents="box-only" />
-        </GestureDetector>
-        <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
-          <Button icon={ArrowLeft} color="dark" size="lg" onPress={() => router.back()} />
-          <TextCore variant="h2" style={styles.title}>
-            Powiadomienia
-          </TextCore>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        <ScrollView contentContainerStyle={styles.content}>
-          <Pressable
-            testID="notifications-select-all"
-            style={styles.selectAllRow}
-            onPress={toggleAll}
-          >
-            <TextCore variant="h2">Wszystkie</TextCore>
-            <SwitchCore onPress={toggleAll} value={allSelected} />
-          </Pressable>
-
-          <View style={styles.divider} />
-
-          <View style={styles.tagsGrid}>
-            {tags.map((tag) => {
-              const isSelected = selected[tag.id] ?? false;
-              const dimmed = !isSelected;
-              return (
-                <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
-                  <Tag
-                    text={`#${tag.title}`}
-                    color={tagColor(tag.color)}
-                    onPress={() => toggle(tag.id)}
-                  />
-                </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-
-        <Animated.View
-          style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
-          pointerEvents="auto"
-        >
-          <Button
-            text="Zapisz"
-            icon={SaveIcon}
-            color="primary"
-            size="lg"
-            onPress={save}
-            disabled={isSaving}
-          />
-        </Animated.View>
-
-        <UnsavedChangesModal
-          visible={showModal}
-          onKeep={() => setShowModal(false)}
-          onDiscard={handleDiscard}
-        />
+    <View testID="notifications-screen" style={styles.wrapper}>
+      <GestureDetector gesture={swipeBack}>
+        <View style={styles.edgeZone} pointerEvents="box-only" />
+      </GestureDetector>
+      <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
+        <Button icon={ArrowLeft} color="dark" size="lg" onPress={() => router.back()} />
+        <TextCore variant="h2" style={styles.title}>
+          Powiadomienia
+        </TextCore>
+        <View style={styles.headerSpacer} />
       </View>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable
+          testID="notifications-select-all"
+          style={styles.selectAllRow}
+          onPress={toggleAll}
+        >
+          <TextCore variant="h2">Wszystkie</TextCore>
+          <SwitchCore onPress={toggleAll} value={allSelected} />
+        </Pressable>
+
+        <View style={styles.divider} />
+
+        <View style={styles.tagsGrid}>
+          {tags.map((tag) => {
+            const isSelected = selected[tag.id] ?? false;
+            const dimmed = !isSelected;
+            return (
+              <View key={tag.id} style={dimmed ? styles.dimmed : undefined}>
+                <Tag
+                  text={`#${tag.title}`}
+                  color={tagColor(tag.color)}
+                  onPress={() => toggle(tag.id)}
+                />
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
+
+      <Animated.View
+        style={[styles.saveWrapper, { bottom: insets.bottom + theme.spacing.md }, saveAnimStyle]}
+        pointerEvents="auto"
+      >
+        <Button
+          text="Zapisz"
+          icon={SaveIcon}
+          color="primary"
+          size="lg"
+          onPress={save}
+          disabled={isSaving}
+        />
+      </Animated.View>
+
+      <UnsavedChangesModal
+        visible={showModal}
+        onKeep={() => setShowModal(false)}
+        onDiscard={handleDiscard}
+      />
+      <ConfirmModal
+        visible={saveError}
+        icon={AlertCircle}
+        title="Błąd"
+        body="Nie udało się zapisać powiadomień."
+        onDismiss={() => setSaveError(false)}
+      />
+    </View>
   );
 }
 

@@ -34,7 +34,9 @@ export default function PushWidget() {
   useEffect(() => {
     get(`/${PLUGIN_ID}/tags`)
       .then((res: any) => setTags(res.data))
-      .catch(() => setError(t("push-notifications-widget.widget.push.errorLoadTags")))
+      .catch(() =>
+        setError(t("push-notifications-widget.widget.push.errorLoadTags")),
+      )
       .finally(() => setFetchLoading(false));
   }, []);
 
@@ -113,7 +115,9 @@ export default function PushWidget() {
       >
         {tags.length === 0 ? (
           <Box padding={3}>
-            <Typography textColor="neutral500">{t("push-notifications-widget.widget.push.noTags")}</Typography>
+            <Typography textColor="neutral500">
+              {t("push-notifications-widget.widget.push.noTags")}
+            </Typography>
           </Box>
         ) : (
           tags.map((tag) => (
@@ -142,7 +146,9 @@ export default function PushWidget() {
           name="title"
           value={title}
           onChange={(e: any) => setTitle(e.target.value)}
-          placeholder={t("push-notifications-widget.widget.push.titlePlaceholder")}
+          placeholder={t(
+            "push-notifications-widget.widget.push.titlePlaceholder",
+          )}
         />
       </Box>
 
@@ -151,7 +157,9 @@ export default function PushWidget() {
           name="body"
           value={body}
           onChange={(e: any) => setBody(e.target.value)}
-          placeholder={t("push-notifications-widget.widget.push.bodyPlaceholder")}
+          placeholder={t(
+            "push-notifications-widget.widget.push.bodyPlaceholder",
+          )}
         />
       </Box>
 

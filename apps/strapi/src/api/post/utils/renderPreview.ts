@@ -68,7 +68,9 @@ function renderBlock(block: Block): string {
       let range = "";
       if (start) {
         const startD = new Date(start);
-        const sameDay = end && new Date(start).toDateString() === new Date(end).toDateString();
+        const sameDay =
+          end &&
+          new Date(start).toDateString() === new Date(end).toDateString();
         range = end
           ? sameDay
             ? `${formatDate(start)}, ${formatTime(start)} – ${formatTime(end)}`
@@ -105,19 +107,21 @@ function renderBlock(block: Block): string {
     }
 
     case "content.calendar": {
-      const entries = (block.entries as Array<{
-        withDate?: boolean;
-        day?: string;
-        date?: string;
-        startTime?: string;
-        endTime?: string;
-      }>) ?? [];
+      const entries =
+        (block.entries as Array<{
+          withDate?: boolean;
+          day?: string;
+          date?: string;
+          startTime?: string;
+          endTime?: string;
+        }>) ?? [];
       if (!entries.length) return "";
       const rows = entries
         .map((e) => {
-          const label = e.withDate && e.date
-            ? formatDate(e.date)
-            : DAY_PL[e.day ?? ""] ?? (e.day ?? "");
+          const label =
+            e.withDate && e.date
+              ? formatDate(e.date)
+              : (DAY_PL[e.day ?? ""] ?? e.day ?? "");
           const time = [e.startTime, e.endTime].filter(Boolean).join(" – ");
           return `<tr><td class="cal-day">${escape(label)}</td><td class="cal-time">${escape(time)}</td></tr>`;
         })

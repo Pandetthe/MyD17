@@ -2,6 +2,7 @@ services:
   database:
     container_name: myd17
     platform: linux/amd64
+    profiles: ["managed-db"]
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
@@ -31,8 +32,8 @@ services:
       HOST: ${HOST:-0.0.0.0}
       PORT: ${PORT:-1337}
       DATABASE_CLIENT: postgres
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
+      DATABASE_HOST: ${DATABASE_HOST:-database}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
@@ -45,22 +46,51 @@ services:
       APP_KEYS: ${APP_KEYS}
       STRAPI_ADMIN_PASSWORD: ${STRAPI_ADMIN_PASSWORD}
       STRAPI_EMPLOYEE_PASSWORD: ${STRAPI_EMPLOYEE_PASSWORD}
+      STRAPI_URL: ${STRAPI_URL:-http://localhost:1337}
       FIREBASE_SERVICE_ACCOUNT: ${FIREBASE_SERVICE_ACCOUNT:-}
+      PREVIEW_SECRET: ${PREVIEW_SECRET:-}
+      EXPO_WEB_URL: ${EXPO_WEB_URL:-}
       NODE_ENV: production
     volumes:
       - strapi_uploads:/opt/app/apps/strapi/public/uploads
     ports:
       - "1337:1337"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:1337/_health || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
     networks:
       - myd17-network
     depends_on:
       database:
         condition: service_healthy
+        required: false
+
+  expo-web:
+    container_name: myd17-expo-web
+    profiles: ["preview"]
+    image: ${EXPO_WEB_IMAGE:-ghcr.io/stawex-team/myd17/expo-web:latest}
+    restart: unless-stopped
+    environment:
+      EXPO_PUBLIC_STRAPI_URL: ${EXPO_PUBLIC_STRAPI_URL:-}
+    networks:
+      - myd17-network
+
+  nginx:
+    container_name: myd17-nginx
+    image: nginx:alpine
+    profiles: ["nginx"]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      strapi:
+        condition: service_started
+      expo-web:
+        condition: service_started
+        required: false
+    networks:
+      - myd17-network
 
 volumes:
   pgdata:

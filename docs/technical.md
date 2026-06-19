@@ -1,278 +1,89 @@
-# Dokumentacja techniczna
+# Technical documentation
 
-Dokument opisuje najprostszy sposób uruchomienia i utrzymania środowiska produkcyjnego na jednym serwerze on-premise.
+Developer reference for maintaining and extending the MyD17 backend.
 
-## Składniki systemu
+## Push notifications
 
-Środowisko produkcyjne uruchamia dwa kontenery:
+Push notifications are sent via Firebase Cloud Messaging (FCM). Two separate pieces of configuration are required: a service account key for the Strapi backend and a `google-services.json` file for the mobile app build.
 
-- `database` - PostgreSQL 17, dane w wolumenie Docker `pgdata`.
-- `strapi` - backend Strapi, uploady w wolumenie Docker `strapi_uploads`.
+### Firebase project setup
 
-Najważniejsze pliki:
+1. Open [Firebase Console](https://console.firebase.google.com) and create a new project (any name, disable Google Analytics if not needed).
+2. From the project overview go to **Settings → General**.
+3. Add an Android app:
+   - Android package name: `io.github.stawex.myd17` (or the value of `android.package` in `apps/mobile/app.json` if customised).
+   - Leave all other fields as default.
+4. Download `google-services.json` and place it in `apps/mobile/`.
 
-- `compose.yaml` - definicja kontenerów.
-- `scripts/onprem.sh` - skrypt do instalacji, aktualizacji, backupu, restore i diagnostyki.
-- `.env` - produkcyjne sekrety i konfiguracja.
+### Strapi service account key
 
-## Pierwsza instalacja
-
-Wszystkie polecenia wykonujemy z katalogu głównego repozytorium.
-
-### Przygotowanie serwera
-
-- Zainstalować Docker Engine i Docker Compose plugin.
-- Sprawdzić instalację:
-
-```bash
-docker --version
-docker compose version
-```
-
-- Sklonować repozytorium na serwer.
-
-### Wygenerowanie konfiguracji
-
-```bash
-bash scripts/onprem.sh init
-```
-
-Skrypt utworzy plik `.env` z losowymi sekretami, hasłem bazy i hasłami startowymi do kont admina.
-
-Po wygenerowaniu:
-
-```bash
-chmod 600 .env
-```
-
-### Dostęp do obrazu Strapi
-
-Opcja zalecana: pobranie obrazu z GitHub Container Registry.
-
-```bash
-echo GITHUB_TOKEN | docker login ghcr.io -u GITHUB_USER --password-stdin
-```
-
-W pliku `.env` ustawić obraz, najlepiej na konkretny tag wersji:
-
-```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
-```
-
-Można też użyć `latest`, ale do produkcji zalecany jest konkretny tag.
-
-Alternatywnie: lokalne zbudowanie obrazu.
-
-```bash
-docker build -t strapi:local -f apps/strapi/Dockerfile .
-```
-
-Następnie w `.env`:
-
-```dotenv
-STRAPI_IMAGE=strapi:local
-```
-
-### Konfiguracja powiadomień push
-
-Powiadomienia push wymagają projektu Firebase z włączoną usługą FCM.
-
-#### Klucz prywatny Firebase (Strapi)
-
-1. Otworzyć [Firebase Console](https://console.firebase.google.com) i stworzyć nowy projekt (dowolna nazwa, reszta opcji domyślna).
-2. Z głównego widoku projektu przejść do **Settings → Service accounts**.
-3. Kliknąć **Generate new private key** — pobierze się plik JSON.
-4. Wkleić zawartość pliku do `.env` jako wartość `FIREBASE_SERVICE_ACCOUNT` **w postaci jednej linii, bez białych znaków** (można do tego użyć dowolnego minifikatora JSON):
+1. Go to **Settings → Service accounts**.
+2. Click **Generate new private key** — a JSON file will be downloaded.
+3. Minify the JSON (remove all whitespace — use [jsonformatter.org](https://jsonformatter.org/json-minifier) or `jq -c . key.json`).
+4. Add it to `.env` as a single line:
 
 ```dotenv
 FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"...","private_key":"-----BEGIN RSA PRIVATE KEY-----\n..."}
 ```
 
-Jeśli zmienna jest pusta lub nieprawidłowa, Strapi uruchomi się normalnie, ale powiadomienia push będą wyłączone (odpowiedni komunikat pojawi się w logach).
+If the variable is empty or the JSON is invalid, Strapi starts normally but push notifications are disabled and a warning is printed in the logs.
 
-#### Plik google-services.json (dotyczy buildu aplikacji mobilnej)
+### FCM in the mobile app
 
-Plik `google-services.json` jest wymagany i musi trafić do katalogu `apps/mobile`.
+The `google-services.json` file placed in `apps/mobile/` is picked up automatically during the Expo prebuild step. No additional code changes are needed — the push notification plugin reads it at build time.
 
-1. Z głównego widoku projektu Firebase Console przejść do **Settings → General**.
-2. Stworzyć nową aplikację Android (Android package name: io.github.stawex.myd17 (lub z wartością znajdującą się pod android/package w pliku app.json w folderze apps/mobile, jeżeli nie jest używana domyślna wartość), reszta domyślnie).
-3. Pobrać `google-services.json` i umieścić go w folderze `apps/mobile`.
+To verify notifications are working after setup:
 
-### Uruchomienie
+1. Start the stack with `FIREBASE_SERVICE_ACCOUNT` set.
+2. Check `./myd17.sh logs strapi` — you should see `Firebase initialized` on startup, not a warning.
+3. Send a test notification from the Strapi admin panel or via the API.
 
-```bash
-bash scripts/onprem.sh up
-```
+---
 
-Sprawdzenie statusu:
+## Updating Strapi framework version
 
-```bash
-bash scripts/onprem.sh status
-```
+This covers upgrading the Strapi framework itself (e.g. `5.46.0` → `5.47.0`), not deploying a new app image to production (see [on-premise.md](on-premise.md#updates) for that).
 
-Panel administracyjny Strapi jest dostępny pod:
-
-```text
-http://ADRES_SERWERA:1337/admin
-```
-
-Startowe konta administracyjne są tworzone przy pierwszym starcie, jeżeli jeszcze nie istnieją:
-
-- `admin@myd17.pl`
-- `employee@myd17.pl`
-
-Hasła znajdują się w `.env` pod zmiennymi `STRAPI_ADMIN_PASSWORD` i `STRAPI_EMPLOYEE_PASSWORD`.
-
-## Opcjonalna konfiguracja
-
-Poniższe zmienne można dopisać ręcznie do `.env` po wygenerowaniu pliku przez `init`.
-
-### Podgląd treści w panelu admina
-
-Strapi udostępnia przycisk **„Open Preview"** na stronach edycji postów, kart informacyjnych i strony kontaktowej. Kliknięcie otwiera wyrenderowany podgląd bloków treści w nowej karcie.
-
-Aby włączyć podgląd, ustaw losowy sekret:
-
-```dotenv
-PREVIEW_SECRET=twój-losowy-sekret
-```
-
-Bez tej zmiennej podgląd działa z domyślną wartością `change-me-in-production`, co jest akceptowalne tylko lokalnie. Na środowisku produkcyjnym **wymagane** jest ustawienie własnej wartości.
-
-### Podgląd z aplikacją webową
-
-Domyślnie podgląd renderuje uproszczoną wersję HTML. Aby zamiast tego używać skompilowanej aplikacji mobilnej (React Native Web), ustaw adres, pod którym jest ona dostępna:
-
-```dotenv
-EXPO_WEB_URL=http://localhost:8081
-```
-
-Wartość powinna wskazywać na serwer deweloperski Expo (`npx expo start --web`) lub na zbudowaną i hostowaną wersję statyczną (`npx expo export --platform web`). Adres jest przekazywany do strony podglądu jako parametr, więc musi być dostępny zarówno dla przeglądarki otwierającej podgląd, jak i dla serwera Strapi.
-
-Pamiętaj, żeby dodać adres aplikacji webowej do zmiennej `CORS_ALLOWED_ORIGINS` w `.env`, np.:
-
-```dotenv
-CORS_ALLOWED_ORIGINS=http://localhost:1337,http://localhost:8081
-```
-
-## Aktualizacja systemu
-
-Aktualizacja polega na zmianie obrazu Strapi i restarcie aplikacji. Strapi wykonuje zmiany schematu podczas startu.
-
-- Sprawdzić aktualną wersję w `.env`:
+### Check current version
 
 ```bash
-grep STRAPI_IMAGE .env
+grep '@strapi/strapi' apps/strapi/package.json
 ```
 
-- Ustawić nowy tag obrazu w `.env`, np.:
-
-```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
-```
-
-- Wykonać aktualizację:
+### Run the upgrade
 
 ```bash
-bash scripts/onprem.sh migrate
+pnpm strapi:upgrade
 ```
 
-Skrypt przed aktualizacją tworzy zweryfikowany backup bazy w katalogu `backups/`.
+This runs `@strapi/upgrade latest` inside the Strapi app, which bumps all `@strapi/*` packages in `apps/strapi/package.json` and applies any required code migrations automatically.
 
-- Sprawdzić środowisko:
+To preview changes without applying them:
 
 ```bash
-bash scripts/onprem.sh status
-bash scripts/onprem.sh verify
+pnpm --filter strapi upgrade:dry
 ```
 
-## Wycofanie zmian (rollback)
+### After upgrading
 
-- W pliku `.env` przywrócić poprzedni tag obrazu, np.:
-
-```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
-```
-
-- Odtworzyć bazę z backupu utworzonego przed aktualizacją:
+1. Review the diff — the upgrade tool may have modified config files or plugin registrations.
+2. Run the dev server and verify nothing is broken:
 
 ```bash
-bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
+pnpm run dev
 ```
 
-- Sprawdzić system:
+3. Run tests:
 
 ```bash
-bash scripts/onprem.sh verify
+pnpm --filter strapi test
 ```
 
-Uwaga: komenda `restore` zatrzymuje Strapi, uruchamia bazę, tworzy dodatkowy backup aktualnego stanu bazy, odtwarza wskazany dump i ponownie uruchamia Strapi.
-
-## Backup i odtwarzanie
-
-Ręczny backup bazy:
+4. Build and push a new image to make the upgrade available on-premise:
 
 ```bash
-bash scripts/onprem.sh backup
+docker build -t ghcr.io/stawex-team/myd17/strapi:latest -f apps/strapi/Dockerfile . && \
+docker push ghcr.io/stawex-team/myd17/strapi:latest
 ```
 
-Backup trafia do katalogu `backups/` jako plik `.dump`.
-
-Odtworzenie backupu:
-
-```bash
-bash scripts/onprem.sh restore backups/myd17-YYYYMMDD-HHMMSS.dump
-```
-
-Backup bazy nie zastępuje backupu uploadów. Pliki uploadowane w Strapi są w wolumenie Docker `strapi_uploads` i powinny być zabezpieczane osobno.
-
-## Podstawowa diagnostyka
-
-### Status usług
-
-```bash
-bash scripts/onprem.sh status
-docker compose --project-name myd17 --env-file .env -f compose.yaml --profile prod ps
-```
-
-Oczekiwane usługi:
-
-- `database` - status `healthy`.
-- `strapi` - status `running` albo `healthy`.
-
-### Logi
-
-Wszystkie usługi:
-
-```bash
-bash scripts/onprem.sh logs
-```
-
-Tylko Strapi:
-
-```bash
-bash scripts/onprem.sh logs strapi
-```
-
-Tylko baza:
-
-```bash
-bash scripts/onprem.sh logs database
-```
-
-### Healthcheck aplikacji
-
-```bash
-curl http://localhost:1337/_health
-```
-
-Jeżeli endpoint nie odpowiada:
-
-- Sprawdzić `bash scripts/onprem.sh status`.
-- Sprawdzić `bash scripts/onprem.sh logs strapi`.
-- Sprawdzić, czy port `1337/tcp` nie jest blokowany przez firewall lub reverse proxy.
-- Sprawdzić, czy `.env` ma komplet wymaganych zmiennych:
-
-```bash
-bash scripts/onprem.sh verify
-```
+5. Deploy to on-premise servers via `./myd17.sh update` (see [on-premise.md](on-premise.md#updates)).

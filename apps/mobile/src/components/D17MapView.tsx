@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import WebView from "react-native-webview";
+import { THREE_BUNDLE } from "@/generated/mapBundle";
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 
@@ -39,12 +40,9 @@ function buildHtml(glbBase64: string, textureBase64: string, roomCoords: RoomCoo
 </style>
 </head>
 <body>
-<script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/"}}
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+<script>${THREE_BUNDLE}</script>
+<script>
+const { GLTFLoader } = THREE;
 
 const FOV = 55, NEAR = 0.1, FAR = 300;
 const ZOOM_MIN = 0.3, ZOOM_SENS = 0.005, ROT_SENS = 0.005;
