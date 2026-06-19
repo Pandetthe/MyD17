@@ -1,5 +1,6 @@
 import "@/styles/unistyles";
 import React, { useEffect, useState } from "react";
+import { Appearance } from "react-native";
 import { useNativeSetup } from "@/hooks/useNativeSetup";
 import { THEME_STORAGE_KEY } from "@/lib/storageKeys";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -33,10 +34,13 @@ export default function Layout() {
 
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
-      if (saved === "light" || saved === "dark") {
-        UnistylesRuntime.setAdaptiveThemes(false);
-        UnistylesRuntime.setTheme(saved);
-      }
+      const theme =
+        saved === "light" || saved === "dark"
+          ? saved
+          : Appearance.getColorScheme() === "dark"
+            ? "dark"
+            : "light";
+      UnistylesRuntime.setTheme(theme);
       setThemeReady(true);
     });
   }, []);

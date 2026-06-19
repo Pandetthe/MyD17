@@ -57,6 +57,11 @@ backups/
 !.env.example.prod
 
 # ==============================
+# Generated Files
+# ==============================
+apps/mobile/src/generated/mapBundle.ts
+
+# ==============================
 # TypeScript & Testing
 # ==============================
 *.tsbuildinfo

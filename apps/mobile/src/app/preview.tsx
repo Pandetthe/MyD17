@@ -69,6 +69,7 @@ export default function PreviewPage() {
       .get<PreviewData>(`/api/preview-content?${qs.toString()}`, {
         signal: controller.signal,
         headers: { "X-Preview-Secret": secret ?? "" },
+        timeout: 15000,
       })
       .then((r) => setData(r.data))
       .catch((e: unknown) => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import WebView from "react-native-webview";
+import { THREE_BUNDLE } from "@/generated/mapBundle";
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 
@@ -39,8 +40,7 @@ function buildHtml(glbBase64: string, textureBase64: string, roomCoords: RoomCoo
 </style>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>${THREE_BUNDLE}</script>
 <script>
 const { GLTFLoader } = THREE;
 

@@ -85,12 +85,15 @@ ask_yn() {
 # Sets COMPOSE (base command) and COMPOSE_UP_SERVICES (explicit services for
 # "up -d"; empty means all services matching active profiles).
 build_compose() {
-  local use_nginx use_managed_db
+  local use_nginx use_managed_db use_preview
   use_nginx="$(env_value USE_NGINX)"
   use_managed_db="$(env_value USE_MANAGED_DB)"
+  use_preview="$(env_value USE_PREVIEW)"
 
   PROFILES=(prod)
+  [[ "${use_managed_db:-true}" != "false" ]] && PROFILES+=(managed-db)
   [[ "${use_nginx:-false}" == "true" ]] && PROFILES+=(nginx)
+  [[ "${use_preview:-false}" == "true" ]] && PROFILES+=(preview)
 
   PROFILE_FLAGS=()
   for p in "${PROFILES[@]}"; do PROFILE_FLAGS+=(--profile "$p"); done
@@ -109,6 +112,7 @@ build_compose() {
   if [[ "${use_managed_db:-true}" == "false" ]]; then
     COMPOSE_UP_SERVICES+=(strapi)
     [[ "${use_nginx:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(nginx)
+    [[ "${use_preview:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(expo-web)
   fi
 }
 
@@ -241,6 +245,27 @@ server {
     # Increase body size limit for Strapi uploads
     client_max_body_size 50m;
 
+    location /preview {
+        proxy_pass         http://expo-web:80;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+    }
+
+    location /_expo/ {
+        proxy_pass         http://expo-web:80/_expo/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+    }
+
+    location /assets/ {
+        proxy_pass         http://expo-web:80/assets/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+    }
+
     location / {
         proxy_pass         http://strapi:1337;
         proxy_http_version 1.1;
@@ -278,6 +303,27 @@ server {
 
     # Increase body size limit for Strapi uploads
     client_max_body_size 50m;
+
+    location /preview {
+        proxy_pass         http://expo-web:80;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+        proxy_set_header   X-Real-IP \$remote_addr;
+        proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto https;
+    }
+
+    location /_expo/ {
+        proxy_pass         http://expo-web:80/_expo/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+    }
+
+    location /assets/ {
+        proxy_pass         http://expo-web:80/assets/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host \$host;
+    }
 
     location / {
         proxy_pass         http://strapi:1337;
@@ -321,8 +367,9 @@ run_install() {
   echo "==========="
   echo ""
 
-  local domain use_nginx use_ssl self_signed use_managed_db
+  local domain use_nginx use_ssl self_signed use_managed_db use_preview
   local db_host db_port db_name db_user db_pass db_ssl
+  local preview_secret expo_web_url expo_public_strapi_url strapi_url
   local db_section
 
   domain="$(ask "Enter domain name (leave empty for IP-only access)")"
@@ -387,6 +434,34 @@ DATABASE_SSL=${db_ssl}"
     self_signed=false
   fi
 
+  # Public Strapi URL (used by preview and other integrations)
+  local scheme="http"
+  [[ "${use_ssl:-false}" == "true" ]] && scheme="https"
+  if [[ "$use_nginx" == "true" && -n "$domain" ]]; then
+    strapi_url="${scheme}://${domain}"
+  elif [[ -n "$domain" ]]; then
+    strapi_url="${scheme}://${domain}:${PORT:-1337}"
+  else
+    strapi_url="http://localhost:1337"
+  fi
+
+  # Preview (Expo web)
+  if ask_yn "Enable content preview? (served at /preview on the main domain)"; then
+    use_preview=true
+    preview_secret="$(secret)"
+    if [[ -n "$domain" ]]; then
+      expo_web_url="${scheme}://${domain}"
+    else
+      expo_web_url="http://localhost:1337"
+    fi
+    expo_public_strapi_url="$(ask "Strapi URL for Expo web preview" "$strapi_url")"
+  else
+    use_preview=false
+    preview_secret=""
+    expo_web_url=""
+    expo_public_strapi_url=""
+  fi
+
   echo ""
 
   # Generate .env
@@ -401,7 +476,9 @@ STRAPI_IMAGE=${STRAPI_IMAGE:-ghcr.io/stawex-team/myd17/strapi:latest}
 # Module configuration
 USE_MANAGED_DB=${use_managed_db}
 USE_NGINX=${use_nginx}
+USE_PREVIEW=${use_preview}
 DOMAIN=${domain}
+STRAPI_URL=${strapi_url}
 
 # Strapi secrets (auto-generated — do not change after first start)
 APP_KEYS=$(secret),$(secret),$(secret),$(secret)
@@ -420,10 +497,13 @@ ${db_section}
 # Optional — Firebase push notifications
 # FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
 
-# Optional — content preview
-# PREVIEW_SECRET=your-random-secret
-# EXPO_WEB_URL=https://your-web-app-url
-# CORS_ALLOWED_ORIGINS=http://localhost:1337
+# Content preview (Expo web container)
+EXPO_WEB_IMAGE=${EXPO_WEB_IMAGE:-ghcr.io/stawex-team/myd17/expo-web:latest}
+$(if [[ "$use_preview" == "true" ]]; then
+  printf 'PREVIEW_SECRET=%s\nEXPO_WEB_URL=%s\nEXPO_PUBLIC_STRAPI_URL=%s' "$preview_secret" "$expo_web_url" "$expo_public_strapi_url"
+else
+  printf '# PREVIEW_SECRET=\n# EXPO_WEB_URL=\n# EXPO_PUBLIC_STRAPI_URL='
+fi)
 EOF
 
   chmod 600 "$ENV_FILE"
@@ -461,8 +541,7 @@ EOF
   echo ""
   echo "Setup complete. Store a secure copy of $ENV_FILE before starting."
   echo ""
-  echo "Optional: review $ENV_FILE to configure Firebase push notifications"
-  echo "or content preview (PREVIEW_SECRET, EXPO_WEB_URL)."
+  echo "Optional: review $ENV_FILE to configure Firebase push notifications."
   echo ""
   echo "Next step:"
   echo "  ./myd17.sh start"
@@ -573,6 +652,12 @@ update_stack() {
 
   if [[ "$strapi_image" == */* ]]; then
     "${COMPOSE[@]}" pull strapi
+  fi
+
+  local expo_web_image
+  expo_web_image="$(env_value EXPO_WEB_IMAGE)"
+  if [[ "$(env_value USE_PREVIEW)" == "true" && "$expo_web_image" == */* ]]; then
+    "${COMPOSE[@]}" pull expo-web
   fi
 
   "${COMPOSE[@]}" up -d "${COMPOSE_UP_SERVICES[@]}"

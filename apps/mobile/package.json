@@ -3,6 +3,8 @@
   "main": "expo-router/entry",
   "version": "1.0.8",
   "scripts": {
+    "bundle-map": "node ../../scripts/bundle-map-assets.mjs",
+    "build:android": "bash ../../scripts/build-dev.sh",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",

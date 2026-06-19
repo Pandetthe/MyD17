@@ -21,6 +21,7 @@ permissions:
 env:
   REGISTRY: ghcr.io
   STRAPI_IMAGE_NAME: ${{ github.repository }}/strapi
+  EXPO_WEB_IMAGE_NAME: ${{ github.repository }}/expo-web
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -123,6 +124,30 @@ jobs:
           file: apps/strapi/Dockerfile
           push: ${{ env.DRY_RUN != 'true' }}
           tags: ${{ steps.image.outputs.tags }}
+
+      - name: Prepare expo-web image metadata
+        id: expo-web-image
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          image="${REGISTRY}/${EXPO_WEB_IMAGE_NAME}"
+          tags="${image,,}:${version}"
+          if [[ "${version}" != *-* ]]; then
+            tags="${tags}"$'\n'"${image,,}:latest"
+          fi
+          {
+            echo "tags<<EOF"
+            echo "${tags}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and optionally push expo-web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/mobile/Dockerfile.web
+          push: ${{ env.DRY_RUN != 'true' }}
+          tags: ${{ steps.expo-web-image.outputs.tags }}
 
       - name: Generate Android project
         working-directory: apps/mobile
