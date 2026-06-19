@@ -149,6 +149,9 @@ jobs:
           push: ${{ env.DRY_RUN != 'true' }}
           tags: ${{ steps.expo-web-image.outputs.tags }}
 
+      - name: Bundle map assets
+        run: pnpm --filter mobile bundle-map
+
       - name: Generate Android project
         working-directory: apps/mobile
         env:
