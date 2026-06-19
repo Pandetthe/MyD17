@@ -63,10 +63,7 @@ STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
 
 ```bash
 ./myd17.sh start
-./myd17.sh status
 ```
-
-The admin panel is available at `http://YOUR_SERVER:1337/admin`. Initial accounts (`admin@myd17.pl`, `employee@myd17.pl`) use passwords from `.env`.
 
 For updates, rollbacks, backups, diagnostics, and the full script reference see [docs/on-premise.md](docs/on-premise.md).
 
