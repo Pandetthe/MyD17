@@ -15,7 +15,6 @@
     "android:configure-signing": "node scripts/configure-android-signing.mjs",
     "mobile:setup": "node scripts/setup-mobile-env.mjs",
     "onprem": "bash myd17.sh",
-    "strapi:upgrade": "pnpm --filter strapi upgrade",
     "load:stress": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=stress",
     "load:staging:smoke": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=smoke",
     "load:staging:test": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=load",

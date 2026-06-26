@@ -42,7 +42,7 @@ To verify notifications are working after setup:
 
 ## Updating Strapi framework version
 
-This covers upgrading the Strapi framework itself (e.g. `5.46.0` → `5.47.0`), not deploying a new app image to production (see [on-premise.md](on-premise.md#updates) for that).
+This covers upgrading the Strapi framework itself, not deploying a new app image to production (see [on-premise.md](on-premise.md#updates) for that).
 
 ### Check current version
 
@@ -53,7 +53,7 @@ grep '@strapi/strapi' apps/strapi/package.json
 ### Run the upgrade
 
 ```bash
-pnpm strapi:upgrade
+pnpm --filter strapi run upgrade
 ```
 
 This runs `@strapi/upgrade latest` inside the Strapi app, which bumps all `@strapi/*` packages in `apps/strapi/package.json` and applies any required code migrations automatically.
@@ -61,7 +61,7 @@ This runs `@strapi/upgrade latest` inside the Strapi app, which bumps all `@stra
 To preview changes without applying them:
 
 ```bash
-pnpm --filter strapi upgrade:dry
+pnpm --filter strapi run upgrade:dry
 ```
 
 ### After upgrading
