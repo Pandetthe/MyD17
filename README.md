@@ -11,6 +11,8 @@ Built as a monorepo with a React Native (Expo) mobile frontend and a Strapi CMS 
 
 The Android APK is available for download from the [Releases](../../releases) page.
 
+> **Note:** The released APK is built with the backend URL set to `http://10.0.2.2:1337` (Android emulator localhost). To use it on a physical device, you need to build the app manually with your own `EXPO_PUBLIC_STRAPI_URL`.
+
 <table>
   <tr>
     <td align="center"><img src="docs/screenshots/screen-home-light.png" width="160"/><br/><sub>Home - light mode</sub></td>

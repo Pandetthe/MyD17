@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "io.github.pandetthe.myd17",
+      "bundleIdentifier": "io.github.stawex.myd17",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -22,7 +22,7 @@
         "monochromeImage": "./assets/images/icon-monochrome-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "io.github.pandetthe.myd17",
+      "package": "io.github.stawex.myd17",
       "googleServicesFile": "./google-services.json",
       "versionCode": 1000000,
       "permissions": [

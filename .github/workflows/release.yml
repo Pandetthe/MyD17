@@ -33,7 +33,7 @@ jobs:
     env:
       RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
       DRY_RUN: ${{ inputs.dry_run || false }}
-      EXPO_PUBLIC_STRAPI_URL: ${{ vars.EXPO_PUBLIC_STRAPI_URL }}
+      EXPO_PUBLIC_STRAPI_URL: ${{ vars.EXPO_PUBLIC_STRAPI_URL || 'http://10.0.2.2:1337' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -151,6 +151,14 @@ jobs:
           file: apps/mobile/Dockerfile.web
           push: ${{ env.DRY_RUN != 'true' }}
           tags: ${{ steps.preview-image.outputs.tags }}
+
+      - name: Inject Google Services config
+        if: ${{ secrets.GOOGLE_SERVICES_JSON != '' }}
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > apps/mobile/google-services.json
+
+      - name: Inject Google Services config (iOS)
+        if: ${{ secrets.GOOGLE_SERVICES_PLIST != '' }}
+        run: echo '${{ secrets.GOOGLE_SERVICES_PLIST }}' > apps/mobile/GoogleService-Info.plist
 
       - name: Generate Android project
         working-directory: apps/mobile
