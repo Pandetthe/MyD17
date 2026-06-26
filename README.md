@@ -8,14 +8,14 @@ The Android APK is available for download from the [Releases](../../releases) pa
 
 <table>
   <tr>
-    <td align="center"><img src="docs/screenshots/screen-home-light.png" width="160"/><br/><sub>Home — light mode</sub></td>
-    <td align="center"><img src="docs/screenshots/screen-home-dark.png" width="160"/><br/><sub>Home — dark mode</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-home-light.png" width="160"/><br/><sub>Home - light mode</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-home-dark.png" width="160"/><br/><sub>Home - dark mode</sub></td>
     <td align="center"><img src="docs/screenshots/screen-navigation.png" width="160"/><br/><sub>Navigation drawer</sub></td>
     <td align="center"><img src="docs/screenshots/screen-news-feed.png" width="160"/><br/><sub>News & events feed</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/screen-map-ground-floor.png" width="160"/><br/><sub>3D map — ground floor</sub></td>
-    <td align="center"><img src="docs/screenshots/screen-map-floor-4.png" width="160"/><br/><sub>3D map — 4th floor (dark)</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-map-ground-floor.png" width="160"/><br/><sub>3D map - ground floor</sub></td>
+    <td align="center"><img src="docs/screenshots/screen-map-floor-4.png" width="160"/><br/><sub>3D map - 4th floor (dark)</sub></td>
     <td align="center"><img src="docs/screenshots/screen-deans-office.png" width="160"/><br/><sub>Dean's office hours & contact</sub></td>
     <td></td>
   </tr>
@@ -37,9 +37,16 @@ The Android APK is available for download from the [Releases](../../releases) pa
 
 **1. Install Docker Engine** following the [official guide](https://docs.docker.com/engine/install/#supported-platforms).
 
-**2. Copy deployment files** to the server — `myd17.sh` and `compose.yaml`.
+**2. Download deployment files** to the server:
 
-**3. Run the installer** — prompts for domain name, optional managed PostgreSQL, nginx reverse proxy, and SSL:
+```bash
+curl -Lso myd17.sh https://github.com/pandetthe/MyD17/releases/latest/download/myd17.sh
+chmod +x myd17.sh
+```
+
+`compose.yaml` is downloaded automatically by the installer in the next step.
+
+**3. Run the installer** - prompts for domain name, optional managed PostgreSQL, nginx reverse proxy, SSL, and content preview:
 
 ```bash
 ./myd17.sh install
@@ -56,7 +63,7 @@ echo YOUR_GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password
 Then set the image tag in `.env`:
 
 ```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+MYD17_VERSION=1.2.0
 ```
 
 **5. Start the stack:**

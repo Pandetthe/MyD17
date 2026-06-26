@@ -110,9 +110,9 @@ build_compose() {
   # so the bundled database container is never started.
   COMPOSE_UP_SERVICES=()
   if [[ "${use_managed_db:-true}" == "false" ]]; then
-    COMPOSE_UP_SERVICES+=(strapi)
+    COMPOSE_UP_SERVICES+=(myd17-cms)
     [[ "${use_nginx:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(nginx)
-    [[ "${use_preview:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(expo-web)
+    [[ "${use_preview:-false}" == "true" ]] && COMPOSE_UP_SERVICES+=(myd17-preview)
   fi
 }
 
@@ -128,11 +128,11 @@ Commands:
   install       Interactive setup: generates .env and nginx config
   start         Start all enabled services
   stop          Stop all services
-  restart       Restart Strapi (and nginx if enabled)
-  update        Backup DB, pull latest image, restart
+  restart       Restart myd17-cms (and nginx if enabled)
+  update        Backup DB, pull new images, restart
   backup        Dump PostgreSQL to backups/ (managed DB only)
   restore FILE  Restore PostgreSQL dump created by backup (managed DB only)
-  verify        Check secrets, backup readiness and Strapi health
+  verify        Check secrets, backup readiness and myd17-cms health
   logs [svc]    Follow logs (all services or one service)
   status        Show service status
   help          Show this message
@@ -140,7 +140,7 @@ Commands:
 Environment overrides:
   ENV_FILE=/path/to/.env
   BACKUP_DIR=/path/to/backups
-  STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:tag
+  MYD17_VERSION=1.2.0
 EOF
 }
 
@@ -246,7 +246,7 @@ server {
     client_max_body_size 50m;
 
     location /preview {
-        proxy_pass         http://expo-web:80;
+        proxy_pass         http://myd17-preview:80;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
         proxy_set_header   X-Real-IP \$remote_addr;
@@ -255,19 +255,19 @@ server {
     }
 
     location /_expo/ {
-        proxy_pass         http://expo-web:80/_expo/;
+        proxy_pass         http://myd17-preview:80/_expo/;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
     }
 
     location /assets/ {
-        proxy_pass         http://expo-web:80/assets/;
+        proxy_pass         http://myd17-preview:80/assets/;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
     }
 
     location / {
-        proxy_pass         http://strapi:1337;
+        proxy_pass         http://myd17-cms:1337;
         proxy_http_version 1.1;
         proxy_set_header   Upgrade \$http_upgrade;
         proxy_set_header   Connection 'upgrade';
@@ -305,7 +305,7 @@ server {
     client_max_body_size 50m;
 
     location /preview {
-        proxy_pass         http://expo-web:80;
+        proxy_pass         http://myd17-preview:80;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
         proxy_set_header   X-Real-IP \$remote_addr;
@@ -314,19 +314,19 @@ server {
     }
 
     location /_expo/ {
-        proxy_pass         http://expo-web:80/_expo/;
+        proxy_pass         http://myd17-preview:80/_expo/;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
     }
 
     location /assets/ {
-        proxy_pass         http://expo-web:80/assets/;
+        proxy_pass         http://myd17-preview:80/assets/;
         proxy_http_version 1.1;
         proxy_set_header   Host \$host;
     }
 
     location / {
-        proxy_pass         http://strapi:1337;
+        proxy_pass         http://myd17-cms:1337;
         proxy_http_version 1.1;
         proxy_set_header   Upgrade \$http_upgrade;
         proxy_set_header   Connection 'upgrade';
@@ -362,6 +362,13 @@ run_install() {
     exit 1
   fi
 
+  if [[ ! -f "$ROOT_DIR/compose.yaml" ]]; then
+    echo "compose.yaml not found - downloading from GitHub..."
+    curl -Lso "$ROOT_DIR/compose.yaml" \
+      "https://github.com/pandetthe/MyD17/releases/latest/download/compose.yaml"
+    echo "Downloaded compose.yaml"
+  fi
+
   echo ""
   echo "MyD17 Setup"
   echo "==========="
@@ -383,7 +390,7 @@ run_install() {
     db_user=myd17
     db_pass="$(password)"
     db_ssl=false
-    db_section="# Database — managed (bundled PostgreSQL container)
+    db_section="# Database - managed (bundled PostgreSQL container)
 DATABASE_CLIENT=postgres
 DATABASE_HOST=${db_host}
 DATABASE_PORT=${db_port}
@@ -403,7 +410,7 @@ DATABASE_SSL=${db_ssl}"
     else
       db_ssl=false
     fi
-    db_section="# Database — external
+    db_section="# Database - external
 DATABASE_CLIENT=postgres
 DATABASE_HOST=${db_host}
 DATABASE_PORT=${db_port}
@@ -471,7 +478,7 @@ DATABASE_SSL=${db_ssl}"
 HOST=0.0.0.0
 PORT=1337
 NODE_ENV=production
-STRAPI_IMAGE=${STRAPI_IMAGE:-ghcr.io/stawex-team/myd17/strapi:latest}
+# MYD17_VERSION=1.2.0
 
 # Module configuration
 USE_MANAGED_DB=${use_managed_db}
@@ -480,7 +487,7 @@ USE_PREVIEW=${use_preview}
 DOMAIN=${domain}
 STRAPI_URL=${strapi_url}
 
-# Strapi secrets (auto-generated — do not change after first start)
+# Strapi secrets (auto-generated - do not change after first start)
 APP_KEYS=$(secret),$(secret),$(secret),$(secret)
 API_TOKEN_SALT=$(secret)
 ADMIN_JWT_SECRET=$(secret)
@@ -488,17 +495,16 @@ TRANSFER_TOKEN_SALT=$(secret)
 JWT_SECRET=$(secret)
 ENCRYPTION_KEY=$(secret)
 
-# Initial admin account passwords (stored in plain text — change after first login)
+# Initial admin account passwords (stored in plain text - change after first login)
 STRAPI_ADMIN_PASSWORD=$(password)
 STRAPI_EMPLOYEE_PASSWORD=$(password)
 
 ${db_section}
 
-# Optional — Firebase push notifications
+# Optional - Firebase push notifications
 # FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
 
 # Content preview (Expo web container)
-EXPO_WEB_IMAGE=${EXPO_WEB_IMAGE:-ghcr.io/stawex-team/myd17/expo-web:latest}
 $(if [[ "$use_preview" == "true" ]]; then
   printf 'PREVIEW_SECRET=%s\nEXPO_WEB_URL=%s\nEXPO_PUBLIC_STRAPI_URL=%s' "$preview_secret" "$expo_web_url" "$expo_public_strapi_url"
 else
@@ -620,7 +626,7 @@ restore_db() {
   db_user="$(env_value DATABASE_USERNAME)"
   db_name="$(env_value DATABASE_NAME)"
 
-  "${COMPOSE[@]}" stop strapi >/dev/null 2>&1 || true
+  "${COMPOSE[@]}" stop myd17-cms >/dev/null 2>&1 || true
   "${COMPOSE[@]}" up -d database
   wait_for_db
   backup_db
@@ -642,26 +648,18 @@ start_stack() {
 update_stack() {
   require_env
 
-  local strapi_image
-  strapi_image="$(env_value STRAPI_IMAGE)"
-
-  # Only back up when using managed DB
   if [[ "$(env_value USE_MANAGED_DB)" != "false" ]]; then
     backup_db
   fi
 
-  if [[ "$strapi_image" == */* ]]; then
-    "${COMPOSE[@]}" pull strapi
-  fi
+  "${COMPOSE[@]}" pull myd17-cms
 
-  local expo_web_image
-  expo_web_image="$(env_value EXPO_WEB_IMAGE)"
-  if [[ "$(env_value USE_PREVIEW)" == "true" && "$expo_web_image" == */* ]]; then
-    "${COMPOSE[@]}" pull expo-web
+  if [[ "$(env_value USE_PREVIEW)" == "true" ]]; then
+    "${COMPOSE[@]}" pull myd17-preview
   fi
 
   "${COMPOSE[@]}" up -d "${COMPOSE_UP_SERVICES[@]}"
-  echo "Strapi restarted. Application schema changes run during Strapi startup."
+  echo "myd17-cms restarted. Application schema changes run during startup."
 }
 
 verify_stack() {
@@ -696,7 +694,8 @@ case "${1:-}" in
   restart)
     require_env
     build_compose
-    "${COMPOSE[@]}" restart strapi
+    "${COMPOSE[@]}" restart myd17-cms
+    [[ "$(env_value USE_NGINX)" == "true" ]] && "${COMPOSE[@]}" restart nginx
     ;;
   update)
     build_compose

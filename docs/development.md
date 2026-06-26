@@ -13,14 +13,14 @@ cp apps/strapi/.env.example apps/strapi/.env
 
 Edit `.env` and `apps/strapi/.env` if needed (default values should work for local development).
 
-**Mobile app — Strapi URL:**
+**Mobile app - Strapi URL:**
 
 ```bash
 pnpm mobile:setup            # physical phone over WiFi (auto-detects your LAN IP)
 pnpm mobile:setup emulator   # Android emulator
 ```
 
-This generates `apps/mobile/.env.local` with `EXPO_PUBLIC_STRAPI_URL` pointing at your running Strapi instance. The file is gitignored — each developer runs this once.
+This generates `apps/mobile/.env.local` with `EXPO_PUBLIC_STRAPI_URL` pointing at your running Strapi instance. The file is gitignored - each developer runs this once.
 
 Alternatively, copy a template manually:
 

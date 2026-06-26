@@ -23,10 +23,10 @@ services:
     networks:
       - myd17-network
 
-  strapi:
-    container_name: strapi
+  myd17-cms:
+    container_name: myd17-cms
     profiles: ["prod"]
-    image: ${STRAPI_IMAGE:-ghcr.io/stawex-team/myd17/strapi:latest}
+    image: ghcr.io/pandetthe/myd17-cms:${MYD17_VERSION:-latest}
     restart: unless-stopped
     environment:
       HOST: ${HOST:-0.0.0.0}
@@ -62,10 +62,10 @@ services:
         condition: service_healthy
         required: false
 
-  expo-web:
-    container_name: myd17-expo-web
+  myd17-preview:
+    container_name: myd17-preview
     profiles: ["preview"]
-    image: ${EXPO_WEB_IMAGE:-ghcr.io/stawex-team/myd17/expo-web:latest}
+    image: ghcr.io/pandetthe/myd17-preview:${MYD17_VERSION:-latest}
     restart: unless-stopped
     environment:
       EXPO_PUBLIC_STRAPI_URL: ${EXPO_PUBLIC_STRAPI_URL:-}
@@ -84,9 +84,9 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
-      strapi:
+      myd17-cms:
         condition: service_started
-      expo-web:
+      myd17-preview:
         condition: service_started
         required: false
     networks:

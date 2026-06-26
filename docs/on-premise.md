@@ -9,7 +9,7 @@ Strapi applies schema changes automatically on startup.
 1. Set the new image tag in `.env`:
 
 ```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.3.0
+MYD17_VERSION=1.3.0
 ```
 
 2. Run the update:
@@ -33,7 +33,7 @@ If an update causes issues, restore the previous state:
 1. Set the previous image tag in `.env`:
 
 ```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+MYD17_VERSION=1.2.0
 ```
 
 2. Restore the database backup created automatically before the update:
@@ -76,13 +76,13 @@ Restore from backup:
 ./myd17.sh status
 ```
 
-Expected output: `database` with status `healthy`, `strapi` with status `running` or `healthy`.
+Expected output: `database` with status `healthy`, `myd17-cms` with status `running` or `healthy`.
 
 ### Logs
 
 ```bash
 ./myd17.sh logs           # all services
-./myd17.sh logs strapi
+./myd17.sh logs myd17-cms
 ./myd17.sh logs database
 ./myd17.sh logs nginx
 ```
@@ -93,10 +93,12 @@ Expected output: `database` with status `healthy`, `strapi` with status `running
 curl http://localhost:1337/_health
 ```
 
+> **Note:** If nginx is enabled, Strapi's port is not exposed directly. Use the domain URL instead: `curl https://your-domain/_health`.
+
 If the endpoint does not respond:
 
-- Check `./myd17.sh status` — confirm containers are running.
-- Check `./myd17.sh logs strapi` — look for startup errors.
+- Check `./myd17.sh status` - confirm containers are running.
+- Check `./myd17.sh logs myd17-cms` - look for startup errors.
 - Verify port `1337/tcp` is not blocked by a firewall or reverse proxy.
 - Run `./myd17.sh verify` to validate secrets and database connectivity.
 
@@ -107,11 +109,11 @@ If the endpoint does not respond:
 | `install` | Interactive setup: generate `.env`, configure nginx |
 | `start` | Start all enabled services |
 | `stop` | Stop all services |
-| `restart` | Restart Strapi (and nginx if enabled) |
-| `update` | Backup DB, pull new Strapi image, restart |
+| `restart` | Restart myd17-cms (and nginx if enabled) |
+| `update` | Backup DB, pull new images, restart |
 | `backup` | Dump PostgreSQL to `backups/` |
 | `restore FILE` | Restore from a dump file |
-| `verify` | Check secrets, backup readiness, Strapi health |
+| `verify` | Check secrets, backup readiness, myd17-cms health |
 | `logs [svc]` | Follow logs for all services or a specific service |
 | `status` | Show service status |
 | `help` | List all commands |

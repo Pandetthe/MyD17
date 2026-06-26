@@ -44,10 +44,10 @@ keytool -genkeypair -v \
   -keyalg RSA \
   -keysize 2048 \
   -validity 10000
-base64 -i myd17-release.keystore | pbcopy
+base64 myd17-release.keystore > myd17-release.keystore.b64
 ```
 
-Use the base64 output as `ANDROID_KEYSTORE_BASE64`.
+Use the contents of `myd17-release.keystore.b64` as `ANDROID_KEYSTORE_BASE64`.
 
 Add a repository variable named `EXPO_PUBLIC_STRAPI_URL`. The Android release workflow passes that value into Expo at build time, so release builds and GitHub Release artifacts point at the live Strapi instance.
 
@@ -71,7 +71,7 @@ Create the production environment:
 Set the image version in `.env`:
 
 ```dotenv
-STRAPI_IMAGE=ghcr.io/stawex-team/myd17/strapi:1.2.0
+MYD17_VERSION=1.2.0
 ```
 
 Start a new installation or update an existing one:

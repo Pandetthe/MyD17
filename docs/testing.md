@@ -44,8 +44,8 @@ Coverage is collected from `src/**/*.{ts,tsx}`, excluding type declarations and 
 
 ### Test file locations
 
-- **Strapi** — `apps/strapi/src/**/__tests__/*.test.ts`
-- **Mobile** — `apps/mobile/src/**/__tests__/*.test.ts(x)` and `*.test.ts(x)` next to the source file
+- **Strapi** - `apps/strapi/src/**/__tests__/*.test.ts`
+- **Mobile** - `apps/mobile/src/**/__tests__/*.test.ts(x)` and `*.test.ts(x)` next to the source file
 
 ---
 
@@ -53,7 +53,7 @@ Coverage is collected from `src/**/*.{ts,tsx}`, excluding type declarations and 
 
 ### Prerequisites
 
-- [mise](https://mise.jdx.dev/) installed — k6 is declared in `mise.toml`
+- [mise](https://mise.jdx.dev/) installed - k6 is declared in `mise.toml`
 - Strapi running (locally or on a remote server)
 
 ```bash
@@ -117,7 +117,7 @@ Each VU iteration simulates: browse feed → read a post → view information pa
 
 The script `security/scripts/run-zap.sh` pulls the official ZAP Docker image and runs an automated scan against the API.
 
-#### Baseline scan (passive — safe for any environment)
+#### Baseline scan (passive - safe for any environment)
 
 ```bash
 ./security/scripts/run-zap.sh baseline
@@ -125,7 +125,7 @@ The script `security/scripts/run-zap.sh` pulls the official ZAP Docker image and
 
 Passive scan: observes traffic, no attack payloads sent.
 
-#### Full scan (active — destructive, use only against a disposable environment)
+#### Full scan (active - destructive, use only against a disposable environment)
 
 ```bash
 ./security/scripts/run-zap.sh full
@@ -153,7 +153,7 @@ Reports are written to `security/reports/` as both HTML and JSON after each run.
 
 ### API security checks
 
-`security/scripts/api-security-checks.sh` runs a suite of lightweight OWASP API Top 10 checks using plain `curl` — no Docker required.
+`security/scripts/api-security-checks.sh` runs a suite of lightweight OWASP API Top 10 checks using plain `curl` - no Docker required.
 
 ```bash
 ./security/scripts/api-security-checks.sh
@@ -167,8 +167,8 @@ TARGET_URL=https://your-server.example.com ./security/scripts/api-security-check
 
 Checks covered:
 
-- **API1** — BOLA: unauthenticated user enumeration
-- **API2** — Broken authentication: JWT `alg:none`, brute-force rate limiting, admin panel exposure
-- **API3** — Mass assignment on the like endpoint
-- **API6** — Like endpoint spam (no auth, no rate limit)
-- **API8** — Security headers, CORS misconfiguration, OpenAPI/Swagger public exposure, default credentials
+- **API1** - BOLA: unauthenticated user enumeration
+- **API2** - Broken authentication: JWT `alg:none`, brute-force rate limiting, admin panel exposure
+- **API3** - Mass assignment on the like endpoint
+- **API6** - Like endpoint spam (no auth, no rate limit)
+- **API8** - Security headers, CORS misconfiguration, OpenAPI/Swagger public exposure, default credentials

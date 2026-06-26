@@ -1,4 +1,4 @@
-appId: io.github.stawex.myd17
+appId: io.github.pandetthe.myd17
 # Uses "Dyżury prodziekana" — second seeded card.
 # Note: react-native-gesture-handler pan gestures inside a Modal are unreliable in
 # Maestro's touch simulation. This test verifies open + close via backdrop tap.

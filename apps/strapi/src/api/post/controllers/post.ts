@@ -18,7 +18,7 @@ const IOS_STORE_URL =
   process.env.IOS_APP_STORE_URL ?? "https://apps.apple.com/app/myd17";
 const ANDROID_STORE_URL =
   process.env.ANDROID_PLAY_STORE_URL ??
-  "https://play.google.com/store/apps/details?id=io.github.stawex.myd17";
+  "https://play.google.com/store/apps/details?id=io.github.pandetthe.myd17";
 
 const APPLE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>`;
 const GPLAY_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M3.18 23.76c.3.17.65.22 1.02.16l12.86-7.43-2.76-2.75zm-1.67-20.5C1.19 3.67 1 4.12 1 4.69v14.62c0 .57.19 1.02.51 1.34l.07.07 8.19-8.19v-.19zm18.98 8.94-2.78-1.61-3.1 3.1 3.1 3.1 2.8-1.62c.8-.46.8-1.5-.02-1.97M4.2.08 17.06 7.5l-2.76 2.76L3.18.24C3.5.18 3.87.23 4.2.08z"/></svg>`;
@@ -32,7 +32,7 @@ function mobileRedirectHtml(
   isIos: boolean,
 ): string {
   const iosDeepLink = `myd17://post/${documentId}`;
-  const androidDeepLink = `intent://post/${documentId}#Intent;scheme=myd17;package=io.github.stawex.myd17;S.browser_fallback_url=${encodeURIComponent(ANDROID_STORE_URL)};end`;
+  const androidDeepLink = `intent://post/${documentId}#Intent;scheme=myd17;package=io.github.pandetthe.myd17;S.browser_fallback_url=${encodeURIComponent(ANDROID_STORE_URL)};end`;
   const deepLink = isIos ? iosDeepLink : androidDeepLink;
   const storeUrl = isIos ? IOS_STORE_URL : ANDROID_STORE_URL;
   const storeIcon = isIos ? APPLE_SVG : GPLAY_SVG;

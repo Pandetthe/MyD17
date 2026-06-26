@@ -2,14 +2,14 @@
   "expo": {
     "name": "MyD17",
     "slug": "MyD17",
-    "version": "1.0.8",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myd17",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "io.github.stawex.myd17",
+      "bundleIdentifier": "io.github.pandetthe.myd17",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -22,9 +22,9 @@
         "monochromeImage": "./assets/images/icon-monochrome-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "io.github.stawex.myd17",
+      "package": "io.github.pandetthe.myd17",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 1000008,
+      "versionCode": 1000000,
       "permissions": [
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR"
@@ -55,7 +55,11 @@
           }
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-font",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

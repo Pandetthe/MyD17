@@ -1,4 +1,4 @@
-appId: io.github.stawex.myd17
+appId: io.github.pandetthe.myd17
 # Only 6 posts are seeded — all fit in one page (pageSize = 10), no infinite scroll.
 # This test just verifies no footer spinner appears when all posts are already loaded.
 ---
