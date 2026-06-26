@@ -1,7 +1,7 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react-native";
 import { TagFilterBar } from "../TagFilterBar.component";
 import type { Tag } from "@repo/types";
+import { render, screen, fireEvent } from "@testing-library/react-native";
 
 jest.mock("@/hooks/usePressAnimation", () => ({
   usePressAnimation: () => ({ animStyle: {}, onPressIn: jest.fn(), onPressOut: jest.fn() }),
@@ -100,9 +100,7 @@ describe("TagFilterBar", () => {
   });
 
   it("renders without crashing when tags array is empty", () => {
-    render(
-      <TagFilterBar tags={[]} selectedTagIds={[]} onSelect={jest.fn()} onClear={jest.fn()} />,
-    );
+    render(<TagFilterBar tags={[]} selectedTagIds={[]} onSelect={jest.fn()} onClear={jest.fn()} />);
     expect(screen.queryByTestId("tag-filter-bar")).toBeTruthy();
   });
 });

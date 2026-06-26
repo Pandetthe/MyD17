@@ -193,7 +193,7 @@ describe("InfoCard", () => {
   it("shows success modal when event is added to calendar", async () => {
     (addEventToCalendar as jest.Mock).mockResolvedValue(true);
     render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
-    
+
     await act(async () => {
       fireEvent.press(screen.getByTestId("info-card-calendar-button"));
     });
@@ -204,7 +204,7 @@ describe("InfoCard", () => {
   it("shows permission modal when calendar permission is denied", async () => {
     (addEventToCalendar as jest.Mock).mockRejectedValue(new CalendarPermissionError());
     render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
-    
+
     await act(async () => {
       fireEvent.press(screen.getByTestId("info-card-calendar-button"));
     });
@@ -216,7 +216,7 @@ describe("InfoCard", () => {
   it("shows error modal when addEventToCalendar throws", async () => {
     (addEventToCalendar as jest.Mock).mockRejectedValue(new Error("calendar failure"));
     render(<InfoCard blocks={[dateTimeBlock("2025-06-15T10:00:00.000Z")]} />);
-    
+
     await act(async () => {
       fireEvent.press(screen.getByTestId("info-card-calendar-button"));
     });

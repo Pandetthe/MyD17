@@ -1,3 +1,6 @@
+import { getIcon } from "../iconMap";
+import * as LucideIcons from "lucide-react-native";
+
 // Override the global lucide mock so each icon has a distinct reference.
 jest.mock("lucide-react-native", () => {
   const Bell = () => null;
@@ -6,9 +9,6 @@ jest.mock("lucide-react-native", () => {
   const GraduationCap = () => null;
   return { Bell, HelpCircle, Heart, GraduationCap };
 });
-
-import { getIcon } from "../iconMap";
-import * as LucideIcons from "lucide-react-native";
 
 describe("getIcon", () => {
   it("returns the matching icon for a single-word kebab-case name", () => {

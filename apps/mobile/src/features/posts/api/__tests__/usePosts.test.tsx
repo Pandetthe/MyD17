@@ -1,7 +1,7 @@
 import React from "react";
+import { usePosts } from "../usePosts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, act, waitFor } from "@testing-library/react-native";
-import { usePosts } from "../usePosts";
 
 const mockGet = jest.fn();
 jest.mock("@/lib/apiClient", () => ({
@@ -12,9 +12,10 @@ function makeWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  return Wrapper;
 }
 
 const makePage = (page: number, pageCount: number, data: unknown[] = []) => ({
@@ -72,7 +73,9 @@ describe("usePosts", () => {
     const { result } = renderHook(() => usePosts(), { wrapper: makeWrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    act(() => { result.current.fetchNextPage(); });
+    act(() => {
+      result.current.fetchNextPage();
+    });
 
     await waitFor(() => expect(result.current.data?.pages).toHaveLength(2));
     expect(mockGet).toHaveBeenCalledWith(expect.stringContaining("pagination[page]=2"));

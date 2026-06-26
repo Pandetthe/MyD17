@@ -1,12 +1,12 @@
 import React from "react";
 import { View, useWindowDimensions } from "react-native";
+import { Image } from "react-native";
 import TagComponent from "@/components/core/Tag.component";
 import { PostPlaceholder } from "@/lib/images";
 import { tagColor } from "@/lib/tagColor";
 import { colors } from "@/styles/colors";
 import type { Theme } from "@/styles/themes/theme";
 import type { Tag as PostTag } from "@repo/types";
-import { Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import { StyleSheet } from "react-native-unistyles";

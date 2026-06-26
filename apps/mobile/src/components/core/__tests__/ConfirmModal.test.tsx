@@ -1,6 +1,7 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react-native";
 import ConfirmModal from "../ConfirmModal.component";
+import { render, screen, fireEvent } from "@testing-library/react-native";
+import type { LucideIcon } from "lucide-react-native";
 
 jest.mock("@/hooks/usePressAnimation", () => ({
   usePressAnimation: () => ({ animStyle: {}, onPressIn: jest.fn(), onPressOut: jest.fn() }),
@@ -9,13 +10,11 @@ jest.mock("expo-linear-gradient", () => ({
   LinearGradient: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-const MockIcon = () => null;
+const MockIcon = (() => null) as unknown as LucideIcon;
 
 describe("ConfirmModal", () => {
   it("renders title when visible", () => {
-    render(
-      <ConfirmModal visible icon={MockIcon} title="Success!" onDismiss={jest.fn()} />,
-    );
+    render(<ConfirmModal visible icon={MockIcon} title="Success!" onDismiss={jest.fn()} />);
     expect(screen.getByText("Success!")).toBeTruthy();
   });
 

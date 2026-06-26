@@ -46,7 +46,7 @@ export default function ConfirmModal({
   // internalVisible tracks if the Modal should be rendered at all.
   // It is true if visible is true, or if we are in the middle of a closing animation.
   const [internalVisible, setInternalVisible] = useState(visible);
-  
+
   if (visible && !internalVisible) {
     setInternalVisible(true);
   }

@@ -65,9 +65,9 @@ mise install   # installs k6 if not already present
 | Script | Target | Scenario |
 |---|---|---|
 | `pnpm run load:stress` | `http://localhost:1337` | stress |
-| `pnpm run load:staging:smoke` | `https://myd17.quiddity.icu` | smoke |
-| `pnpm run load:staging:test` | `https://myd17.quiddity.icu` | load |
-| `pnpm run load:staging:stress` | `https://myd17.quiddity.icu` | stress |
+| `pnpm run load:staging:smoke` | `http://localhost:1337` | smoke |
+| `pnpm run load:staging:test` | `http://localhost:1337` | load |
+| `pnpm run load:staging:stress` | `http://localhost:1337` | stress |
 
 ### Running locally
 

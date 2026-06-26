@@ -1,3 +1,6 @@
+import { handleTokenRefresh } from "../pushNotifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const mockGet = jest.fn();
 const mockPut = jest.fn();
 const mockPost = jest.fn();
@@ -22,9 +25,6 @@ jest.mock("@react-native-firebase/messaging", () => ({
   getToken: jest.fn().mockResolvedValue("new-fcm-token"),
   deleteToken: jest.fn().mockResolvedValue(undefined),
 }));
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { handleTokenRefresh } from "../pushNotifications";
 
 const FCM_TOKEN_KEY = "fcm_token";
 

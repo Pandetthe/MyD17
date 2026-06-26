@@ -1,14 +1,19 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react-native";
 import { PostDetail } from "../PostDetail.component";
 import type { Post, Tag } from "@repo/types";
+import { render, screen, fireEvent } from "@testing-library/react-native";
 
 const mockBack = jest.fn();
 const mockLikePost = jest.fn();
 const mockHandleShare = jest.fn();
 
 jest.mock("@/hooks/useGuardedRouter", () => ({
-  useGuardedRouter: () => ({ back: mockBack, push: jest.fn(), navigate: jest.fn(), replace: jest.fn() }),
+  useGuardedRouter: () => ({
+    back: mockBack,
+    push: jest.fn(),
+    navigate: jest.fn(),
+    replace: jest.fn(),
+  }),
 }));
 
 jest.mock("@/features/posts/api/useLikePost", () => ({
@@ -39,14 +44,18 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 jest.mock("react-native-gesture-handler", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View, ScrollView } = require("react-native");
   return {
     ScrollView,
-    Gesture: { Pan: () => ({ activeOffsetX: () => ({ failOffsetY: () => ({ onEnd: () => ({}) }) }) }) },
+    Gesture: {
+      Pan: () => ({ activeOffsetX: () => ({ failOffsetY: () => ({ onEnd: () => ({}) }) }) }),
+    },
     GestureDetector: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
   };
 });
 jest.mock("react-native-svg", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require("react-native");
   return {
     default: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,

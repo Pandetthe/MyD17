@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { render, screen, fireEvent } from "@testing-library/react-native";
 import RadioButton from "../RadioButton";
 import { RadioButtonGroup } from "../RadioButton.context";
+import { render, screen, fireEvent } from "@testing-library/react-native";
 
 function ControlledGroup({
   initial,

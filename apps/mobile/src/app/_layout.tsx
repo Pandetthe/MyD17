@@ -34,12 +34,12 @@ export default function Layout() {
 
   useEffect(() => {
     AsyncStorage.getItem(THEME_STORAGE_KEY).then((saved) => {
-      const theme =
-        saved === "light" || saved === "dark"
-          ? saved
-          : Appearance.getColorScheme() === "dark"
-            ? "dark"
-            : "light";
+      let theme: "light" | "dark";
+      if (saved === "light" || saved === "dark") {
+        theme = saved;
+      } else {
+        theme = Appearance.getColorScheme() === "dark" ? "dark" : "light";
+      }
       UnistylesRuntime.setTheme(theme);
       setThemeReady(true);
     });

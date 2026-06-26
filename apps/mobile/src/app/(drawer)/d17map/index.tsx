@@ -18,9 +18,9 @@ import D17MapView, { FloorPayload } from "@/components/D17MapView";
 import { Card } from "@/components/core/Card.component";
 import IconPrimitive from "@/components/core/Icon.component";
 import TextCore from "@/components/core/Text.component";
+import { MAP_ASSETS, ROOM_KEYS } from "@/generated/mapBundle";
 import { colors, palette } from "@/styles/colors";
 import type { PaletteColor } from "@/styles/themes/theme";
-import { MAP_ASSETS, ROOM_KEYS } from "@/generated/mapBundle";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -138,7 +138,6 @@ const FLOOR_LABEL: Record<string, { short: string; full: string }> = {
   "3": { short: "Piętro 3", full: "Piętro 3" },
   "4": { short: "Piętro 4", full: "Piętro 4" },
 };
-
 
 const ITEM_H = 52;
 const VISIBLE = 5;
@@ -958,35 +957,35 @@ export default function D17MapScreen() {
 
       <>
         {floorDropdownOpen && (
-            <Pressable
-              style={StyleSheet.absoluteFill}
-              onPress={() => floorPillCloseRef.current?.()}
-            />
-          )}
-          <LinearGradient
-            colors={[theme.colors.surface, theme.colors.surface + "00"]}
-            style={[styles.topGradient, { height: insets.top + 80 }]}
-            pointerEvents="none"
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => floorPillCloseRef.current?.()}
           />
-          <View
-            style={{ position: "absolute", top: 12, left: 0, right: 0, alignItems: "center" }}
-            pointerEvents="box-none"
-          >
-            <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
-              <FloorPill
-                floors={FLOORS}
-                activeFloor={activeFloor}
-                loadedFloors={loadedFloors}
-                onFloorChange={handleFloorSwitch}
-                onOpenChange={setFloorDropdownOpen}
-                closeRef={floorPillCloseRef}
-              />
-              <SearchPill onPress={openDrawer} />
-              {((appliedFloor !== null && appliedRoom !== null) || specialType !== null) && (
-                <ResetPill onPress={handleReset} />
-              )}
-            </View>
+        )}
+        <LinearGradient
+          colors={[theme.colors.surface, theme.colors.surface + "00"]}
+          style={[styles.topGradient, { height: insets.top + 80 }]}
+          pointerEvents="none"
+        />
+        <View
+          style={{ position: "absolute", top: 12, left: 0, right: 0, alignItems: "center" }}
+          pointerEvents="box-none"
+        >
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
+            <FloorPill
+              floors={FLOORS}
+              activeFloor={activeFloor}
+              loadedFloors={loadedFloors}
+              onFloorChange={handleFloorSwitch}
+              onOpenChange={setFloorDropdownOpen}
+              closeRef={floorPillCloseRef}
+            />
+            <SearchPill onPress={openDrawer} />
+            {((appliedFloor !== null && appliedRoom !== null) || specialType !== null) && (
+              <ResetPill onPress={handleReset} />
+            )}
           </View>
+        </View>
       </>
 
       <Modal

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import WebView from "react-native-webview";
 import { THREE_BUNDLE } from "@/generated/mapBundle";
+import WebView from "react-native-webview";
 
 type RoomCoords = Record<string, { x: number; y: number }>;
 

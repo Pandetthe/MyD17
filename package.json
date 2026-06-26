@@ -17,15 +17,15 @@
     "onprem": "bash myd17.sh",
     "strapi:upgrade": "pnpm --filter strapi upgrade",
     "load:stress": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=stress",
-    "load:staging:smoke": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=smoke",
-    "load:staging:test": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=load",
-    "load:staging:stress": "BASE_URL=https://myd17.quiddity.icu k6 run k6/main.js -e SCENARIO=stress"
+    "load:staging:smoke": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=smoke",
+    "load:staging:test": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=load",
+    "load:staging:stress": "BASE_URL=http://localhost:1337 k6 run k6/main.js -e SCENARIO=stress"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "prettier": "^3.8.5",
-    "turbo": "^2.10.0",
-    "typescript": "6.0.3"
+    "prettier": "^3.8.3",
+    "turbo": "^2.9.14",
+    "typescript": "6.0.2"
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -37,6 +37,7 @@
       "@types/react": "^19",
       "react": "19.2.0",
       "react-dom": "19.2.0",
+      "react-test-renderer": "19.2.0",
       "strapi>react": "18.3.1",
       "strapi>react-dom": "18.3.1"
     },

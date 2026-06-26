@@ -1,7 +1,7 @@
 import React from "react";
+import { usePost } from "../usePost";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import { usePost } from "../usePost";
 
 const mockGet = jest.fn();
 jest.mock("@/lib/apiClient", () => ({
@@ -12,9 +12,10 @@ function makeWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  return Wrapper;
 }
 
 beforeEach(() => mockGet.mockReset());

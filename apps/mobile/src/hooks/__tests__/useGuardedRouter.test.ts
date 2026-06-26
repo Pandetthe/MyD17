@@ -1,5 +1,5 @@
-import { renderHook } from "@testing-library/react-native";
 import { useGuardedRouter } from "../useGuardedRouter";
+import { renderHook } from "@testing-library/react-native";
 
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();

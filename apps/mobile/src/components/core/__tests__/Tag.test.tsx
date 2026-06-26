@@ -1,6 +1,6 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react-native";
 import Tag from "../Tag.component";
+import { render, screen, fireEvent } from "@testing-library/react-native";
 
 jest.mock("@/hooks/usePressAnimation", () => ({
   usePressAnimation: () => ({ animStyle: {}, onPressIn: jest.fn(), onPressOut: jest.fn() }),
