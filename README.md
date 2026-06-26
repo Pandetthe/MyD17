@@ -1,5 +1,10 @@
 # MyD17
 
+![Version](https://img.shields.io/github/v/release/pandetthe/MyD17?label=version)
+![CI](https://github.com/pandetthe/MyD17/actions/workflows/ci.yml/badge.svg)
+![Lint](https://github.com/pandetthe/MyD17/actions/workflows/lint.yaml/badge.svg)
+![Release](https://github.com/pandetthe/MyD17/actions/workflows/release.yml/badge.svg)
+
 MyD17 is a mobile application for the Faculty of Computer Science, designed to support the faculty's promotion and communication efforts. It provides students and visitors with access to news and events, a 3D interactive map of the D17 building, dean's office hours, contact information, and first-year student resources. Content is managed through a dedicated CMS application. The project was developed as part of the Inżynieria Oprogramowania (Software Engineering) course.
 
 Built as a monorepo with a React Native (Expo) mobile frontend and a Strapi CMS backend, using Turborepo for build orchestration and Docker Compose for local development.
