@@ -1,3 +1,6 @@
 # Strapi-generated files
 apps/strapi/types/generated/**
 packages/types/src/generated.ts
+
+# Mobile-generated files
+apps/mobile/src/generated/**
