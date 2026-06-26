@@ -92,7 +92,7 @@ jobs:
         run: pnpm release:validate
 
       - name: Run checks
-        run: pnpm turbo run lint check-types format-check test build --continue
+        run: pnpm turbo run lint:check types:check format:check test build --continue
 
       - name: Prepare CMS image metadata
         id: cms-image
