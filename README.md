@@ -1,6 +1,6 @@
 # MyD17
 
-![Version](https://img.shields.io/github/v/release/pandetthe/MyD17?label=version)
+![Version](https://img.shields.io/github/v/release/pandetthe/MyD17?label=Version)
 ![CI](https://github.com/pandetthe/MyD17/actions/workflows/ci.yml/badge.svg)
 ![Lint](https://github.com/pandetthe/MyD17/actions/workflows/lint.yaml/badge.svg)
 ![Release](https://github.com/pandetthe/MyD17/actions/workflows/release.yml/badge.svg)
